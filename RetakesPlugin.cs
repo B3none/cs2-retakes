@@ -45,7 +45,7 @@ public class RetakesPlugin : BasePlugin
     public HookResult OnRoundPreStart(EventRoundPrestart @event, GameEventInfo info)
     {
         Console.WriteLine(MessagePrefix + "Round Pre Start event fired!");
-
+        
         return HookResult.Continue;
     }
 }

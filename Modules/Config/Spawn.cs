@@ -4,9 +4,10 @@ namespace RetakesPlugin.Modules.Config;
 
 public abstract class Spawn
 {
-    public double X { get; set; }
-    public double Y { get; set; }
+    public Vector Vector { get; set; }
+    public QAngle Angle { get; set; }
     public double Z { get; set; }
     public CsTeam Team { get; set; }
+    public Bombsite Bombsite { get; set; }
     public bool CanBePlanter { get; set; }
 }
