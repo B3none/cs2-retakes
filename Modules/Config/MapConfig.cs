@@ -11,17 +11,19 @@ public class MapConfig
     public MapConfig(string moduleDirectory, string mapName)
     {
         MapName = mapName;
-        _mapConfigPath = Path.Combine(moduleDirectory, mapName, ".json");
+        _mapConfigPath = Path.Combine(moduleDirectory, $"map_configs/{mapName}.json");
         _mapConfigData = null;
     }
 
     public void Load()
     {
+        Console.WriteLine($"{RetakesPlugin.MessagePrefix}Attempting to load data from {_mapConfigPath}");
+        
         try
         {
             if (!File.Exists(_mapConfigPath))
             {
-                throw new FileNotFoundException("Map configuration file not found.");
+                throw new FileNotFoundException();
             }
 
             string jsonData = File.ReadAllText(_mapConfigPath);
@@ -29,7 +31,7 @@ public class MapConfig
 
             if (_mapConfigData!.Spawns == null || _mapConfigData.Spawns.Count == 0)
             {
-                throw new Exception("Error loading config");
+                throw new Exception("No spawns found in config");
             }
             
             Console.WriteLine($"{RetakesPlugin.MessagePrefix}Data loaded from {_mapConfigPath}");
@@ -37,12 +39,10 @@ public class MapConfig
         catch (FileNotFoundException)
         {
             Console.WriteLine($"{RetakesPlugin.MessagePrefix}No config for map {MapName}");
-            throw; // Re-throw the exception to handle it in the calling code
         }
         catch (Exception ex)
         {
             Console.WriteLine($"{RetakesPlugin.MessagePrefix}An error occurred while loading data: {ex.Message}");
-            throw;
         }
     }
 
