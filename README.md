@@ -1,2 +1,8 @@
 # cs2-retakes
-CS2 implementation of retakes. Based on the version for CS:GO by Splewis
+Retakes plugin written in C# for CounterStrikeSharp
+
+## Credit
+This was inspired by the CS:GO Retakes project written by Splewis.
+
+## Setup for development
+Download the latest release of CounterStrikeSharp, and put the contents into the `CounterStrikeSharp` directory.
