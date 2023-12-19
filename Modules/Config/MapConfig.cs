@@ -26,16 +26,23 @@ public class MapConfig
 
             string jsonData = File.ReadAllText(_mapConfigPath);
             _mapConfigData = JsonSerializer.Deserialize<MapConfigData>(jsonData);
+
+            if (_mapConfigData!.Spawns == null || _mapConfigData.Spawns.Count == 0)
+            {
+                throw new Exception("Error loading config");
+            }
+            
             Console.WriteLine($"{RetakesPlugin.MessagePrefix}Data loaded from {_mapConfigPath}");
         }
-        catch (FileNotFoundException ex)
+        catch (FileNotFoundException)
         {
-            Console.WriteLine($"{RetakesPlugin.MessagePrefix}Error loading data: {ex.Message}");
+            Console.WriteLine($"{RetakesPlugin.MessagePrefix}No config for map {MapName}");
             throw; // Re-throw the exception to handle it in the calling code
         }
         catch (Exception ex)
         {
             Console.WriteLine($"{RetakesPlugin.MessagePrefix}An error occurred while loading data: {ex.Message}");
+            throw;
         }
     }
 

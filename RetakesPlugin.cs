@@ -1,6 +1,7 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes;
+using CounterStrikeSharp.API.Core.Attributes.Registration;
 using RetakesPlugin.Modules.Config;
 
 namespace RetakesPlugin;
@@ -19,10 +20,18 @@ public class RetakesPlugin : BasePlugin
     public override void Load(bool hotReload)
     {
         Console.WriteLine(MessagePrefix + "Plugin loaded!");
-        
-        _mapConfig = new MapConfig(ModuleDirectory, Server.MapName);
-        _mapConfig.Load();
-        
-        throw new Exception($"No config for map {Server.MapName}!");
+    }
+    
+    [GameEventHandler]
+    public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
+    {
+        // If we don't have a map config loaded, load it.
+        if (_mapConfig!.MapName != Server.MapName)
+        {
+            _mapConfig = new MapConfig(ModuleDirectory, Server.MapName);
+            _mapConfig.Load();
+        }
+
+        return HookResult.Continue;
     }
 }
