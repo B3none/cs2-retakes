@@ -29,16 +29,19 @@ public class MapConfig
             string jsonData = File.ReadAllText(_mapConfigPath);
             _mapConfigData = JsonSerializer.Deserialize<MapConfigData>(jsonData);
 
-            if (_mapConfigData!.Spawns == null || _mapConfigData.Spawns.Count == 0)
-            {
-                throw new Exception("No spawns found in config");
-            }
+            // TODO: Implement validation to make sure the config is valid / has enough spawns.
+            // if (_mapConfigData!.Spawns == null || _mapConfigData.Spawns.Count < 0)
+            // {
+            //     throw new Exception("No spawns found in config");
+            // }
             
             Console.WriteLine($"{RetakesPlugin.MessagePrefix}Data loaded from {_mapConfigPath}");
         }
         catch (FileNotFoundException)
         {
             Console.WriteLine($"{RetakesPlugin.MessagePrefix}No config for map {MapName}");
+            _mapConfigData = new MapConfigData(null);
+            Save();
         }
         catch (Exception ex)
         {

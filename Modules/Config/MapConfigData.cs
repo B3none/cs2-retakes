@@ -6,6 +6,6 @@ public class MapConfigData
     
     public MapConfigData(List<Spawn>? spawns)
     {
-        Spawns = spawns;
+        Spawns = spawns ?? new List<Spawn>();
     }
 }

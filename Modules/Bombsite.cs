@@ -2,6 +2,6 @@
 
 public enum Bombsite
 {
-    A,
-    B
+    A = 0,
+    B = 1
 }
