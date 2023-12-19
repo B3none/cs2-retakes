@@ -12,6 +12,7 @@ public class MapConfig
     {
         MapName = mapName;
         _mapConfigPath = Path.Combine(moduleDirectory, mapName, ".json");
+        _mapConfigData = null;
     }
 
     public void Load()
