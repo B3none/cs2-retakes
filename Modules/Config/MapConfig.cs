@@ -11,7 +11,7 @@ public class MapConfig
     public MapConfig(string moduleDirectory, string mapName)
     {
         MapName = mapName;
-        _mapConfigPath = Path.Combine(moduleDirectory, $"map_configs/{mapName}.json");
+        _mapConfigPath = Path.Combine(moduleDirectory, $"map_config/{mapName}.json");
         _mapConfigData = null;
     }
 
