@@ -5,13 +5,15 @@ namespace RetakesPlugin.Modules.Config;
 public class MapConfig
 {
     public readonly string MapName;
+    private readonly string _mapConfigDirectory;
     private readonly string _mapConfigPath;
     private MapConfigData? _mapConfigData;
     
     public MapConfig(string moduleDirectory, string mapName)
     {
         MapName = mapName;
-        _mapConfigPath = Path.Combine(moduleDirectory, $"map_config/{mapName}.json");
+        _mapConfigDirectory = Path.Combine(moduleDirectory, "map_config");
+        _mapConfigPath = Path.Combine(_mapConfigDirectory, $"{mapName}.json");
         _mapConfigData = null;
     }
 
@@ -26,7 +28,7 @@ public class MapConfig
                 throw new FileNotFoundException();
             }
 
-            string jsonData = File.ReadAllText(_mapConfigPath);
+            var jsonData = File.ReadAllText(_mapConfigPath);
             _mapConfigData = JsonSerializer.Deserialize<MapConfigData>(jsonData);
 
             // TODO: Implement validation to make sure the config is valid / has enough spawns.
@@ -49,17 +51,37 @@ public class MapConfig
         }
     }
 
-    public void Save()
+    public void AddSpawn(Spawn spawn)
+    {
+        _mapConfigData ??= new MapConfigData(null);
+        _mapConfigData.Spawns ??= new List<Spawn>();
+        
+        _mapConfigData.Spawns.Add(spawn);
+        
+        Save();
+    }
+
+    public void RemoveSpawn()
+    {
+        // TODO: Implement this.
+    }
+
+    private void Save()
     {
         // Convert object to JSON string
-        string jsonString = JsonSerializer.Serialize(_mapConfigData);
+        var jsonString = JsonSerializer.Serialize(_mapConfigData);
 
         try
         {
+            if (!Directory.Exists(_mapConfigDirectory))
+            {
+                Directory.CreateDirectory(_mapConfigDirectory);
+            }
+            
             // Write JSON string to the file
             File.WriteAllText(_mapConfigPath, jsonString);
 
-            Console.WriteLine(RetakesPlugin.MessagePrefix + "Data has been written to " + _mapConfigPath);
+            Console.WriteLine($"{RetakesPlugin.MessagePrefix}Data has been written to " + _mapConfigPath);
         }
         catch (IOException e)
         {

@@ -2,8 +2,14 @@
 
 namespace RetakesPlugin.Modules.Config;
 
-public abstract class Spawn
+public class Spawn
 {
+    public Spawn(Vector vector, QAngle angle)
+    {
+        Vector = vector;
+        Angle = angle;
+    }
+
     public Vector Vector { get; set; }
     public QAngle Angle { get; set; }
     public CsTeam Team { get; set; }
