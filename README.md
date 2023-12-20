@@ -16,4 +16,4 @@ Retakes plugin written in C# for CounterStrikeSharp
 Download the latest release of CounterStrikeSharp, and put the contents into the `CounterStrikeSharp` directory.
 
 ## Credits
-This was inspired by the CS:GO Retakes project written by Splewis.
+This was inspired by the [CS:GO Retakes project](https://github.com/splewis/csgo-retakes) written by [splewis](https://github.com/splewis).
