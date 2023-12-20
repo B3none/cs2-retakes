@@ -31,7 +31,7 @@ public class RetakesPlugin : BasePlugin
     // State
     private static CCSGameRules? _gameRules;
     private Bombsite _currentBombsite = Bombsite.A;
-    private Teams _teamsManager = new();
+    private Game _gameManager = new();
     private CCSPlayerController? _planter;
     private readonly Random _random = new();
 
@@ -312,7 +312,7 @@ public class RetakesPlugin : BasePlugin
     }
     
     private int _consecutiveRoundsWon = 0;
-    private const int _roundsToScramble = 5;
+    private const int ConsecutiveRoundWinsToScramble = 5;
     
     [GameEventHandler]
     public HookResult OnRoundEnd(EventRoundEnd @event, GameEventInfo info)
@@ -325,9 +325,10 @@ public class RetakesPlugin : BasePlugin
         {
             _consecutiveRoundsWon++;
             
-            if (_consecutiveRoundsWon == _roundsToScramble)
+            if (_consecutiveRoundsWon == ConsecutiveRoundWinsToScramble)
             {
-                // TODO: Scramble teams
+                _consecutiveRoundsWon = 0;
+                _gameManager.ScrambleTeams();
                 
                 return HookResult.Continue;
             }
@@ -337,6 +338,7 @@ public class RetakesPlugin : BasePlugin
             _consecutiveRoundsWon = 0;
             
             // TODO: Figure out the new teams based on player round scores
+            _gameManager.CounterTerroristRoundWin();
         }
 
         return HookResult.Continue;

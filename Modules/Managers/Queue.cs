@@ -21,8 +21,7 @@ public class Queue
     
     public int GetNumCounterTerrorists()
     {
-        int numTerrorists = GetNumTerrorists();
-        return ActivePlayers.Count - numTerrorists;
+        return ActivePlayers.Count - GetNumTerrorists();
     }
 
     public void UpdateActivePlayers()
