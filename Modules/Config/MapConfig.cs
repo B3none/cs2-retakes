@@ -42,7 +42,7 @@ public class MapConfig
         catch (FileNotFoundException)
         {
             Console.WriteLine($"{RetakesPlugin.MessagePrefix}No config for map {MapName}");
-            _mapConfigData = new MapConfigData(null);
+            _mapConfigData = new MapConfigData();
             Save();
         }
         catch (Exception ex)
@@ -53,8 +53,7 @@ public class MapConfig
 
     public void AddSpawn(Spawn spawn)
     {
-        _mapConfigData ??= new MapConfigData(null);
-        _mapConfigData.Spawns ??= new List<Spawn>();
+        _mapConfigData ??= new MapConfigData();
         
         _mapConfigData.Spawns.Add(spawn);
         
