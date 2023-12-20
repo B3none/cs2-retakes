@@ -31,6 +31,7 @@ public class RetakesPlugin : BasePlugin
     private Bombsite _currentBombsite = Bombsite.A;
     private List<CCSPlayerController> _players = new();
     private Random _random = new();
+    private CCSPlayerResource? _planter;
     
     public override void Load(bool hotReload)
     {
@@ -130,8 +131,9 @@ public class RetakesPlugin : BasePlugin
             return HookResult.Continue;
         }
         
-        // Randomly set the bombsite for the current round.
+        // Reset round state.
         _currentBombsite = _random.Next(0, 2) == 0 ? Bombsite.A : Bombsite.B;
+        _planter = null;
         
         // TODO: Cache the spawns so we don't have to do this every round.
         // Filter the spawns.
@@ -160,7 +162,8 @@ public class RetakesPlugin : BasePlugin
         Console.WriteLine($"{MessagePrefix}There are {tSpawns.Count} Terrorist, and {ctSpawns.Count} Counter-Terrorist spawns available for bombsite {(_currentBombsite == Bombsite.A ? "A" : "B")}.");
 
         // Now move the players to their spawns.
-        foreach (var player in Utilities.GetPlayers())
+        // We shuffle this list to ensure that 1 player does not have to plant every round.
+        foreach (var player in Helpers.Shuffle(Utilities.GetPlayers()))
         {
             if (!Helpers.IsValidPlayer(player) || player.TeamNum < (int)CsTeam.Terrorist)
             {
@@ -176,9 +179,18 @@ public class RetakesPlugin : BasePlugin
             
             var isTerrorist = player.TeamNum == (int)CsTeam.Terrorist;
 
-            // TODO: Ensure the player with the bomb is only picking from spawns where CanBePlanter is true
-            //       We should probably process their spawn first since it'll prevent any clashes later on.
-            var spawn = Helpers.GetAndRemoveRandomItem(isTerrorist ? tSpawns : ctSpawns);
+            Spawn spawn;
+            
+            if (_planter == null && isTerrorist)
+            {
+                var spawnIndex = tSpawns.FindIndex(tSpawn => tSpawn.CanBePlanter);
+                spawn = tSpawns[spawnIndex];
+                tSpawns.RemoveAt(spawnIndex);
+            }
+            else
+            {
+                spawn = Helpers.GetAndRemoveRandomItem(isTerrorist ? tSpawns : ctSpawns);
+            }
             
             playerPawn.Teleport(spawn.Vector, spawn.QAngle, new Vector());
         }
