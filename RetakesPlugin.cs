@@ -27,7 +27,7 @@ public class RetakesPlugin : BasePlugin
     private MapConfig? _mapConfig;
     
     // State
-    static CCSGameRules? _gameRules;
+    private static CCSGameRules? _gameRules;
     private Bombsite _currentBombsite = Bombsite.A;
     private List<CCSPlayerController> _players = new();
     private Random _random = new();
@@ -41,6 +41,7 @@ public class RetakesPlugin : BasePlugin
 
         if (hotReload)
         {
+            _mapConfig = null;
             OnMapStartHandler(Server.MapName);
         }
     }
@@ -112,6 +113,7 @@ public class RetakesPlugin : BasePlugin
             return;
         }
 
+        
         if (command.ArgCount != 4)
         {
             return;
@@ -145,25 +147,27 @@ public class RetakesPlugin : BasePlugin
             _mapConfig.Load();
         }
     }
-
+    
     [GameEventHandler]
-    public HookResult OnWeaponFire(EventWeaponFire @event, GameEventInfo info)
+    public HookResult OnBombBeginPlant(EventBombBeginplant @event, GameEventInfo info)
     {
-        Console.WriteLine($"{MessagePrefix}OnPlayerSpawn event fired for {@event.Userid.PlayerName}");
+        Console.WriteLine($"{MessagePrefix}BombBeginplant event fired for {@event.Userid.PlayerName} - bombsite: {(@event.Site == (int)Bombsite.A ? "A" : "B")}");
 
         var player = @event.Userid;
-        var weapon = @event.Weapon;
         
-        var buttons = @event.Userid.Buttons;
-
-        if (_gameRules.FreezePeriod)
+        _gameRules = Helpers.GetGameRules();
+        
+        Console.WriteLine($"{MessagePrefix}FreezePeriod: {(_gameRules!.FreezePeriod ? "yes" : "no")}");
+        
+        // Don't allow planting during freeze time.
+        if (_gameRules!.FreezePeriod)
         {
+            player.PrintToChat("You cannot plant during freeze time.");
             
-        }
-        
-        if((buttons & PlayerButtons.Use) != 0)
-        {
-            //do something
+            // Change to their knife to prevent planting.
+            NativeAPI.IssueClientCommand((int)player.UserId!, "slot3");
+            
+            return HookResult.Handled;
         }
         
         return HookResult.Continue;
