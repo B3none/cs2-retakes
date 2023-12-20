@@ -162,12 +162,10 @@ public class RetakesPlugin : BasePlugin
         // Don't allow planting during freeze time.
         if (_gameRules!.FreezePeriod)
         {
-            player.PrintToChat("You cannot plant during freeze time.");
+            player.PrintToChat($"{MessagePrefix}You cannot plant during freeze time.");
             
             // Change to their knife to prevent planting.
             NativeAPI.IssueClientCommand((int)player.UserId!, "slot3");
-            
-            return HookResult.Handled;
         }
         
         return HookResult.Continue;
