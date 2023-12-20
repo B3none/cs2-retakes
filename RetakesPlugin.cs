@@ -99,42 +99,6 @@ public class RetakesPlugin : BasePlugin
         commandInfo.ReplyToCommand($"{MessagePrefix}Adding spawn.");
     }
     
-    [ConsoleCommand("css_teleport", "This command teleports the player to the given coordinates")]
-    [RequiresPermissions("@css/root")]
-    public void OnCommandTeleport(CCSPlayerController? player, CommandInfo command)
-    {
-        if (player == null)
-        {
-            return;
-        }
-        if (!player.PlayerPawn.IsValid)
-        {
-            return;
-        }
-
-        if (command.ArgCount != 4)
-        {
-            return;
-        }
-
-        if (!float.TryParse(command.ArgByIndex(1), out float positionX))
-        {
-            return;
-        }
-
-        if (!float.TryParse(command.ArgByIndex(2), out float positionY))
-        {
-            return;
-        }
-
-        if (!float.TryParse(command.ArgByIndex(3), out float positionZ))
-        {
-            return;
-        }
-
-        player?.PlayerPawn?.Value?.Teleport(new Vector(positionX, positionY, positionZ), new QAngle(0f,0f,0f), new Vector(0f, 0f, 0f));
-    }
-    
     // Listeners
     private void OnMapStartHandler(string mapName)
     {
