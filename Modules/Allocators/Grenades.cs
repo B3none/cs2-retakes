@@ -1,6 +1,6 @@
 ﻿using CounterStrikeSharp.API.Core;
 
-namespace RetakesPlugin.Modules.Handlers;
+namespace RetakesPlugin.Modules.Allocators;
 
 public abstract class Grenades
 {

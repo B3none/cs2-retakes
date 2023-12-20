@@ -6,8 +6,8 @@ using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules;
+using RetakesPlugin.Modules.Allocators;
 using RetakesPlugin.Modules.Config;
-using RetakesPlugin.Modules.Handlers;
 using Helpers = RetakesPlugin.Modules.Helpers;
 
 namespace RetakesPlugin;
@@ -31,9 +31,9 @@ public class RetakesPlugin : BasePlugin
     private static CCSGameRules? _gameRules;
     private Bombsite _currentBombsite = Bombsite.A;
     private List<CCSPlayerController> _players = new();
-    private Random _random = new();
     private CCSPlayerController? _planter;
-    
+    private readonly Random _random = new();
+
     public override void Load(bool hotReload)
     {
         Console.WriteLine($"{MessagePrefix}Plugin loaded!");

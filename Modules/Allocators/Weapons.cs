@@ -1,7 +1,7 @@
 ﻿using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 
-namespace RetakesPlugin.Modules.Handlers;
+namespace RetakesPlugin.Modules.Allocators;
 
 public abstract class Weapons
 {
