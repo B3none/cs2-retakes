@@ -209,7 +209,6 @@ public class RetakesPlugin : BasePlugin
             Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Begin loop.");
             if (!Helpers.IsValidPlayer(player) || player.TeamNum < (int)CsTeam.Terrorist)
             {
-                // output debug
                 Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] IsValidPlayer: {(Helpers.IsValidPlayer(player) ? "yes" : "no")}.");
                 Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] player.TeamNum({player.TeamNum}) < (int)CsTeam.Terrorist({(int)CsTeam.Terrorist}): {(player.TeamNum < (int)CsTeam.Terrorist ? "yes" : "no")}.");
                 
