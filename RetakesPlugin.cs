@@ -176,6 +176,8 @@ public class RetakesPlugin : BasePlugin
             
             var isTerrorist = player.TeamNum == (int)CsTeam.Terrorist;
 
+            // TODO: Ensure the player with the bomb is only picking from spawns where CanBePlanter is true
+            //       We should probably process their spawn first since it'll prevent any clashes later on.
             var spawn = Helpers.GetAndRemoveRandomItem(isTerrorist ? tSpawns : ctSpawns);
             
             playerPawn.Teleport(spawn.Vector, spawn.QAngle, new Vector());
