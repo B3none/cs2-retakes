@@ -19,6 +19,7 @@ public class RetakesPlugin : BasePlugin
     public override string ModuleAuthor => "B3none";
     public override string ModuleDescription => "Community retakes for CS2.";
 
+    // Constants
     // TODO: Add colours for message prefix.
     public const string MessagePrefix = "[Retakes] ";
     
@@ -29,6 +30,7 @@ public class RetakesPlugin : BasePlugin
     static CCSGameRules? _gameRules;
     private Bombsite _currentBombsite = Bombsite.A;
     private List<CCSPlayerController> _players = new();
+    private Random _random = new();
     
     public override void Load(bool hotReload)
     {
@@ -128,9 +130,11 @@ public class RetakesPlugin : BasePlugin
             return HookResult.Continue;
         }
         
-        // Randomly set the current bombsite.
-        _currentBombsite = new Random().Next(0, 2) == 0 ? Bombsite.A : Bombsite.B;
+        // Randomly set the bombsite for the current round.
+        _currentBombsite = _random.Next(0, 2) == 0 ? Bombsite.A : Bombsite.B;
         
+        // TODO: Cache the spawns so we don't have to do this every round.
+        // Filter the spawns.
         List<Spawn> tSpawns = new();
         List<Spawn> ctSpawns = new();
         foreach (var spawn in _mapConfig!.GetSpawnsClone())
@@ -154,6 +158,28 @@ public class RetakesPlugin : BasePlugin
         }
         
         Console.WriteLine($"{MessagePrefix}There are {tSpawns.Count} Terrorist, and {ctSpawns.Count} Counter-Terrorist spawns available for bombsite {(_currentBombsite == Bombsite.A ? "A" : "B")}.");
+
+        // Now move the players to their spawns.
+        foreach (var player in Utilities.GetPlayers())
+        {
+            if (!Helpers.IsValidPlayer(player) || player.TeamNum < (int)CsTeam.Terrorist)
+            {
+                continue;
+            }
+            
+            var playerPawn = player.PlayerPawn.Value;
+
+            if (playerPawn == null)
+            {
+                continue;
+            }
+            
+            var isTerrorist = player.TeamNum == (int)CsTeam.Terrorist;
+
+            var spawn = Helpers.GetAndRemoveRandomItem(isTerrorist ? tSpawns : ctSpawns);
+            
+            playerPawn.Teleport(spawn.Vector, spawn.QAngle, new Vector());
+        }
         
         return HookResult.Continue;
     }
