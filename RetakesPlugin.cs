@@ -60,21 +60,21 @@ public class RetakesPlugin : BasePlugin
         var team = commandInfo.GetArg(1).ToUpper();
         if (team != "T" && team != "CT")
         {
-            commandInfo.ReplyToCommand($"{MessagePrefix}You must specify a team [T / CT].");
+            commandInfo.ReplyToCommand($"{MessagePrefix}You must specify a team [T / CT] - [Value: {team}].");
             return;
         }
         
         var bombsite = commandInfo.GetArg(2).ToUpper();
-        if (bombsite != "A" && team != "B")
+        if (bombsite != "A" && bombsite != "B")
         {
-            commandInfo.ReplyToCommand($"{MessagePrefix}You must specify a bombsite [A / B].");
+            commandInfo.ReplyToCommand($"{MessagePrefix}You must specify a bombsite [A / B] - [Value: {bombsite}].");
             return;
         }
 
         var canBePlanter = commandInfo.GetArg(3).ToUpper();
         if (canBePlanter != "" && canBePlanter != "Y" && canBePlanter != "N")
         {
-            commandInfo.ReplyToCommand($"{MessagePrefix}Invalid value passed to can be a planter [Y / N].");
+            commandInfo.ReplyToCommand($"{MessagePrefix}Invalid value passed to can be a planter [Y / N] - [Value: {canBePlanter}].");
             return;
         }
 
