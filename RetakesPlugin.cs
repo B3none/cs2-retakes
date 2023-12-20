@@ -6,6 +6,7 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules;
 using RetakesPlugin.Modules.Config;
+using Helpers = RetakesPlugin.Modules.Helpers;
 
 namespace RetakesPlugin;
 
@@ -20,7 +21,13 @@ public class RetakesPlugin : BasePlugin
     // TODO: Add colours for message prefix.
     public const string MessagePrefix = "[Retakes] ";
     
+    // Config
     private MapConfig? _mapConfig;
+    
+    // State
+    private Bombsite _currentBombsite = Bombsite.A;
+    private List<CCSPlayerController> _players = new();
+    private List<Spawn> _availableSpawns = new();
     
     public override void Load(bool hotReload)
     {
@@ -35,12 +42,11 @@ public class RetakesPlugin : BasePlugin
     }
     
     // Commands
-    
     [ConsoleCommand("css_addspawn", "Adds a spawn point for retakes to the map.")]
     [CommandHelper(minArgs: 2, usage: "[T/CT] [A/B] [Y/N (can be planter / optional)]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
     public void AddSpawnCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (!CanPlayerAddSpawn(player))
+        if (!Helpers.CanPlayerAddSpawn(player))
         {
             commandInfo.ReplyToCommand($"{MessagePrefix}You must be a player.");
             return;
@@ -104,25 +110,25 @@ public class RetakesPlugin : BasePlugin
     {
         Console.WriteLine($"{MessagePrefix}Round Pre Start event fired!");
         
-        return HookResult.Continue;
-    }
-    
-    // Helpers
-    private static bool IsValidPlayer(CCSPlayerController? player)
-    {
-        return player != null && player.IsValid;
-    }
-    
-    private static bool CanPlayerAddSpawn(CCSPlayerController? player)
-    {
-        if (!IsValidPlayer(player))
+        List<Spawn> tSpawns = new();
+        List<Spawn> ctSpawns = new();
+        foreach (var spawn in _mapConfig!.GetSpawnsClone())
         {
-            return false;
+            switch (spawn.Team)
+            {
+                case CsTeam.Terrorist:
+                    tSpawns.Add(spawn);
+                    break;
+                case CsTeam.CounterTerrorist:
+                    ctSpawns.Add(spawn);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
         
-        var playerPawn = player!.PlayerPawn.Value;
+        Console.WriteLine($"{MessagePrefix}There are {tSpawns.Count} Terrorist spawns and {ctSpawns.Count} Counter-Terrorist spawns available.");
         
-        return playerPawn != null
-               && playerPawn is { Health: > 0, AbsOrigin: not null, AbsRotation: not null };
+        return HookResult.Continue;
     }
 }

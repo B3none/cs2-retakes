@@ -51,6 +51,19 @@ public class MapConfig
         }
     }
 
+    /**
+     * This function returns a clone of the spawns list. (free to mutate :>)
+     */
+    public List<Spawn> GetSpawnsClone()
+    {
+        if (_mapConfigData == null)
+        {
+            throw new Exception("Map config data is null");
+        }
+        
+        return _mapConfigData.Spawns.ToList();
+    }
+    
     public void AddSpawn(Spawn spawn)
     {
         _mapConfigData ??= new MapConfigData();
