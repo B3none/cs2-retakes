@@ -208,6 +208,8 @@ public class RetakesPlugin : BasePlugin
                 _planter = player;
                 _planter.GiveNamedItem("weapon_c4");
                 
+                // TODO: Prevent the planter from planting in freeze time / add autoplant.
+                
                 var spawnIndex = tSpawns.FindIndex(tSpawn => tSpawn.CanBePlanter);
                 spawn = tSpawns[spawnIndex];
                 
