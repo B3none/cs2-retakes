@@ -19,5 +19,7 @@ public abstract class Weapons
             player.GiveNamedItem("weapon_m4a1_silencer");
             player.GiveNamedItem("weapon_usp");
         }
+
+        player.GiveNamedItem("weapon_knife");
     }
 }

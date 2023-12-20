@@ -98,7 +98,6 @@ public class Helpers
     
     public static void RemoveAllItemsAndEntities(CCSPlayerController player)
     {
-        CHandle<CBasePlayerWeapon>? item = null;
         if (player.PlayerPawn.Value == null || player.PlayerPawn.Value.WeaponServices == null)
         {
             return;
@@ -110,14 +109,9 @@ public class Helpers
             {
                 continue;
             }
-
-            if (item == null || item.Value == null)
-            {
-                continue;
-            }
         
-            player.PlayerPawn.Value.RemovePlayerItem(item.Value);
-            item.Value.Remove();
+            player.PlayerPawn.Value.RemovePlayerItem(weapon.Value);
+            weapon.Value.Remove();
         }
     }
 }
