@@ -95,9 +95,9 @@ public class RetakesPlugin : BasePlugin
             return;
         }
         
-        _mapConfig.AddSpawn(spawn);
+        var didAddSpawn = _mapConfig.AddSpawn(spawn);
         
-        commandInfo.ReplyToCommand($"{MessagePrefix}Adding spawn.");
+        commandInfo.ReplyToCommand($"{MessagePrefix}{(didAddSpawn ? "Spawn added" : "Error adding spawn")}");
     }
     
     [ConsoleCommand("css_teleport", "This command teleports the player to the given coordinates")]

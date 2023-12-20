@@ -64,7 +64,7 @@ public class MapConfig
         return _mapConfigData.Spawns.ToList();
     }
     
-    public void AddSpawn(Spawn spawn)
+    public bool AddSpawn(Spawn spawn)
     {
         _mapConfigData ??= new MapConfigData();
         
@@ -72,7 +72,7 @@ public class MapConfig
         if (_mapConfigData.Spawns.Any(existingSpawn =>
                 existingSpawn.Vector == spawn.Vector && existingSpawn.Bombsite == spawn.Bombsite))
         {
-            return; // Spawn already exists, avoid duplication
+            return false; // Spawn already exists, avoid duplication
         }
         
         _mapConfigData.Spawns.Add(spawn);
@@ -81,6 +81,8 @@ public class MapConfig
         
         // TODO: Figure out why the spawns can't be added on the fly.
         Load();
+
+        return true;
     }
 
     public void RemoveSpawn()
