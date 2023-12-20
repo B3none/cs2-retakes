@@ -4,6 +4,7 @@ Retakes plugin written in C# for CounterStrikeSharp
 ## Progress
 - [x] Bombsite selection
 - [x] Spawns
+- [x] Per map spawns configuration
 - [] Team switch calculations
 - [] Weapon allocator
 - [] Grenade allocator
