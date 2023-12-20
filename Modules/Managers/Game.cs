@@ -2,9 +2,9 @@
 
 namespace RetakesPlugin.Modules.Managers;
 
-public class Teams
+public class Game
 {
-    private Dictionary<int, int> _playerRoundScores = new();
+    public readonly Players Players = new();
     public readonly Queue Queue = new();
     
     public void Scramble()

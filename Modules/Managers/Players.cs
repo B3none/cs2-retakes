@@ -2,5 +2,5 @@
 
 public class Players
 {
-    
+    private Dictionary<int, int> _playerRoundScores = new();
 }
