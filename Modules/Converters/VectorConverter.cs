@@ -8,8 +8,6 @@ public class VectorConverter : JsonConverter<Vector>
 {
     public override Vector Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        Console.WriteLine($"{RetakesPlugin.MessagePrefix}Reading Vector");
-        
         if (reader.TokenType != JsonTokenType.String)
         {
             throw new JsonException("Expected a string value.");

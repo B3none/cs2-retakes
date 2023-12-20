@@ -8,8 +8,6 @@ public class QAngleConverter : JsonConverter<QAngle>
 {
     public override QAngle Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        Console.WriteLine($"{RetakesPlugin.MessagePrefix}Reading QAngle");
-        
         if (reader.TokenType != JsonTokenType.String)
         {
             throw new JsonException("Expected a string value.");
