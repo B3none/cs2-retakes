@@ -3,21 +3,20 @@ using CounterStrikeSharp.API.Modules.Utils;
 
 namespace RetakesPlugin.Modules.Allocators;
 
-public abstract class Weapons
+public abstract class Equiptment
 {
     public static void Allocate(CCSPlayerController player)
     {
         // Weapon allocation logic
         if (player.TeamNum == (byte)CsTeam.Terrorist)
         {
-            player.GiveNamedItem("weapon_ak47");
-            player.GiveNamedItem("weapon_glock");
+            player.GiveNamedItem("vesthelm");
         }
         
         if (player.TeamNum == (byte)CsTeam.CounterTerrorist)
         {
-            player.GiveNamedItem("weapon_m4a1_silencer");
-            player.GiveNamedItem("weapon_usp");
+            player.GiveNamedItem("vesthelm");
+            player.GiveNamedItem("defuser");
         }
     }
 }

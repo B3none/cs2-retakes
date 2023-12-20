@@ -172,13 +172,13 @@ public class RetakesPlugin : BasePlugin
         return HookResult.Continue;
     }
 
-    [GameEventHandler]
-    public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
-    {
-        Console.WriteLine($"{MessagePrefix}OnPlayerSpawn event fired for {@event.Userid.PlayerName}");
-        
-        return HookResult.Continue;
-    }
+    // [GameEventHandler]
+    // public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
+    // {
+    //     Console.WriteLine($"{MessagePrefix}OnPlayerSpawn event fired for {@event.Userid.PlayerName}");
+    //     
+    //     return HookResult.Continue;
+    // }
 
     [GameEventHandler]
     public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
@@ -257,20 +257,12 @@ public class RetakesPlugin : BasePlugin
             Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Is terrorist {(isTerrorist ? "yes" : "no")}.");
 
             Spawn spawn;
-
-            // Strip the player of all of their weapons and the bomb before any spawn / allocation occurs.
-            player.RemoveWeapons();
-            if (isTerrorist)
-            {
-                player.RemoveItemByDesignerName("weapon_c4");
-            }
             
             if (_planter == null && isTerrorist)
             {
                 Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Getting planter spawn.");
                 
                 _planter = player;
-                _planter.GiveNamedItem("weapon_c4");
                 
                 var spawnIndex = tSpawns.FindIndex(tSpawn => tSpawn.CanBePlanter);
                 spawn = tSpawns[spawnIndex];
@@ -290,9 +282,6 @@ public class RetakesPlugin : BasePlugin
             
             playerPawn.Teleport(spawn.Vector, spawn.QAngle, new Vector());
             
-            Weapons.Allocate(player);
-            Grenades.Allocate(player);
-            
             Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Loop end.");
         }
         
@@ -303,9 +292,36 @@ public class RetakesPlugin : BasePlugin
     public HookResult OnRoundPostStart(EventRoundPoststart @event, GameEventInfo info)
     {
         Console.WriteLine($"{MessagePrefix}OnRoundPostStart event fired.");
-        
-        // TODO: Add autoplant logic here.
-        
+
+        foreach (var player in Utilities.GetPlayers())
+        {
+            // TODO: Add autoplant logic here.
+            
+            var isTerrorist = player.TeamNum == (byte)CsTeam.Terrorist;
+            Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Is terrorist {(isTerrorist ? "yes" : "no")}.");
+            
+            // Strip the player of all of their weapons and the bomb before any spawn / allocation occurs.
+            
+            // TODO: Figure out why this is crashing the server.
+            // player.RemoveWeapons();
+            
+            if (isTerrorist)
+            {
+                Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Removing bomb.");
+                player.RemoveItemByDesignerName("weapon_c4");
+            }
+
+            if (player == _planter)
+            {
+                Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Giving bomb.");
+                player.GiveNamedItem("weapon_c4");
+            }
+            
+            Weapons.Allocate(player);
+            Equiptment.Allocate(player);
+            Grenades.Allocate(player);
+        }
+
         return HookResult.Continue;
     }
 }
