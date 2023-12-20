@@ -7,6 +7,7 @@ Retakes plugin written in C# for CounterStrikeSharp
 - [x] Per map spawns configuration
 - [x] Temporary weapon allocation (hard coded)
 - [] Team switch calculations
+- [] Queue system
 - [] Weapon allocator
 - [] Grenade allocator
 - [] Add optional autoplant
