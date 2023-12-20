@@ -295,32 +295,17 @@ public class RetakesPlugin : BasePlugin
 
         foreach (var player in Utilities.GetPlayers())
         {
-            // TODO: Add autoplant logic here.
-            
-            var isTerrorist = player.TeamNum == (byte)CsTeam.Terrorist;
-            Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Is terrorist {(isTerrorist ? "yes" : "no")}.");
-            
             // Strip the player of all of their weapons and the bomb before any spawn / allocation occurs.
-            
-            // TODO: Figure out why this is crashing the server.
+            // TODO: Figure out why this is crashing the server / undo workaround.
             // player.RemoveWeapons();
-            
-            if (isTerrorist)
-            {
-                Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Removing bomb.");
-                player.RemoveItemByDesignerName("weapon_c4");
-            }
-
-            if (player == _planter)
-            {
-                Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Giving bomb.");
-                player.GiveNamedItem("weapon_c4");
-            }
+            Helpers.RemoveAllItemsAndEntities(player);
             
             Weapons.Allocate(player);
-            Equiptment.Allocate(player);
+            Equipment.Allocate(player, player == _planter);
             Grenades.Allocate(player);
         }
+        
+        // TODO: Add auto plant logic here.
 
         return HookResult.Continue;
     }
