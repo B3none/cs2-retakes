@@ -7,6 +7,7 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules;
 using RetakesPlugin.Modules.Config;
+using RetakesPlugin.Modules.Handlers;
 using Helpers = RetakesPlugin.Modules.Helpers;
 
 namespace RetakesPlugin;
@@ -257,8 +258,9 @@ public class RetakesPlugin : BasePlugin
 
             Spawn spawn;
 
-            // If we already have a planter, strip the c4.
-            if (_planter != null && isTerrorist)
+            // Strip the player of all of their weapons and the bomb before any spawn / allocation occurs.
+            player.RemoveWeapons();
+            if (isTerrorist)
             {
                 player.RemoveItemByDesignerName("weapon_c4");
             }
@@ -266,6 +268,7 @@ public class RetakesPlugin : BasePlugin
             if (_planter == null && isTerrorist)
             {
                 Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Getting planter spawn.");
+                
                 _planter = player;
                 _planter.GiveNamedItem("weapon_c4");
                 
@@ -286,6 +289,9 @@ public class RetakesPlugin : BasePlugin
             Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Teleporting pawn to ({spawn.Vector}, {spawn.QAngle}, {new Vector()}).");
             
             playerPawn.Teleport(spawn.Vector, spawn.QAngle, new Vector());
+            
+            Weapons.Allocate(player);
+            Grenades.Allocate(player);
             
             Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Loop end.");
         }
