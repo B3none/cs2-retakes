@@ -110,10 +110,18 @@ public class RetakesPlugin : BasePlugin
     {
         Console.WriteLine($"{MessagePrefix}Round Pre Start event fired!");
         
+        // Randomly set the current bombsite.
+        _currentBombsite = new Random().Next(0, 2) == 0 ? Bombsite.A : Bombsite.B;
+        
         List<Spawn> tSpawns = new();
         List<Spawn> ctSpawns = new();
         foreach (var spawn in _mapConfig!.GetSpawnsClone())
         {
+            if (spawn.Bombsite != _currentBombsite)
+            {
+                continue;
+            }
+            
             switch (spawn.Team)
             {
                 case CsTeam.Terrorist:
@@ -127,7 +135,7 @@ public class RetakesPlugin : BasePlugin
             }
         }
         
-        Console.WriteLine($"{MessagePrefix}There are {tSpawns.Count} Terrorist spawns and {ctSpawns.Count} Counter-Terrorist spawns available.");
+        Console.WriteLine($"{MessagePrefix}There are {tSpawns.Count} Terrorist, and {ctSpawns.Count} Counter-Terrorist spawns available for bombsite {(_currentBombsite == Bombsite.A ? "A" : "B")}.");
         
         return HookResult.Continue;
     }
