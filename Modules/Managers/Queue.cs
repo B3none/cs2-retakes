@@ -4,9 +4,9 @@ namespace RetakesPlugin.Modules.Managers;
 
 public class Queue
 {
-    public static int MaxRetakesPlayers = 9;
-    public static float TerroristRatio = 0.45f;
-    
+    public const int MaxRetakesPlayers = 9;
+    public const float TerroristRatio = 0.45f;
+
     public List<CCSPlayerController> QueuePlayers = new();
     public List<CCSPlayerController> ActivePlayers = new();
 

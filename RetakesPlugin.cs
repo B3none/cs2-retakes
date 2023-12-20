@@ -149,37 +149,6 @@ public class RetakesPlugin : BasePlugin
             _mapConfig.Load();
         }
     }
-    
-    [GameEventHandler]
-    public HookResult OnBombBeginPlant(EventBombBeginplant @event, GameEventInfo info)
-    {
-        Console.WriteLine($"{MessagePrefix}BombBeginplant event fired for {@event.Userid.PlayerName} - bombsite: {(@event.Site == (int)Bombsite.A ? "A" : "B")}");
-
-        var player = @event.Userid;
-        
-        _gameRules = Helpers.GetGameRules();
-        
-        Console.WriteLine($"{MessagePrefix}FreezePeriod: {(_gameRules!.FreezePeriod ? "yes" : "no")}");
-        
-        // Don't allow planting during freeze time.
-        if (_gameRules!.FreezePeriod)
-        {
-            player.PrintToChat($"{MessagePrefix}You cannot plant during freeze time.");
-            
-            // Change to their knife to prevent planting.
-            NativeAPI.IssueClientCommand((int)player.UserId!, "slot3");
-        }
-        
-        return HookResult.Continue;
-    }
-
-    // [GameEventHandler]
-    // public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
-    // {
-    //     Console.WriteLine($"{MessagePrefix}OnPlayerSpawn event fired for {@event.Userid.PlayerName}");
-    //     
-    //     return HookResult.Continue;
-    // }
 
     [GameEventHandler]
     public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
@@ -205,6 +174,7 @@ public class RetakesPlugin : BasePlugin
         // Reset round state.
         _currentBombsite = _random.Next(0, 2) == 0 ? Bombsite.A : Bombsite.B;
         _planter = null;
+        _gameManager.ResetPlayerScores();
         
         // TODO: Cache the spawns so we don't have to do this every round.
         // Filter the spawns.
@@ -307,6 +277,61 @@ public class RetakesPlugin : BasePlugin
         }
         
         // TODO: Add auto plant logic here.
+
+        return HookResult.Continue;
+    }
+    
+    [GameEventHandler]
+    public HookResult OnBombBeginPlant(EventBombBeginplant @event, GameEventInfo info)
+    {
+        Console.WriteLine($"{MessagePrefix}BombBeginplant event fired for {@event.Userid.PlayerName} - bombsite: {(@event.Site == (int)Bombsite.A ? "A" : "B")}");
+
+        var player = @event.Userid;
+        
+        _gameRules = Helpers.GetGameRules();
+        
+        Console.WriteLine($"{MessagePrefix}FreezePeriod: {(_gameRules!.FreezePeriod ? "yes" : "no")}");
+        
+        // Don't allow planting during freeze time.
+        if (_gameRules!.FreezePeriod)
+        {
+            player.PrintToChat($"{MessagePrefix}You cannot plant during freeze time.");
+            
+            // Change to their knife to prevent planting.
+            NativeAPI.IssueClientCommand((int)player.UserId!, "slot3");
+        }
+        
+        return HookResult.Continue;
+    }
+    
+    [GameEventHandler]
+    public HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
+    {
+        var attacker = @event.Attacker;
+        var assister = @event.Assister;
+
+        if (!Helpers.IsValidPlayer(attacker) || attacker.IsBot)
+        {
+            return HookResult.Continue;
+        }
+        
+        _gameManager.AddScore(attacker, Game.ScoreForKill);
+        _gameManager.AddScore(assister, Game.ScoreForAssist);
+
+        return HookResult.Continue;
+    }
+    
+    [GameEventHandler]
+    public HookResult OnBombDefused(EventBombDefused @event, GameEventInfo info)
+    {
+        var player = @event.Userid;
+
+        if (!Helpers.IsValidPlayer(player) || player.IsBot)
+        {
+            return HookResult.Continue;
+        }
+        
+        _gameManager.AddScore(player, Game.ScoreForDefuse);
 
         return HookResult.Continue;
     }
