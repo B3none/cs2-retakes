@@ -31,7 +31,7 @@ public class RetakesPlugin : BasePlugin
     private Bombsite _currentBombsite = Bombsite.A;
     private List<CCSPlayerController> _players = new();
     private Random _random = new();
-    private CCSPlayerResource? _planter;
+    private CCSPlayerController? _planter;
     
     public override void Load(bool hotReload)
     {
@@ -99,6 +99,42 @@ public class RetakesPlugin : BasePlugin
         commandInfo.ReplyToCommand($"{MessagePrefix}Adding spawn.");
     }
     
+    [ConsoleCommand("css_teleport", "This command teleports the player to the given coordinates")]
+    [RequiresPermissions("@css/root")]
+    public void OnCommandTeleport(CCSPlayerController? player, CommandInfo command)
+    {
+        if (player == null)
+        {
+            return;
+        }
+        if (!player.PlayerPawn.IsValid)
+        {
+            return;
+        }
+
+        if (command.ArgCount != 4)
+        {
+            return;
+        }
+
+        if (!float.TryParse(command.ArgByIndex(1), out float positionX))
+        {
+            return;
+        }
+
+        if (!float.TryParse(command.ArgByIndex(2), out float positionY))
+        {
+            return;
+        }
+
+        if (!float.TryParse(command.ArgByIndex(3), out float positionZ))
+        {
+            return;
+        }
+
+        player?.PlayerPawn?.Value?.Teleport(new Vector(positionX, positionY, positionZ), new QAngle(0f,0f,0f), new Vector(0f, 0f, 0f));
+    }
+    
     // Listeners
     private void OnMapStartHandler(string mapName)
     {
@@ -109,11 +145,19 @@ public class RetakesPlugin : BasePlugin
             _mapConfig.Load();
         }
     }
-    
+
     [GameEventHandler]
-    public HookResult OnRoundPreStart(EventRoundPrestart @event, GameEventInfo info)
+    public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
     {
-        Console.WriteLine($"{MessagePrefix}Round Pre Start event fired!");
+        Console.WriteLine($"{MessagePrefix}OnPlayerSpawn event fired for {@event.Userid.PlayerName}");
+        
+        return HookResult.Continue;
+    }
+
+    [GameEventHandler]
+    public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
+    {
+        Console.WriteLine($"{MessagePrefix}Round Start event fired!");
 
         // If we don't have the game rules, get them.
         _gameRules ??= Helpers.GetGameRules();
@@ -165,8 +209,13 @@ public class RetakesPlugin : BasePlugin
         // We shuffle this list to ensure that 1 player does not have to plant every round.
         foreach (var player in Helpers.Shuffle(Utilities.GetPlayers()))
         {
+            Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Begin loop.");
             if (!Helpers.IsValidPlayer(player) || player.TeamNum < (int)CsTeam.Terrorist)
             {
+                // output debug
+                Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] IsValidPlayer: {(Helpers.IsValidPlayer(player) ? "yes" : "no")}.");
+                Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] player.TeamNum({player.TeamNum}) < (int)CsTeam.Terrorist({(int)CsTeam.Terrorist}): {(player.TeamNum < (int)CsTeam.Terrorist ? "yes" : "no")}.");
+                
                 continue;
             }
             
@@ -174,25 +223,46 @@ public class RetakesPlugin : BasePlugin
 
             if (playerPawn == null)
             {
+                Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] No pawn found.");
                 continue;
             }
             
-            var isTerrorist = player.TeamNum == (int)CsTeam.Terrorist;
+            var isTerrorist = player.TeamNum == (byte)CsTeam.Terrorist;
+            Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Is terrorist {(isTerrorist ? "yes" : "no")}.");
 
             Spawn spawn;
+
+            // If we already have a planter, strip the c4.
+            if (_planter != null && isTerrorist)
+            {
+                player.RemoveItemByDesignerName("weapon_c4");
+            }
             
             if (_planter == null && isTerrorist)
             {
+                Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Getting planter spawn.");
+                _planter = player;
+                _planter.GiveNamedItem("weapon_c4");
+                
                 var spawnIndex = tSpawns.FindIndex(tSpawn => tSpawn.CanBePlanter);
                 spawn = tSpawns[spawnIndex];
+                
+                Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] IF Spawn found {spawn}.");
+                
                 tSpawns.RemoveAt(spawnIndex);
             }
             else
             {
                 spawn = Helpers.GetAndRemoveRandomItem(isTerrorist ? tSpawns : ctSpawns);
+                
+                Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] ELSE Spawn found {spawn}.");
             }
             
+            Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Teleporting pawn to ({spawn.Vector}, {spawn.QAngle}, {new Vector()}).");
+            
             playerPawn.Teleport(spawn.Vector, spawn.QAngle, new Vector());
+            
+            Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Loop end.");
         }
         
         return HookResult.Continue;
