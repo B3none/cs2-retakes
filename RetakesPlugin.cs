@@ -361,8 +361,6 @@ public class RetakesPlugin : BasePlugin
         else
         {
             _consecutiveRoundsWon = 0;
-            
-            // TODO: Figure out the new teams based on player round scores
             _gameManager.CounterTerroristRoundWin();
         }
 
