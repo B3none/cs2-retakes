@@ -80,8 +80,10 @@ public class MapConfig
 
     private void Save()
     {
-        // Convert object to JSON string
-        var jsonString = JsonSerializer.Serialize(_mapConfigData);
+        var jsonString = JsonSerializer.Serialize(_mapConfigData, new JsonSerializerOptions
+        {
+            WriteIndented = true
+        });
 
         try
         {
@@ -90,7 +92,6 @@ public class MapConfig
                 Directory.CreateDirectory(_mapConfigDirectory);
             }
             
-            // Write JSON string to the file
             File.WriteAllText(_mapConfigPath, jsonString);
 
             Console.WriteLine($"{RetakesPlugin.MessagePrefix}Data has been written to " + _mapConfigPath);
