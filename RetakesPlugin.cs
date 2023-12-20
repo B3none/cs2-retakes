@@ -30,7 +30,7 @@ public class RetakesPlugin : BasePlugin
     // State
     private static CCSGameRules? _gameRules;
     private Bombsite _currentBombsite = Bombsite.A;
-    private List<CCSPlayerController> _players = new();
+    private Dictionary<int, int> _playerRoundScores = new();
     private CCSPlayerController? _planter;
     private readonly Random _random = new();
 
