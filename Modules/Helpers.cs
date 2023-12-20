@@ -1,4 +1,5 @@
-﻿using CounterStrikeSharp.API.Core;
+﻿using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Core;
 
 namespace RetakesPlugin.Modules;
 
@@ -20,5 +21,11 @@ public class Helpers
         
         return playerPawn != null
                && playerPawn is { Health: > 0, AbsOrigin: not null, AbsRotation: not null };
+    }
+    
+    public static CCSGameRules? GetGameRules()
+    {
+        var gameRulesEntities = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules");
+        return gameRulesEntities.First().GameRules!;
     }
 }

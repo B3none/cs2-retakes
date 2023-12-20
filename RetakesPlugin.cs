@@ -2,6 +2,7 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
+using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules;
@@ -25,9 +26,9 @@ public class RetakesPlugin : BasePlugin
     private MapConfig? _mapConfig;
     
     // State
+    static CCSGameRules? _gameRules;
     private Bombsite _currentBombsite = Bombsite.A;
     private List<CCSPlayerController> _players = new();
-    private List<Spawn> _availableSpawns = new();
     
     public override void Load(bool hotReload)
     {
@@ -109,6 +110,22 @@ public class RetakesPlugin : BasePlugin
     public HookResult OnRoundPreStart(EventRoundPrestart @event, GameEventInfo info)
     {
         Console.WriteLine($"{MessagePrefix}Round Pre Start event fired!");
+
+        // If we don't have the game rules, get them.
+        _gameRules ??= Helpers.GetGameRules();
+        
+        if (_gameRules == null)
+        {
+            Console.WriteLine($"{MessagePrefix}Game rules not found.");
+            return HookResult.Continue;
+        }
+        
+        // If we are in warmup, skip.
+        if (_gameRules is { WarmupPeriod: true })
+        {
+            Console.WriteLine($"{MessagePrefix}Warmup round, skipping.");
+            return HookResult.Continue;
+        }
         
         // Randomly set the current bombsite.
         _currentBombsite = new Random().Next(0, 2) == 0 ? Bombsite.A : Bombsite.B;
