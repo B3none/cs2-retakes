@@ -8,6 +8,7 @@ using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules;
 using RetakesPlugin.Modules.Allocators;
 using RetakesPlugin.Modules.Config;
+using RetakesPlugin.Modules.Managers;
 using Helpers = RetakesPlugin.Modules.Helpers;
 
 namespace RetakesPlugin;
@@ -30,7 +31,7 @@ public class RetakesPlugin : BasePlugin
     // State
     private static CCSGameRules? _gameRules;
     private Bombsite _currentBombsite = Bombsite.A;
-    private Dictionary<int, int> _playerRoundScores = new();
+    private Teams _teamsManager = new();
     private CCSPlayerController? _planter;
     private readonly Random _random = new();
 
@@ -306,6 +307,37 @@ public class RetakesPlugin : BasePlugin
         }
         
         // TODO: Add auto plant logic here.
+
+        return HookResult.Continue;
+    }
+    
+    private int _consecutiveRoundsWon = 0;
+    private const int _roundsToScramble = 5;
+    
+    [GameEventHandler]
+    public HookResult OnRoundEnd(EventRoundEnd @event, GameEventInfo info)
+    {
+        Console.WriteLine($"{MessagePrefix}OnRoundEnd event fired.");
+
+        var didTerroristsWin = @event.Winner == (int)CsTeam.Terrorist;
+
+        if (didTerroristsWin)
+        {
+            _consecutiveRoundsWon++;
+            
+            if (_consecutiveRoundsWon == _roundsToScramble)
+            {
+                // TODO: Scramble teams
+                
+                return HookResult.Continue;
+            }
+        }
+        else
+        {
+            _consecutiveRoundsWon = 0;
+            
+            // TODO: Figure out the new teams based on player round scores
+        }
 
         return HookResult.Continue;
     }
