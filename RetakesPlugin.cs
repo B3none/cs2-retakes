@@ -269,8 +269,6 @@ public class RetakesPlugin : BasePlugin
                 _planter = player;
                 _planter.GiveNamedItem("weapon_c4");
                 
-                // TODO: Prevent the planter from planting in freeze time / add autoplant.
-                
                 var spawnIndex = tSpawns.FindIndex(tSpawn => tSpawn.CanBePlanter);
                 spawn = tSpawns[spawnIndex];
                 
@@ -291,6 +289,16 @@ public class RetakesPlugin : BasePlugin
             
             Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Loop end.");
         }
+        
+        return HookResult.Continue;
+    }
+    
+    [GameEventHandler]
+    public HookResult OnRoundPostStart(EventRoundPoststart @event, GameEventInfo info)
+    {
+        Console.WriteLine($"{MessagePrefix}OnRoundPostStart event fired.");
+        
+        // TODO: Add autoplant logic here.
         
         return HookResult.Continue;
     }
