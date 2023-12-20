@@ -71,6 +71,9 @@ public class MapConfig
         _mapConfigData.Spawns.Add(spawn);
         
         Save();
+        
+        // TODO: Figure out why the spawns can't be added on the fly.
+        Load();
     }
 
     public void RemoveSpawn()

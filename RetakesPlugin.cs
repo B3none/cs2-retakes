@@ -147,7 +147,7 @@ public class RetakesPlugin : BasePlugin
         // Filter the spawns.
         List<Spawn> tSpawns = new();
         List<Spawn> ctSpawns = new();
-        foreach (var spawn in _mapConfig!.GetSpawnsClone())
+        foreach (var spawn in Helpers.Shuffle(_mapConfig!.GetSpawnsClone()))
         {
             if (spawn.Bombsite != _currentBombsite)
             {
