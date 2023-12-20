@@ -87,10 +87,26 @@ public class MapConfig
     {
         // TODO: Implement this.
     }
+    
+    private MapConfigData GetSanitisedMapConfigData()
+    {
+        if (_mapConfigData == null)
+        {
+            throw new Exception("Map config data is null");
+        }
+        
+        // Remove any duplicate spawns in the list
+        _mapConfigData.Spawns = _mapConfigData.Spawns
+            .GroupBy(spawn => new {spawn.Vector, spawn.Bombsite})
+            .Select(group => group.First())
+            .ToList();
+
+        return _mapConfigData;
+    }
 
     private void Save()
     {
-        var jsonString = JsonSerializer.Serialize(_mapConfigData, new JsonSerializerOptions
+        var jsonString = JsonSerializer.Serialize(GetSanitisedMapConfigData(), new JsonSerializerOptions
         {
             WriteIndented = true
         });
