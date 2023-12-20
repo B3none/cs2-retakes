@@ -45,6 +45,7 @@ public class RetakesPlugin : BasePlugin
     // Commands
     [ConsoleCommand("css_addspawn", "Adds a spawn point for retakes to the map.")]
     [CommandHelper(minArgs: 2, usage: "[T/CT] [A/B] [Y/N (can be planter / optional)]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
+    [RequiresPermissions("@css/root")]
     public void AddSpawnCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
         if (!Helpers.CanPlayerAddSpawn(player))
