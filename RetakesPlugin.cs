@@ -212,12 +212,8 @@ public class RetakesPlugin : BasePlugin
         // We shuffle this list to ensure that 1 player does not have to plant every round.
         foreach (var player in Helpers.Shuffle(_gameManager.Queue.ActivePlayers))
         {
-            Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Begin loop.");
             if (!Helpers.IsValidPlayer(player) || player.TeamNum < (int)CsTeam.Terrorist)
             {
-                Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] IsValidPlayer: {(Helpers.IsValidPlayer(player) ? "yes" : "no")}.");
-                Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] player.TeamNum({player.TeamNum}) < (int)CsTeam.Terrorist({(int)CsTeam.Terrorist}): {(player.TeamNum < (int)CsTeam.Terrorist ? "yes" : "no")}.");
-                
                 continue;
             }
             
@@ -225,40 +221,28 @@ public class RetakesPlugin : BasePlugin
 
             if (playerPawn == null)
             {
-                Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] No pawn found.");
                 continue;
             }
             
             var isTerrorist = player.TeamNum == (byte)CsTeam.Terrorist;
-            Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Is terrorist {(isTerrorist ? "yes" : "no")}.");
 
             Spawn spawn;
             
             if (_planter == null && isTerrorist)
             {
-                Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Getting planter spawn.");
-                
                 _planter = player;
                 
                 var spawnIndex = tSpawns.FindIndex(tSpawn => tSpawn.CanBePlanter);
                 spawn = tSpawns[spawnIndex];
-                
-                Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] IF Spawn found {spawn}.");
                 
                 tSpawns.RemoveAt(spawnIndex);
             }
             else
             {
                 spawn = Helpers.GetAndRemoveRandomItem(isTerrorist ? tSpawns : ctSpawns);
-                
-                Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] ELSE Spawn found {spawn}.");
             }
             
-            Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Teleporting pawn to ({spawn.Vector}, {spawn.QAngle}, {new Vector()}).");
-            
             playerPawn.Teleport(spawn.Vector, spawn.QAngle, new Vector());
-            
-            Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Loop end.");
         }
         
         return HookResult.Continue;
@@ -271,14 +255,18 @@ public class RetakesPlugin : BasePlugin
 
         foreach (var player in _gameManager.Queue.ActivePlayers)
         {
-            // Strip the player of all of their weapons and the bomb before any spawn / allocation occurs.
-            // TODO: Figure out why this is crashing the server / undo workaround.
-            // player.RemoveWeapons();
-            Helpers.RemoveAllItemsAndEntities(player);
-            
-            Weapons.Allocate(player);
-            Equipment.Allocate(player, player == _planter);
-            Grenades.Allocate(player);
+            // Create a timer to do this as it would occasionally fire too early.
+            AddTimer(0.05f, () =>
+            {
+                // Strip the player of all of their weapons and the bomb before any spawn / allocation occurs.
+                // TODO: Figure out why this is crashing the server / undo workaround.
+                // player.RemoveWeapons();
+                Helpers.RemoveAllItemsAndEntities(player);
+                
+                Weapons.Allocate(player);
+                Equipment.Allocate(player, player == _planter);
+                Grenades.Allocate(player);
+            });
         }
         
         // TODO: Add auto plant logic here.
