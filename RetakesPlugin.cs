@@ -306,12 +306,17 @@ public class RetakesPlugin : BasePlugin
 
         var player = @event.Userid;
         
+        if (!Helpers.IsValidPlayer(player))
+        {
+            return HookResult.Continue;
+        }
+        
         _gameRules = Helpers.GetGameRules();
         
         // Don't allow planting during freeze time.
         if (_gameRules!.FreezePeriod)
         {
-            Console.WriteLine($"{MessagePrefix}Should be preventing plant.");
+            Console.WriteLine($"{MessagePrefix}Should be preventing plant for userid({(int)player.UserId!}).");
             player.PrintToChat($"{MessagePrefix}You cannot plant during freeze time.");
             
             // TODO: Investigate this because sometimes it doesn't work.
@@ -344,7 +349,7 @@ public class RetakesPlugin : BasePlugin
         var attacker = @event.Attacker;
         var assister = @event.Assister;
 
-        if (!Helpers.IsValidPlayer(attacker) || attacker.IsBot)
+        if (!Helpers.IsValidPlayer(attacker))
         {
             return HookResult.Continue;
         }
@@ -360,7 +365,7 @@ public class RetakesPlugin : BasePlugin
     {
         var player = @event.Userid;
 
-        if (!Helpers.IsValidPlayer(player) || player.IsBot)
+        if (!Helpers.IsValidPlayer(player))
         {
             return HookResult.Continue;
         }
