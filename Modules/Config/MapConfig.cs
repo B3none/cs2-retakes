@@ -122,7 +122,7 @@ public class MapConfig
             
             File.WriteAllText(_mapConfigPath, jsonString);
 
-            Console.WriteLine($"{RetakesPlugin.MessagePrefix}Data has been written to " + _mapConfigPath);
+            Console.WriteLine($"{RetakesPlugin.MessagePrefix}Data has been written to {_mapConfigPath}");
         }
         catch (IOException e)
         {

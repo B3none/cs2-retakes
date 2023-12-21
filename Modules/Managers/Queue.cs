@@ -1,4 +1,5 @@
 ﻿using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Utils;
 
 namespace RetakesPlugin.Modules.Managers;
 
@@ -24,14 +25,34 @@ public class Queue
         return ActivePlayers.Count - GetNumTerrorists();
     }
 
+    public void PlayerTriedToJoinTeam(CCSPlayerController player)
+    {
+        if (ActivePlayers.Contains(player))
+        {
+            ActivePlayers.Remove(player);
+        }
+
+        if (!QueuePlayers.Contains(player))
+        {
+            QueuePlayers.Add(player);
+        }
+        
+        player.SwitchTeam(CsTeam.Spectator);
+    }
+
     public void UpdateActivePlayers()
     {
-        if (ActivePlayers.Count < MaxRetakesPlayers && QueuePlayers.Count > 0)
+        var playersToAdd = MaxRetakesPlayers - ActivePlayers.Count;
+
+        if (playersToAdd > 0 && QueuePlayers.Count > 0)
         {
-            foreach (var queuePlayer in QueuePlayers)
-            {
-                // get queuePlayer index in QueuePlayers
-            }
+            // Take players from QueuePlayers and add them to ActivePlayers
+            var playersToAddList = QueuePlayers.Take(playersToAdd).ToList();
+
+            // Remove the players that will be added from the Queue
+            QueuePlayers.RemoveAll(player => playersToAddList.Contains(player));
+
+            ActivePlayers.AddRange(playersToAddList);
         }
     }
 }

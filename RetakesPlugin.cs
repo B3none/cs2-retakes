@@ -203,9 +203,12 @@ public class RetakesPlugin : BasePlugin
         
         Console.WriteLine($"{MessagePrefix}There are {tSpawns.Count} Terrorist, and {ctSpawns.Count} Counter-Terrorist spawns available for bombsite {(_currentBombsite == Bombsite.A ? "A" : "B")}.");
 
+        // Update Queue status
+        _gameManager.Queue.UpdateActivePlayers();
+        
         // Now move the players to their spawns.
         // We shuffle this list to ensure that 1 player does not have to plant every round.
-        foreach (var player in Helpers.Shuffle(Utilities.GetPlayers()))
+        foreach (var player in Helpers.Shuffle(_gameManager.Queue.ActivePlayers))
         {
             Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Begin loop.");
             if (!Helpers.IsValidPlayer(player) || player.TeamNum < (int)CsTeam.Terrorist)
@@ -351,6 +354,16 @@ public class RetakesPlugin : BasePlugin
         {
             _gameManager.CounterTerroristRoundWin();
         }
+
+        return HookResult.Continue;
+    }
+    
+    [GameEventHandler]
+    public HookResult OnPlayerTeam(EventPlayerTeam @event, GameEventInfo info)
+    {
+        Console.WriteLine($"{MessagePrefix}OnPlayerTeam event fired.");
+
+        _gameManager.Queue.PlayerTriedToJoinTeam(@event.Userid);
 
         return HookResult.Continue;
     }
