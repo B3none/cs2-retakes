@@ -10,7 +10,7 @@ public abstract class Equipment
         // Weapon allocation logic
         if (player.TeamNum == (int)CsTeam.Terrorist)
         {
-            player.GiveNamedItem("vesthelm");
+            player.GiveNamedItem("item_assaultsuit");
 
             if (isPlanter)
             {
@@ -20,8 +20,8 @@ public abstract class Equipment
 
         if (player.TeamNum == (int)CsTeam.CounterTerrorist)
         {
-            player.GiveNamedItem("vesthelm");
-            player.GiveNamedItem("defuser");
+            player.GiveNamedItem("item_assaultsuit");
+            player.GiveNamedItem("item_defuser");
         }
     }
 }
