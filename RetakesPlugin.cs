@@ -153,7 +153,7 @@ public class RetakesPlugin : BasePlugin
         
         // TODO: Temporary to speed up testing.
         Server.ExecuteCommand($"mp_freezetime 3");
-        Server.ExecuteCommand($"mp_warmuptime 120");
+        Server.ExecuteCommand($"mp_warmuptime 15");
     }
     
     [GameEventHandler]
