@@ -1,4 +1,5 @@
 ﻿using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 
 namespace RetakesPlugin.Modules.Allocators;
@@ -10,16 +11,18 @@ public abstract class Weapons
         // Weapon allocation logic
         if (player.TeamNum == (int)CsTeam.Terrorist)
         {
-            player.GiveNamedItem("weapon_ak47");
-            player.GiveNamedItem("weapon_glock");
+            player.GiveNamedItem(CsItem.AK47);
+            // player.GiveNamedItem(CsItem.Glock);
+            player.GiveNamedItem(CsItem.Deagle);
         }
         
         if (player.TeamNum == (int)CsTeam.CounterTerrorist)
         {
-            player.GiveNamedItem("weapon_m4a1_silencer");
-            player.GiveNamedItem("weapon_usp_silencer");
+            player.GiveNamedItem(CsItem.M4A1S);
+            // player.GiveNamedItem(CsItem.USPS);
+            player.GiveNamedItem(CsItem.Deagle);
         }
 
-        player.GiveNamedItem("weapon_knife");
+        player.GiveNamedItem(CsItem.Knife);
     }
 }

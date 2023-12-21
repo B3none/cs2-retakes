@@ -1,4 +1,6 @@
 ﻿using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
+using CounterStrikeSharp.API.Modules.Utils;
 
 namespace RetakesPlugin.Modules.Allocators;
 
@@ -10,16 +12,16 @@ public abstract class Grenades
         switch (new Random().Next(4))
         {
             case 0:
-                player.GiveNamedItem("weapon_smokegrenade");    
+                player.GiveNamedItem(CsItem.SmokeGrenade);    
                 break;
             case 1:
-                player.GiveNamedItem("weapon_flashbang");
+                player.GiveNamedItem(CsItem.Flashbang);
                 break;
             case 2:
-                player.GiveNamedItem("weapon_hegrenade");
+                player.GiveNamedItem(CsItem.HEGrenade);
                 break;
             case 3:
-                player.GiveNamedItem("weapon_molotov");
+                player.GiveNamedItem(player.TeamNum == (int)CsTeam.Terrorist ? CsItem.Molotov : CsItem.Incendiary);
                 break;
         }
     }

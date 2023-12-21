@@ -1,4 +1,5 @@
 ﻿using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 
 namespace RetakesPlugin.Modules.Allocators;
@@ -10,18 +11,23 @@ public abstract class Equipment
         // Weapon allocation logic
         if (player.TeamNum == (int)CsTeam.Terrorist)
         {
-            player.GiveNamedItem("item_assaultsuit");
+            player.GiveNamedItem(CsItem.AssaultSuit);
 
             if (isPlanter)
             {
-                player.GiveNamedItem("weapon_c4");
+                player.GiveNamedItem(CsItem.Bomb);
             }
         }
 
         if (player.TeamNum == (int)CsTeam.CounterTerrorist)
         {
-            player.GiveNamedItem("item_assaultsuit");
-            player.GiveNamedItem("item_defuser");
+            player.GiveNamedItem(CsItem.AssaultSuit);
+
+            if (player.PlayerPawn.Value?.ItemServices?.Handle != null)
+            {
+                var itemServices = new CCSPlayer_ItemServices(player.PlayerPawn.Value.ItemServices.Handle);
+                itemServices.HasDefuser = true;
+            }
         }
     }
 }
