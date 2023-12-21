@@ -1,4 +1,4 @@
-# CS2 Retakes (work in progress)
+# CS2 Retakes
 Retakes plugin written in C# for CounterStrikeSharp
 
 ## Progress
