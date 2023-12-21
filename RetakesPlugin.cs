@@ -45,10 +45,8 @@ public class RetakesPlugin : BasePlugin
 
         if (hotReload)
         {
-            _mapConfig = null;
-            _gameManager.Queue.ActivePlayers = new();
-            _gameManager.Queue.QueuePlayers = new();
-            OnMapStartHandler(Server.MapName);
+            // If a hot reload is detected restart the current map.
+            Server.ExecuteCommand($"map {Server.MapName}");
         }
     }
     
@@ -153,9 +151,7 @@ public class RetakesPlugin : BasePlugin
             _mapConfig.Load();
         }
     }
-
-
-
+    
     [GameEventHandler]
     public HookResult OnRoundPreStart(EventRoundPrestart @event, GameEventInfo info)
     {
@@ -302,7 +298,7 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnBombBeginPlant(EventBombBeginplant @event, GameEventInfo info)
     {
-        Console.WriteLine($"{MessagePrefix}BombBeginplant event fired for {@event.Userid.PlayerName} - bombsite: {(@event.Site == (int)Bombsite.A ? "A" : "B")}");
+        Console.WriteLine($"{MessagePrefix}BombBeginplant event fired.");
 
         var player = @event.Userid;
         
@@ -329,7 +325,8 @@ public class RetakesPlugin : BasePlugin
         {
             return HookResult.Continue;
         }
-
+        
+        player.TeamNum = (int)CsTeam.Spectator;
         player.ForceTeamTime = 3600.0f;
 
         return HookResult.Continue;
