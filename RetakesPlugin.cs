@@ -40,7 +40,7 @@ public class RetakesPlugin : BasePlugin
     {
         Console.WriteLine($"{MessagePrefix}Plugin loaded!");
         
-        RegisterListener<Listeners.OnMapStart>(OnMapStartHandler);
+        RegisterListener<Listeners.OnMapStart>(OnMapStart);
 
         if (hotReload)
         {
@@ -141,8 +141,15 @@ public class RetakesPlugin : BasePlugin
     }
     
     // Listeners
-    private void OnMapStartHandler(string mapName)
+    private void OnMapStart(string mapName)
     {
+        Console.WriteLine($"{MessagePrefix}OnMapStart listener triggered!");
+        
+        var hasExistingConfig = _mapConfig != null;
+        var hasExistingQueueData = _gameManager.Queue.ActivePlayers.Any() || _gameManager.Queue.QueuePlayers.Any();
+        Console.WriteLine($"{MessagePrefix}Has existing config = {(hasExistingConfig ? "YES" : "NO")}");
+        Console.WriteLine($"{MessagePrefix}Has existing queue data = {(hasExistingQueueData ? "YES" : "NO")}");
+        
         // If we don't have a map config loaded, load it.
         if (_mapConfig == null || _mapConfig.MapName != Server.MapName)
         {
@@ -372,7 +379,7 @@ public class RetakesPlugin : BasePlugin
         
         var player = @event.Userid;
 
-        if (!Helpers.IsValidPlayer(player))
+        if (!Helpers.IsValidPlayer(player) && Helpers.IsPlayerConnected(player))
         {
             return HookResult.Continue;
         }
