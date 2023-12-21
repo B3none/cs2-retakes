@@ -269,7 +269,7 @@ public class RetakesPlugin : BasePlugin
     {
         Console.WriteLine($"{MessagePrefix}OnRoundPostStart event fired.");
 
-        foreach (var player in Utilities.GetPlayers())
+        foreach (var player in _gameManager.Queue.ActivePlayers)
         {
             // Strip the player of all of their weapons and the bomb before any spawn / allocation occurs.
             // TODO: Figure out why this is crashing the server / undo workaround.
