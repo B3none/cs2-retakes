@@ -65,37 +65,6 @@ public class Helpers
         return gameRulesEntities.First().GameRules!;
     }
     
-    public static bool RemoveItemAndEntityByDesignerName(CCSPlayerController player, string designerName)
-    {
-        CHandle<CBasePlayerWeapon>? item = null;
-        if (player.PlayerPawn.Value == null || player.PlayerPawn.Value.WeaponServices == null)
-        {
-            return false;
-        }
-
-        foreach(var weapon in player.PlayerPawn.Value.WeaponServices.MyWeapons)
-        {
-            if (weapon is not { IsValid: true, Value.IsValid: true })
-            {
-                continue;
-            }
-
-            if (weapon.Value.DesignerName != designerName)
-            {
-                continue;
-            }
-
-            item = weapon;
-        }
-
-        if (item == null || item.Value == null) return false;
-        
-        player.PlayerPawn.Value.RemovePlayerItem(item.Value);
-        item.Value.Remove();
-        
-        return true;
-    }
-    
     public static void RemoveAllItemsAndEntities(CCSPlayerController player)
     {
         if (player.PlayerPawn.Value == null || player.PlayerPawn.Value.WeaponServices == null)
