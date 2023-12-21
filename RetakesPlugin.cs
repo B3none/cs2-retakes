@@ -367,4 +367,14 @@ public class RetakesPlugin : BasePlugin
 
         return HookResult.Continue;
     }
+    
+    [GameEventHandler]
+    public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
+    {
+        Console.WriteLine($"{MessagePrefix}OnPlayerDisconnect event fired.");
+
+        _gameManager.Queue.PlayerDisconnected(@event.Userid);
+
+        return HookResult.Continue;
+    }
 }

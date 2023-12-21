@@ -55,4 +55,17 @@ public class Queue
             ActivePlayers.AddRange(playersToAddList);
         }
     }
+
+    public void PlayerDisconnected(CCSPlayerController player)
+    {
+        if (ActivePlayers.Contains(player))
+        {
+            ActivePlayers.Remove(player);
+        }
+
+        if (QueuePlayers.Contains(player))
+        {
+            QueuePlayers.Remove(player);
+        }
+    }
 }
