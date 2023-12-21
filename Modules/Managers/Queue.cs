@@ -61,7 +61,7 @@ public class Queue
 
     public void RemoveDisconnectedPlayers()
     {
-        var disconnectedActivePlayers = ActivePlayers.Where(Helpers.IsPlayerConnected).ToList();
+        var disconnectedActivePlayers = ActivePlayers.Where(player => !Helpers.IsPlayerConnected(player)).ToList();
 
         if (disconnectedActivePlayers.Count > 0)
         {
@@ -69,7 +69,7 @@ public class Queue
             ActivePlayers.RemoveAll(player => disconnectedActivePlayers.Contains(player));
         }
         
-        var disconnectedQueuePlayers = QueuePlayers.Where(Helpers.IsPlayerConnected).ToList();
+        var disconnectedQueuePlayers = QueuePlayers.Where(player => !Helpers.IsPlayerConnected(player)).ToList();
         
         if (disconnectedQueuePlayers.Count > 0)
         {
