@@ -8,7 +8,6 @@ public abstract class Grenades
 {
     public static void Allocate(CCSPlayerController player)
     {
-        // Grenade allocation logic
         switch (new Random().Next(4))
         {
             case 0:

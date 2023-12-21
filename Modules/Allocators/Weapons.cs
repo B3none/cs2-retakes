@@ -8,7 +8,6 @@ public abstract class Weapons
 {
     public static void Allocate(CCSPlayerController player)
     {
-        // Weapon allocation logic
         if (player.TeamNum == (int)CsTeam.Terrorist)
         {
             player.GiveNamedItem(CsItem.AK47);
