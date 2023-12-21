@@ -255,14 +255,14 @@ public class RetakesPlugin : BasePlugin
 
         foreach (var player in _gameManager.Queue.ActivePlayers)
         {
+            // Strip the player of all of their weapons and the bomb before any spawn / allocation occurs.
+            // TODO: Figure out why this is crashing the server / undo workaround.
+            // player.RemoveWeapons();
+            Helpers.RemoveAllItemsAndEntities(player);
+            
             // Create a timer to do this as it would occasionally fire too early.
             AddTimer(0.05f, () =>
             {
-                // Strip the player of all of their weapons and the bomb before any spawn / allocation occurs.
-                // TODO: Figure out why this is crashing the server / undo workaround.
-                // player.RemoveWeapons();
-                Helpers.RemoveAllItemsAndEntities(player);
-                
                 Weapons.Allocate(player);
                 Equipment.Allocate(player, player == _planter);
                 Grenades.Allocate(player);
