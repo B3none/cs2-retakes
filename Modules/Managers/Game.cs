@@ -19,7 +19,7 @@ public class Game
         
         foreach (var player in Helpers.Shuffle(Queue.ActivePlayers))
         {
-            player.ChangeTeam(numAssigned < Queue.GetNumTerrorists() ? CsTeam.Terrorist : CsTeam.CounterTerrorist);
+            player.SwitchTeam(numAssigned < Queue.GetNumTerrorists() ? CsTeam.Terrorist : CsTeam.CounterTerrorist);
             numAssigned++;
         }
     }
@@ -79,13 +79,13 @@ public class Game
         {
             if (player.TeamNum == (int)CsTeam.Terrorist)
             {
-                player.ChangeTeam(CsTeam.CounterTerrorist);
+                player.SwitchTeam(CsTeam.CounterTerrorist);
                 continue;
             }
             
             if (newTerrorists.Contains(player))
             {
-                player.ChangeTeam(CsTeam.Terrorist);
+                player.SwitchTeam(CsTeam.Terrorist);
             }
         }
     }

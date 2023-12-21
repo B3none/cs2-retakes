@@ -35,6 +35,7 @@ public class RetakesPlugin : BasePlugin
     private Game _gameManager = new();
     private CCSPlayerController? _planter;
     private readonly Random _random = new();
+    private bool _didTerroristsWinLastRound = false;
 
     public override void Load(bool hotReload)
     {
@@ -151,6 +152,26 @@ public class RetakesPlugin : BasePlugin
             _mapConfig = new MapConfig(ModuleDirectory, Server.MapName);
             _mapConfig.Load();
         }
+    }
+
+
+
+    [GameEventHandler]
+    public HookResult OnRoundPreStart(EventRoundPrestart @event, GameEventInfo info)
+    {
+        Console.WriteLine($"{MessagePrefix}Round Pre Start event fired!");
+        
+        // Handle team swaps at the start of the round
+        if (_didTerroristsWinLastRound)
+        {
+            _gameManager.TerroristRoundWin();
+        }
+        else
+        {
+            _gameManager.CounterTerroristRoundWin();
+        }
+
+        return HookResult.Continue;
     }
 
     [GameEventHandler]
@@ -300,6 +321,21 @@ public class RetakesPlugin : BasePlugin
     }
     
     [GameEventHandler]
+    public HookResult OnPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
+    {
+        var player = @event.Userid;
+
+        if (!Helpers.IsValidPlayer(player))
+        {
+            return HookResult.Continue;
+        }
+
+        player.ForceTeamTime = 3600.0f;
+
+        return HookResult.Continue;
+    }
+    
+    [GameEventHandler]
     public HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
     {
         var attacker = @event.Attacker;
@@ -336,16 +372,7 @@ public class RetakesPlugin : BasePlugin
     {
         Console.WriteLine($"{MessagePrefix}OnRoundEnd event fired.");
 
-        var didTerroristsWin = @event.Winner == (int)CsTeam.Terrorist;
-        
-        if (didTerroristsWin)
-        {
-            _gameManager.TerroristRoundWin();
-        }
-        else
-        {
-            _gameManager.CounterTerroristRoundWin();
-        }
+        _didTerroristsWinLastRound = @event.Winner == (int)CsTeam.Terrorist;
 
         return HookResult.Continue;
     }
