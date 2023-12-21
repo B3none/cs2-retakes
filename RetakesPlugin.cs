@@ -245,6 +245,8 @@ public class RetakesPlugin : BasePlugin
             playerPawn.Teleport(spawn.Vector, spawn.QAngle, new Vector());
         }
         
+        Server.PrintToChatAll($"{MessagePrefix}Bombsite: {(_currentBombsite == Bombsite.A ? "A" : "B")}");
+        
         return HookResult.Continue;
     }
     
@@ -282,8 +284,6 @@ public class RetakesPlugin : BasePlugin
         var player = @event.Userid;
         
         _gameRules = Helpers.GetGameRules();
-        
-        Console.WriteLine($"{MessagePrefix}FreezePeriod: {(_gameRules!.FreezePeriod ? "yes" : "no")}");
         
         // Don't allow planting during freeze time.
         if (_gameRules!.FreezePeriod)
