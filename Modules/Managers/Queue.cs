@@ -25,19 +25,38 @@ public class Queue
         return ActivePlayers.Count - GetNumTerrorists();
     }
 
-    public void PlayerTriedToJoinTeam(CCSPlayerController player)
+    public void PlayerTriedToJoinTeam(CCSPlayerController player, bool switchToSpectator)
     {
+        Console.WriteLine($"{RetakesPlugin.MessagePrefix}[{player.PlayerName}] PlayerTriedToJoinTeam called.");
+        
+        Console.WriteLine($"{RetakesPlugin.MessagePrefix}[{player.PlayerName}] Checking ActivePlayers.");
         if (ActivePlayers.Contains(player))
         {
+            Console.WriteLine($"{RetakesPlugin.MessagePrefix}[{player.PlayerName}] Found! Removing from ActivePlayers.");
             ActivePlayers.Remove(player);
         }
+        else
+        {
+            Console.WriteLine($"{RetakesPlugin.MessagePrefix}[{player.PlayerName}] Not found in ActivePlayers.");
+        }
 
+        Console.WriteLine($"{RetakesPlugin.MessagePrefix}[{player.PlayerName}] Checking QueuePlayers.");
         if (!QueuePlayers.Contains(player))
         {
+            Console.WriteLine($"{RetakesPlugin.MessagePrefix}[{player.PlayerName}] Not found, adding to QueuePlayers.");
             QueuePlayers.Add(player);
         }
-        
-        player.SwitchTeam(CsTeam.Spectator);
+        else
+        {
+            Console.WriteLine($"{RetakesPlugin.MessagePrefix}[{player.PlayerName}] Found in QueuePlayers, do nothing.");
+        }
+
+        Console.WriteLine($"{RetakesPlugin.MessagePrefix}[{player.PlayerName}] Should switch to spectator? {(switchToSpectator ? "yes" : "no")}");
+        if (switchToSpectator)
+        {
+            Console.WriteLine($"{RetakesPlugin.MessagePrefix}[{player.PlayerName}] Changing to spectator.");
+            player.ChangeTeam(CsTeam.Spectator);
+        }
     }
 
     public void UpdateActivePlayers()
@@ -67,5 +86,12 @@ public class Queue
         {
             QueuePlayers.Remove(player);
         }
+    }
+    
+    public void DebugQueues(bool isBefore)
+    {
+        // Get a csv of each player's name in the queue instead
+        Console.WriteLine($"{RetakesPlugin.MessagePrefix}ActivePlayers ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", ActivePlayers.Select(player => player.PlayerName))}");
+        Console.WriteLine($"{RetakesPlugin.MessagePrefix}QueuePlayers ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", QueuePlayers.Select(player => player.PlayerName))}");
     }
 }

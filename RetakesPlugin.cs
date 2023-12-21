@@ -204,7 +204,9 @@ public class RetakesPlugin : BasePlugin
         Console.WriteLine($"{MessagePrefix}There are {tSpawns.Count} Terrorist, and {ctSpawns.Count} Counter-Terrorist spawns available for bombsite {(_currentBombsite == Bombsite.A ? "A" : "B")}.");
 
         // Update Queue status
+        _gameManager.Queue.DebugQueues(true);
         _gameManager.Queue.UpdateActivePlayers();
+        _gameManager.Queue.DebugQueues(false);
         
         // Now move the players to their spawns.
         // We shuffle this list to ensure that 1 player does not have to plant every round.
@@ -361,9 +363,11 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnPlayerTeam(EventPlayerTeam @event, GameEventInfo info)
     {
-        Console.WriteLine($"{MessagePrefix}OnPlayerTeam event fired.");
-
-        _gameManager.Queue.PlayerTriedToJoinTeam(@event.Userid);
+        Console.WriteLine($"{MessagePrefix}[{@event.Userid.PlayerName}] OnPlayerTeam event fired. ({(@event.Isbot ? "BOT" : "NOT BOT")}) {(CsTeam)@event.Oldteam} -> {(CsTeam)@event.Team}");
+        
+        _gameManager.Queue.DebugQueues(true);
+        _gameManager.Queue.PlayerTriedToJoinTeam(@event.Userid, @event.Team != (int)CsTeam.Spectator);
+        _gameManager.Queue.DebugQueues(false);
 
         return HookResult.Continue;
     }
@@ -373,7 +377,9 @@ public class RetakesPlugin : BasePlugin
     {
         Console.WriteLine($"{MessagePrefix}OnPlayerDisconnect event fired.");
 
+        _gameManager.Queue.DebugQueues(true);
         _gameManager.Queue.PlayerDisconnected(@event.Userid);
+        _gameManager.Queue.DebugQueues(false);
 
         return HookResult.Continue;
     }
