@@ -114,4 +114,9 @@ public class Helpers
             weapon.Value.Remove();
         }
     }
+    
+    public static bool IsPlayerConnected(CCSPlayerController player)
+    {
+        return player.Connected == PlayerConnectedState.PlayerConnected;
+    }
 }

@@ -59,8 +59,29 @@ public class Queue
         }
     }
 
-    public void UpdateActivePlayers()
+    public void RemoveDisconnectedPlayers()
     {
+        var disconnectedActivePlayers = ActivePlayers.Where(Helpers.IsPlayerConnected).ToList();
+
+        if (disconnectedActivePlayers.Count > 0)
+        {
+            Console.WriteLine($"{RetakesPlugin.MessagePrefix}Removing {disconnectedActivePlayers.Count} disconnected players from ActivePlayers.");
+            ActivePlayers.RemoveAll(player => disconnectedActivePlayers.Contains(player));
+        }
+        
+        var disconnectedQueuePlayers = QueuePlayers.Where(Helpers.IsPlayerConnected).ToList();
+        
+        if (disconnectedQueuePlayers.Count > 0)
+        {
+            Console.WriteLine($"{RetakesPlugin.MessagePrefix}Removing {disconnectedQueuePlayers.Count} disconnected players from QueuePlayers.");
+            QueuePlayers.RemoveAll(player => disconnectedQueuePlayers.Contains(player));
+        }
+    }
+    
+    public void Update()
+    {
+        RemoveDisconnectedPlayers();
+        
         var playersToAdd = MaxRetakesPlayers - ActivePlayers.Count;
 
         if (playersToAdd > 0 && QueuePlayers.Count > 0)

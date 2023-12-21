@@ -205,7 +205,7 @@ public class RetakesPlugin : BasePlugin
 
         // Update Queue status
         _gameManager.Queue.DebugQueues(true);
-        _gameManager.Queue.UpdateActivePlayers();
+        _gameManager.Queue.Update();
         _gameManager.Queue.DebugQueues(false);
         
         // Now move the players to their spawns.
