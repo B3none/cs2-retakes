@@ -145,10 +145,8 @@ public class RetakesPlugin : BasePlugin
     {
         Console.WriteLine($"{MessagePrefix}OnMapStart listener triggered!");
         
-        var hasExistingConfig = _mapConfig != null;
-        var hasExistingQueueData = _gameManager.Queue.ActivePlayers.Any() || _gameManager.Queue.QueuePlayers.Any();
-        Console.WriteLine($"{MessagePrefix}Has existing config = {(hasExistingConfig ? "YES" : "NO")}");
-        Console.WriteLine($"{MessagePrefix}Has existing queue data = {(hasExistingQueueData ? "YES" : "NO")}");
+        // Execute the retakes configuration.
+        Helpers.ExecuteRetakesConfiguration();
         
         // If we don't have a map config loaded, load it.
         if (_mapConfig == null || _mapConfig.MapName != Server.MapName)

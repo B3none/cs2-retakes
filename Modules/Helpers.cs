@@ -88,4 +88,9 @@ public class Helpers
     {
         return player.Connected == PlayerConnectedState.PlayerConnected;
     }
+    
+    public static void ExecuteRetakesConfiguration()
+    {
+        Server.ExecuteCommand("execifexists cs2-retakes/retakes.cfg");
+    }
 }
