@@ -150,6 +150,10 @@ public class RetakesPlugin : BasePlugin
             _mapConfig = new MapConfig(ModuleDirectory, Server.MapName);
             _mapConfig.Load();
         }
+        
+        // TODO: Temporary to speed up testing.
+        Server.ExecuteCommand($"mp_freezetime 3");
+        Server.ExecuteCommand($"mp_warmuptime 120");
     }
     
     [GameEventHandler]
