@@ -361,7 +361,7 @@ public class RetakesPlugin : BasePlugin
     }
     
     [GameEventHandler]
-    public HookResult OnPlayerTeam(EventPlayerTeam @event, GameEventInfo info)
+    public HookResult OnPlayerConnected(EventPlayerTeam @event, GameEventInfo info)
     {
         Console.WriteLine($"{MessagePrefix}[{@event.Userid.PlayerName}] OnPlayerTeam event fired. ({(@event.Isbot ? "BOT" : "NOT BOT")}) {(CsTeam)@event.Oldteam} -> {(CsTeam)@event.Team}");
         

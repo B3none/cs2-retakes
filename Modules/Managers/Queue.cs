@@ -32,12 +32,8 @@ public class Queue
         Console.WriteLine($"{RetakesPlugin.MessagePrefix}[{player.PlayerName}] Checking ActivePlayers.");
         if (ActivePlayers.Contains(player))
         {
-            Console.WriteLine($"{RetakesPlugin.MessagePrefix}[{player.PlayerName}] Found! Removing from ActivePlayers.");
-            ActivePlayers.Remove(player);
-        }
-        else
-        {
-            Console.WriteLine($"{RetakesPlugin.MessagePrefix}[{player.PlayerName}] Not found in ActivePlayers.");
+            Console.WriteLine($"{RetakesPlugin.MessagePrefix}[{player.PlayerName}] Already an active player.");
+            return;
         }
 
         Console.WriteLine($"{RetakesPlugin.MessagePrefix}[{player.PlayerName}] Checking QueuePlayers.");
