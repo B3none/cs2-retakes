@@ -12,8 +12,8 @@ public class Game
     public const int ScoreForKill = 50;
     public const int ScoreForAssist = 25;
     public const int ScoreForDefuse = 50;
-    
-    public void ScrambleTeams()
+
+    private void ScrambleTeams()
     {
         var numAssigned = 0;
         
