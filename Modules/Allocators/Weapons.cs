@@ -8,13 +8,13 @@ public abstract class Weapons
     public static void Allocate(CCSPlayerController player)
     {
         // Weapon allocation logic
-        if (player.TeamNum == (byte)CsTeam.Terrorist)
+        if (player.TeamNum == (int)CsTeam.Terrorist)
         {
             player.GiveNamedItem("weapon_ak47");
             player.GiveNamedItem("weapon_glock");
         }
         
-        if (player.TeamNum == (byte)CsTeam.CounterTerrorist)
+        if (player.TeamNum == (int)CsTeam.CounterTerrorist)
         {
             player.GiveNamedItem("weapon_m4a1_silencer");
             player.GiveNamedItem("weapon_usp");

@@ -8,7 +8,7 @@ public abstract class Equipment
     public static void Allocate(CCSPlayerController player, bool isPlanter = false)
     {
         // Weapon allocation logic
-        if (player.TeamNum == (byte)CsTeam.Terrorist)
+        if (player.TeamNum == (int)CsTeam.Terrorist)
         {
             player.GiveNamedItem("vesthelm");
 
@@ -18,7 +18,7 @@ public abstract class Equipment
             }
         }
 
-        if (player.TeamNum == (byte)CsTeam.CounterTerrorist)
+        if (player.TeamNum == (int)CsTeam.CounterTerrorist)
         {
             player.GiveNamedItem("vesthelm");
             player.GiveNamedItem("defuser");
