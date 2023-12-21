@@ -55,7 +55,7 @@ public class Queue
         }
     }
 
-    public void RemoveDisconnectedPlayers()
+    private void RemoveDisconnectedPlayers()
     {
         var disconnectedActivePlayers = ActivePlayers.Where(player => !Helpers.IsPlayerConnected(player)).ToList();
 
@@ -107,8 +107,22 @@ public class Queue
     
     public void DebugQueues(bool isBefore)
     {
-        // Get a csv of each player's name in the queue instead
-        Console.WriteLine($"{RetakesPlugin.MessagePrefix}ActivePlayers ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", ActivePlayers.Select(player => player.PlayerName))}");
-        Console.WriteLine($"{RetakesPlugin.MessagePrefix}QueuePlayers ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", QueuePlayers.Select(player => player.PlayerName))}");
+        if (ActivePlayers == null || !ActivePlayers.Any())
+        {
+            Console.WriteLine($"{RetakesPlugin.MessagePrefix}ActivePlayers ({(isBefore ? "BEFORE" : "AFTER")}): No active players.");
+        }
+        else
+        {
+            Console.WriteLine($"{RetakesPlugin.MessagePrefix}ActivePlayers ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", ActivePlayers.Select(player => player.PlayerName))}");
+        }
+
+        if (QueuePlayers == null || !QueuePlayers.Any())
+        {
+            Console.WriteLine($"{RetakesPlugin.MessagePrefix}QueuePlayers ({(isBefore ? "BEFORE" : "AFTER")}): No players in the queue.");
+        }
+        else
+        {
+            Console.WriteLine($"{RetakesPlugin.MessagePrefix}QueuePlayers ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", QueuePlayers.Select(player => player.PlayerName))}");
+        }
     }
 }
