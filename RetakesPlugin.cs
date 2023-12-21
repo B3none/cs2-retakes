@@ -45,6 +45,8 @@ public class RetakesPlugin : BasePlugin
         if (hotReload)
         {
             _mapConfig = null;
+            _gameManager.Queue.ActivePlayers = new();
+            _gameManager.Queue.QueuePlayers = new();
             OnMapStartHandler(Server.MapName);
         }
     }

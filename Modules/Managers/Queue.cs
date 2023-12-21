@@ -1,4 +1,5 @@
-﻿using CounterStrikeSharp.API.Core;
+﻿using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 
 namespace RetakesPlugin.Modules.Managers;
@@ -73,10 +74,25 @@ public class Queue
             QueuePlayers.RemoveAll(player => disconnectedQueuePlayers.Contains(player));
         }
     }
+
+    private void AddConnectedPlayers()
+    {
+        var connectedPlayers = Utilities.GetPlayers().Where(Helpers.IsPlayerConnected).ToList();
+
+        foreach (var connectedPlayer in connectedPlayers)
+        {
+            if (!ActivePlayers.Contains(connectedPlayer) && !QueuePlayers.Contains(connectedPlayer))
+            {
+                Console.WriteLine($"{RetakesPlugin.MessagePrefix}Adding {connectedPlayer.PlayerName} to QueuePlayers.");
+                QueuePlayers.Add(connectedPlayer);
+            }
+        }
+    }
     
     public void Update()
     {
         RemoveDisconnectedPlayers();
+        AddConnectedPlayers();
         
         var playersToAdd = MaxRetakesPlayers - ActivePlayers.Count;
 
