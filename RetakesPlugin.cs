@@ -256,6 +256,7 @@ public class RetakesPlugin : BasePlugin
         _gameManager.Queue.Update();
         _gameManager.Queue.DebugQueues(false);
         
+        Console.WriteLine($"{MessagePrefix}Moving players to spawns.");
         // Now move the players to their spawns.
         // We shuffle this list to ensure that 1 player does not have to plant every round.
         foreach (var player in Helpers.Shuffle(_gameManager.Queue.ActivePlayers))
@@ -281,19 +282,31 @@ public class RetakesPlugin : BasePlugin
                 _planter = player;
                 
                 var spawnIndex = tSpawns.FindIndex(tSpawn => tSpawn.CanBePlanter);
+
+                if (spawnIndex == -1)
+                {
+                    Console.WriteLine($"{MessagePrefix}No bomb planter spawn found in configuration.");
+                    throw new Exception("No bomb planter spawn found in configuration.");
+                }
+                
                 spawn = tSpawns[spawnIndex];
                 
                 tSpawns.RemoveAt(spawnIndex);
             }
             else
             {
+                Console.WriteLine($"{MessagePrefix}GetAndRemoveRandomItem called.");
                 spawn = Helpers.GetAndRemoveRandomItem(isTerrorist ? tSpawns : ctSpawns);
+                Console.WriteLine($"{MessagePrefix}GetAndRemoveRandomItem complete.");
             }
             
             playerPawn.Teleport(spawn.Vector, spawn.QAngle, new Vector());
         }
+        Console.WriteLine($"{MessagePrefix}Moving players to spawns COMPLETE.");
         
+        Console.WriteLine($"{MessagePrefix}Printing bombsite output to all players.");
         Server.PrintToChatAll($"{MessagePrefix}Bombsite: {(_currentBombsite == Bombsite.A ? "A" : "B")}");
+        Console.WriteLine($"{MessagePrefix}Printing bombsite output to all players COMPLETE.");
         
         return HookResult.Continue;
     }
