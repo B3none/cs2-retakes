@@ -4,6 +4,7 @@ using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules;
 using RetakesPlugin.Modules.Allocators;
@@ -335,31 +336,19 @@ public class RetakesPlugin : BasePlugin
         return HookResult.Continue;
     }
     
-    private int _consecutiveRoundsWon = 0;
-    private const int ConsecutiveRoundWinsToScramble = 5;
-    
     [GameEventHandler]
     public HookResult OnRoundEnd(EventRoundEnd @event, GameEventInfo info)
     {
         Console.WriteLine($"{MessagePrefix}OnRoundEnd event fired.");
 
         var didTerroristsWin = @event.Winner == (int)CsTeam.Terrorist;
-
+        
         if (didTerroristsWin)
         {
-            _consecutiveRoundsWon++;
-            
-            if (_consecutiveRoundsWon == ConsecutiveRoundWinsToScramble)
-            {
-                _consecutiveRoundsWon = 0;
-                _gameManager.ScrambleTeams();
-                
-                return HookResult.Continue;
-            }
+            _gameManager.TerroristRoundWin();
         }
         else
         {
-            _consecutiveRoundsWon = 0;
             _gameManager.CounterTerroristRoundWin();
         }
 

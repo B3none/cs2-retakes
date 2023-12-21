@@ -44,9 +44,25 @@ public class Game
             _playerRoundScores[playerId] += score;
         }
     }
+
+    private int _consecutiveRoundsWon = 0;
+    private const int ConsecutiveRoundWinsToScramble = 5;
+    
+    public void TerroristRoundWin()
+    {
+        _consecutiveRoundsWon++;
+        
+        if (_consecutiveRoundsWon == ConsecutiveRoundWinsToScramble)
+        {
+            _consecutiveRoundsWon = 0;
+            ScrambleTeams();
+        }
+    }
     
     public void CounterTerroristRoundWin()
     {
+        _consecutiveRoundsWon = 0;
+        
         var numTerrorists = Queue.GetNumTerrorists();
         
         var sortedCounterTerroristPlayers = Queue.ActivePlayers
