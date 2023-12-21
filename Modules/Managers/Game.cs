@@ -98,6 +98,6 @@ public class Game
         }
         
         Queue.ActivePlayers = Queue.QueuePlayers;
-        Queue.QueuePlayers.Clear();
+        Queue.QueuePlayers = new List<CCSPlayerController>();
     }
 }
