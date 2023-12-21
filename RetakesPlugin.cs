@@ -176,7 +176,7 @@ public class RetakesPlugin : BasePlugin
         Console.WriteLine($"{MessagePrefix}Round Start event fired!");
 
         // If we don't have the game rules, get them.
-        _gameRules ??= Helpers.GetGameRules();
+        _gameRules = Helpers.GetGameRules();
         
         if (_gameRules == null)
         {
