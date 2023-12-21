@@ -129,7 +129,7 @@ public class Queue
         }
         else
         {
-            Console.WriteLine($"{RetakesPlugin.MessagePrefix}ActivePlayers ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", ActivePlayers.Select(player => player.PlayerName))}");
+            Console.WriteLine($"{RetakesPlugin.MessagePrefix}ActivePlayers ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", ActivePlayers.Where(Helpers.IsValidPlayer).Select(player => player.PlayerName))}");
         }
 
         if (QueuePlayers == null || !QueuePlayers.Any())
@@ -138,7 +138,7 @@ public class Queue
         }
         else
         {
-            Console.WriteLine($"{RetakesPlugin.MessagePrefix}QueuePlayers ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", QueuePlayers.Select(player => player.PlayerName))}");
+            Console.WriteLine($"{RetakesPlugin.MessagePrefix}QueuePlayers ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", QueuePlayers.Where(Helpers.IsValidPlayer).Select(player => player.PlayerName))}");
         }
     }
 }
