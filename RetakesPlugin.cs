@@ -4,7 +4,6 @@ using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules;
 using RetakesPlugin.Modules.Allocators;
@@ -160,6 +159,29 @@ public class RetakesPlugin : BasePlugin
     public HookResult OnRoundPreStart(EventRoundPrestart @event, GameEventInfo info)
     {
         Console.WriteLine($"{MessagePrefix}Round Pre Start event fired!");
+
+        // If we don't have the game rules, get them.
+        _gameRules = Helpers.GetGameRules();
+        
+        if (_gameRules == null)
+        {
+            Console.WriteLine($"{MessagePrefix}Game rules not found.");
+            return HookResult.Continue;
+        }
+        
+        // If we are in warmup, skip.
+        if (_gameRules.WarmupPeriod)
+        {
+            Console.WriteLine($"{MessagePrefix}Warmup round, skipping.");
+            return HookResult.Continue;
+        }
+        
+        if (!_gameManager.Queue.ActivePlayers.Any())
+        {
+            Console.WriteLine($"{MessagePrefix}No active players, skipping.");
+            _gameManager.SetupActivePlayers();
+            return HookResult.Continue;
+        }
         
         // Handle team swaps at the start of the round
         if (_didTerroristsWinLastRound)
@@ -189,7 +211,7 @@ public class RetakesPlugin : BasePlugin
         }
         
         // If we are in warmup, skip.
-        if (_gameRules is { WarmupPeriod: true })
+        if (_gameRules.WarmupPeriod)
         {
             Console.WriteLine($"{MessagePrefix}Warmup round, skipping.");
             return HookResult.Continue;
@@ -324,6 +346,59 @@ public class RetakesPlugin : BasePlugin
             NativeAPI.IssueClientCommand((int)player.UserId!, "slot3");
         }
         
+        return HookResult.Continue;
+    }
+    
+    [GameEventHandler]
+    public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
+    {
+        Console.WriteLine($"{MessagePrefix}OnPlayerSpawn event fired.");
+        
+        // If we don't have the game rules, get them.
+        _gameRules = Helpers.GetGameRules();
+        
+        if (_gameRules == null)
+        {
+            Console.WriteLine($"{MessagePrefix}Game rules not found.");
+            return HookResult.Continue;
+        }
+        
+        // If we are in warmup, skip.
+        if (_gameRules.WarmupPeriod)
+        {
+            Console.WriteLine($"{MessagePrefix}Warmup round, skipping.");
+            return HookResult.Continue;
+        }
+        
+        var player = @event.Userid;
+
+        if (!Helpers.IsValidPlayer(player))
+        {
+            return HookResult.Continue;
+        }
+        
+        // debug and check if the player is in the queue.
+        Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Checking ActivePlayers.");
+        if (!_gameManager.Queue.ActivePlayers.Contains(player))
+        {
+            Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Player not in ActivePlayers, moving to spectator.");
+            if (!player.IsBot)
+            {
+                player.ChangeTeam(CsTeam.Spectator);
+            }
+
+            if (player.PlayerPawn.Value != null)
+            {
+                player.PlayerPawn.Value.Health = 0;
+                // player.PlayerPawn.Value.Remove();
+            }
+            return HookResult.Continue;
+        }
+        else
+        {
+            Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Player is in ActivePlayers.");
+        }
+
         return HookResult.Continue;
     }
     

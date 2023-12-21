@@ -89,4 +89,15 @@ public class Game
             }
         }
     }
+
+    public void SetupActivePlayers()
+    {
+        if (Queue.ActivePlayers.Count != 0)
+        {
+            return;
+        }
+        
+        Queue.ActivePlayers = Queue.QueuePlayers;
+        Queue.QueuePlayers.Clear();
+    }
 }
