@@ -166,9 +166,10 @@ public class Game
         
         var numCounterTerroristsNeeded = Queue.GetTargetNumCounterTerrorists() - Helpers.GetCurrentNumPlayers(CsTeam.CounterTerrorist);
         Console.WriteLine($"{RetakesPlugin.MessagePrefix}checking if CT need a player. Queue.GetTargetNumCounterTerrorists() = {Queue.GetTargetNumCounterTerrorists()} | Helpers.GetCurrentNumPlayers(CsTeam.CounterTerrorist) = {Helpers.GetCurrentNumPlayers(CsTeam.CounterTerrorist)} | numCounterTerroristsNeeded {numCounterTerroristsNeeded}");
+        
         if (numCounterTerroristsNeeded > 0)
         {
-            var terroristsWithZeroScore = Queue.ActivePlayers
+            var terroristsWithZeroScore = /*Queue.ActivePlayers*/Utilities.GetPlayers()
                 .Where(player => 
                     player.TeamNum == (int)CsTeam.Terrorist
                     && Helpers.IsValidPlayer(player) 
@@ -186,7 +187,7 @@ public class Game
             {
                 // For remaining excess terrorists, move the ones with the lowest score to CT
                 newCounterTerrorists.AddRange(
-                    Queue.ActivePlayers
+                    /*Queue.ActivePlayers*/Utilities.GetPlayers()
                         .Except(newCounterTerrorists)
                         .Where(player => player.TeamNum == (int)CsTeam.Terrorist && Helpers.IsValidPlayer(player))
                         .OrderBy(player => _playerRoundScores.GetValueOrDefault((int)player.UserId!, 0))
