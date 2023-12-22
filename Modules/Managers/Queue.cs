@@ -6,13 +6,13 @@ namespace RetakesPlugin.Modules.Managers;
 
 public class Queue
 {
-    public const int MaxRetakesPlayers = 9;
-    public const float TerroristRatio = 0.45f;
+    private const int MaxRetakesPlayers = 9;
+    private const float TerroristRatio = 0.45f;
 
     public List<CCSPlayerController> QueuePlayers = new();
     public List<CCSPlayerController> ActivePlayers = new();
 
-    public int GetNumTerrorists()
+    public int GetTargetNumTerrorists()
     {
         var ratio = TerroristRatio * ActivePlayers.Count;
         var numTerrorists = (int)Math.Round(ratio);
@@ -21,9 +21,9 @@ public class Queue
         return numTerrorists > 0 ? numTerrorists : 1;
     }
     
-    public int GetNumCounterTerrorists()
+    public int GetTargetNumCounterTerrorists()
     {
-        return ActivePlayers.Count - GetNumTerrorists();
+        return ActivePlayers.Count - GetTargetNumTerrorists();
     }
 
     public void PlayerTriedToJoinTeam(CCSPlayerController player, bool switchToSpectator)

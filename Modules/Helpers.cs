@@ -93,4 +93,28 @@ public class Helpers
     {
         Server.ExecuteCommand("execifexists cs2-retakes/retakes.cfg");
     }
+    
+    public static int GetCurrentNumTerrorists()
+    {
+        Console.WriteLine($"{RetakesPlugin.MessagePrefix} GetCurrentNumTerrorists called");
+        // var gameRules = GetGameRules();
+        //
+        // if (gameRules != null)
+        // {
+        //     return gameRules.NumTerrorist;
+        // }
+        
+        var numTerrorists = 0;
+
+        foreach (var player in Utilities.GetPlayers().Where(player => IsValidPlayer(player) && IsPlayerConnected(player)))
+        {
+            if (player.TeamNum == (int)CsTeam.Terrorist)
+            {
+                Console.WriteLine($"{RetakesPlugin.MessagePrefix} Found terrorist! {player.PlayerName}");
+                numTerrorists++;
+            }
+        }
+
+        return numTerrorists;
+    }
 }
