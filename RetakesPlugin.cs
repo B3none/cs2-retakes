@@ -338,34 +338,6 @@ public class RetakesPlugin : BasePlugin
     }
     
     [GameEventHandler]
-    public HookResult OnBombBeginPlant(EventBombBeginplant @event, GameEventInfo info)
-    {
-        Console.WriteLine($"{MessagePrefix}BombBeginplant event fired.");
-
-        var player = @event.Userid;
-        
-        if (!Helpers.IsValidPlayer(player))
-        {
-            return HookResult.Continue;
-        }
-        
-        _gameRules = Helpers.GetGameRules();
-        
-        // Don't allow planting during freeze time.
-        if (_gameRules!.FreezePeriod)
-        {
-            Console.WriteLine($"{MessagePrefix}Should be preventing plant for userid({(int)player.UserId!}).");
-            player.PrintToChat($"{MessagePrefix}You cannot plant during freeze time.");
-            
-            // TODO: Investigate this because sometimes it doesn't work.
-            // Change to their knife to prevent planting.
-            NativeAPI.IssueClientCommand((int)player.UserId!, "slot3");
-        }
-        
-        return HookResult.Continue;
-    }
-    
-    [GameEventHandler]
     public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
     {
         Console.WriteLine($"{MessagePrefix}OnPlayerSpawn event fired.");
