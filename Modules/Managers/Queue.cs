@@ -126,7 +126,7 @@ public class Queue
         {
             foreach (var player in playersToAddToQueue)
             {
-                Console.WriteLine($"{RetakesPlugin.MessagePrefix}SanitiseQueues: {player.PlayerName} is not on a team, adding to QueuePlayers.");
+                Console.WriteLine($"{RetakesPlugin.MessagePrefix}SanitiseQueues: {player.PlayerName} is not on a team, removing from ActivePlayers and adding to QueuePlayers.");
                 ActivePlayers.Remove(player);
                 QueuePlayers.Add(player);
             }
