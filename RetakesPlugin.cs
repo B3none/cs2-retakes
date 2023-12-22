@@ -55,7 +55,7 @@ public class RetakesPlugin : BasePlugin
     [RequiresPermissions("@css/root")]
     public void AddSpawnCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (!Helpers.CanPlayerAddSpawn(player))
+        if (!Helpers.DoesPlayerHavePawn(player))
         {
             commandInfo.ReplyToCommand($"{MessagePrefix}You must be a player.");
             return;

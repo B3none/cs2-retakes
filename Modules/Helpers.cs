@@ -4,16 +4,16 @@ using CounterStrikeSharp.API.Modules.Utils;
 
 namespace RetakesPlugin.Modules;
 
-public class Helpers
+public static class Helpers
 {
-    private static readonly Random Random = new Random();
+    private static readonly Random Random = new();
     
     public static bool IsValidPlayer(CCSPlayerController? player)
     {
         return player != null && player.IsValid;
     }
     
-    public static bool CanPlayerAddSpawn(CCSPlayerController? player)
+    public static bool DoesPlayerHavePawn(CCSPlayerController? player)
     {
         if (!IsValidPlayer(player))
         {
