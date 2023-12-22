@@ -152,4 +152,9 @@ public static class Helpers
 
         return item != null && item.Value != null;
     }
+
+    public static void GivePlayerBomb()
+    {
+        
+    }
 }

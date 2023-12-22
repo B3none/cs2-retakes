@@ -4,6 +4,7 @@ using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules;
 using RetakesPlugin.Modules.Allocators;
@@ -433,7 +434,34 @@ public class RetakesPlugin : BasePlugin
 
         return HookResult.Continue;
     }
-    
+
+    [GameEventHandler]
+    public HookResult OnBombDropped(EventBombDropped @event, GameEventInfo info)
+    {
+        var player = @event.Userid;
+        
+        if (!Helpers.IsValidPlayer(player))
+        {
+            return HookResult.Continue;
+        }
+        
+        // Remove the bomb entity and give the player that dropped it the bomb
+        var bombEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("weapon_c4").ToList();
+
+        if (bombEntities.Any())
+        {
+            foreach (var bomb in bombEntities)
+            {
+                bomb.Remove();
+            }
+        }
+        
+        player.GiveNamedItem(CsItem.Bomb);
+        NativeAPI.IssueClientCommand((int)player.UserId!, "slot5");
+        
+        return HookResult.Continue;
+    }
+
     [GameEventHandler]
     public HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
     {
