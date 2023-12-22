@@ -89,33 +89,7 @@ public class Game
             newTerrorists.AddRange(playersLeft.Take(numTerroristsNeeded - newTerrorists.Count));
         }
 
-        if (newTerrorists.Count < numTerroristsNeeded)
-        {
-            Console.WriteLine($"{RetakesPlugin.MessagePrefix}Still not enough terrorists needed.");
-            var playersLeft = Helpers.Shuffle(sortedCounterTerroristPlayers.Except(newTerrorists).ToList());
-            newTerrorists.AddRange(playersLeft.Take(numTerroristsNeeded - newTerrorists.Count));
-        }
-        
-        var sortedTerroristPlayers = Queue.ActivePlayers
-            .Where(player => Helpers.IsValidPlayer(player) && player.TeamNum == (int)CsTeam.Terrorist)
-            .OrderByDescending(player => _playerRoundScores.GetValueOrDefault((int)player.UserId!, 0))
-            .ToList();
-        
-        Console.WriteLine($"{RetakesPlugin.MessagePrefix}Got {sortedTerroristPlayers.Count} sortedTerroristPlayers.");
-        
-        newTerrorists.AddRange(sortedCounterTerroristPlayers.Where(player => player.Score > 0).Take(numTerroristsNeeded - newTerrorists.Count).ToList());
-        
-        Console.WriteLine($"{RetakesPlugin.MessagePrefix}{sortedTerroristPlayers.Where(player => player.Score > 0).ToList().Count} sortedTerroristPlayers with more than 0 score found.");
-        Console.WriteLine($"{RetakesPlugin.MessagePrefix}There are currently {newTerrorists.Count} new terrorists.");
-
-        if (newTerrorists.Count < numTerroristsNeeded)
-        {
-            Console.WriteLine($"{RetakesPlugin.MessagePrefix}Still not enough terrorists needed.");
-            var playersLeft = Helpers.Shuffle(sortedCounterTerroristPlayers.Except(newTerrorists).ToList());
-            newTerrorists.AddRange(playersLeft.Take(numTerroristsNeeded - newTerrorists.Count));
-        }
-
-        Console.WriteLine($"{RetakesPlugin.MessagePrefix}Swapping players to terrorist.");
+        Console.WriteLine($"{RetakesPlugin.MessagePrefix}Swapping player(s) to terrorist...");
         foreach (var player in newTerrorists)
         {
             Console.WriteLine($"{RetakesPlugin.MessagePrefix}Swapping player {player.PlayerName} to terrorist.");

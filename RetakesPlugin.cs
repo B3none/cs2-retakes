@@ -190,14 +190,14 @@ public class RetakesPlugin : BasePlugin
         _gameManager.Queue.DebugQueues(false);
         
         // Handle team swaps at the start of the round
-        if (_didTerroristsWinLastRound)
-        {
-            _gameManager.TerroristRoundWin();
-        }
-        else
+        if (!_didTerroristsWinLastRound)
         {
             _gameManager.CounterTerroristRoundWin();
+
+            return HookResult.Continue;
         }
+        
+        _gameManager.TerroristRoundWin();
 
         return HookResult.Continue;
     }
