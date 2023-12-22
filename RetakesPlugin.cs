@@ -331,8 +331,6 @@ public class RetakesPlugin : BasePlugin
                 Grenades.Allocate(player);
             });
         }
-        
-        // TODO: Add auto plant logic here.
 
         return HookResult.Continue;
     }
