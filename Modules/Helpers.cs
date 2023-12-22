@@ -13,7 +13,7 @@ public static class Helpers
         return player != null && player.IsValid;
     }
     
-    public static bool DoesPlayerHavePawn(CCSPlayerController? player)
+    public static bool DoesPlayerHavePawn(CCSPlayerController? player, bool shouldBeAlive = true)
     {
         if (!IsValidPlayer(player))
         {
@@ -21,10 +21,18 @@ public static class Helpers
         }
         
         var playerPawn = player!.PlayerPawn.Value;
+
+        if (playerPawn == null || playerPawn is { AbsOrigin: null, AbsRotation: null })
+        {
+            return false;
+        }
         
-        // Beware, this is also checking if they're alive.
-        return playerPawn != null
-               && playerPawn is { Health: > 0, AbsOrigin: not null, AbsRotation: not null };
+        if (shouldBeAlive && !(playerPawn.Health > 0))
+        {
+            return false;
+        }
+
+        return true;
     }
     
     public static T GetAndRemoveRandomItem<T>(List<T> list)
