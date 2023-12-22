@@ -184,6 +184,11 @@ public class RetakesPlugin : BasePlugin
             return HookResult.Continue;
         }
         
+        // Update Queue status
+        _gameManager.Queue.DebugQueues(true);
+        _gameManager.Queue.Update();
+        _gameManager.Queue.DebugQueues(false);
+        
         // Handle team swaps at the start of the round
         if (_didTerroristsWinLastRound)
         {
@@ -249,11 +254,6 @@ public class RetakesPlugin : BasePlugin
         
         Console.WriteLine($"{MessagePrefix}There are {tSpawns.Count} Terrorist, and {ctSpawns.Count} Counter-Terrorist spawns available for bombsite {(_currentBombsite == Bombsite.A ? "A" : "B")}.");
         Server.PrintToChatAll($"{MessagePrefix}There are {tSpawns.Count} Terrorist, and {ctSpawns.Count} Counter-Terrorist spawns available for bombsite {(_currentBombsite == Bombsite.A ? "A" : "B")}.");
-
-        // Update Queue status
-        _gameManager.Queue.DebugQueues(true);
-        _gameManager.Queue.Update();
-        _gameManager.Queue.DebugQueues(false);
         
         Console.WriteLine($"{MessagePrefix}Moving players to spawns.");
         // Now move the players to their spawns.

@@ -112,8 +112,10 @@ public class Queue
 
     private void SanitiseQueues()
     {
+        Console.WriteLine($"{RetakesPlugin.MessagePrefix}SanitiseQueues called.");
         if (ActivePlayers.Count == 0)
         {
+            Console.WriteLine($"{RetakesPlugin.MessagePrefix}SanitiseQueues returned early (no active players).");
             return;
         }
 
@@ -122,6 +124,8 @@ public class Queue
             player.TeamNum != (int)CsTeam.CounterTerrorist
         ).ToList();
 
+        Console.WriteLine($"{RetakesPlugin.MessagePrefix}playersToAddToQueue.Count {playersToAddToQueue.Count}.");
+        
         if (playersToAddToQueue.Count > 0)
         {
             foreach (var player in playersToAddToQueue)
