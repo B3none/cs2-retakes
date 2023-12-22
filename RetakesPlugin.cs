@@ -229,6 +229,7 @@ public class RetakesPlugin : BasePlugin
         _gameManager.ResetPlayerScores();
         
         // TODO: Cache the spawns so we don't have to do this every round.
+        // TODO: Move spawning functionality to a "SpawnManager"
         // Filter the spawns.
         List<Spawn> tSpawns = new();
         List<Spawn> ctSpawns = new();
