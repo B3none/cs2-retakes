@@ -22,6 +22,7 @@ public static class Helpers
         
         var playerPawn = player!.PlayerPawn.Value;
         
+        // Beware, this is also checking if they're alive.
         return playerPawn != null
                && playerPawn is { Health: > 0, AbsOrigin: not null, AbsRotation: not null };
     }
