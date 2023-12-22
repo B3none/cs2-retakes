@@ -93,6 +93,8 @@ public class Queue
     {
         RemoveDisconnectedPlayers();
         AddConnectedPlayers();
+
+        SanitiseQueues();
         
         var playersToAdd = MaxRetakesPlayers - ActivePlayers.Count;
 
@@ -105,6 +107,29 @@ public class Queue
             QueuePlayers.RemoveAll(player => playersToAddList.Contains(player));
 
             ActivePlayers.AddRange(playersToAddList);
+        }
+    }
+
+    private void SanitiseQueues()
+    {
+        if (ActivePlayers.Count == 0)
+        {
+            return;
+        }
+
+        var playersToAddToQueue = ActivePlayers.Where(player =>
+            player.TeamNum != (int)CsTeam.Terrorist &&
+            player.TeamNum != (int)CsTeam.CounterTerrorist
+        ).ToList();
+
+        if (playersToAddToQueue.Count > 0)
+        {
+            foreach (var player in playersToAddToQueue)
+            {
+                Console.WriteLine($"{RetakesPlugin.MessagePrefix}SanitiseQueues: {player.PlayerName} is not on a team, adding to QueuePlayers.");
+                ActivePlayers.Remove(player);
+                QueuePlayers.Add(player);
+            }
         }
     }
 

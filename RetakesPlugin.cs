@@ -405,7 +405,7 @@ public class RetakesPlugin : BasePlugin
             if (player.PlayerPawn.Value != null)
             {
                 player.PlayerPawn.Value.Health = 0;
-                // player.PlayerPawn.Value.Remove();
+                player.PlayerPawn.Value.Remove();
             }
             return HookResult.Continue;
         }
