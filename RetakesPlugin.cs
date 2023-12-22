@@ -82,6 +82,12 @@ public class RetakesPlugin : BasePlugin
             return;
         }
 
+        if (team != "T" && canBePlanter == "Y")
+        {
+            commandInfo.ReplyToCommand($"{MessagePrefix}It looks like you tried to place a bomb planter spawn for a CT? Is this correct?");
+            return;
+        }
+
         var spawn = new Spawn(
             vector: player!.PlayerPawn.Value!.AbsOrigin!,
             qAngle: player!.PlayerPawn.Value!.AbsRotation!
