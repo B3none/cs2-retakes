@@ -93,8 +93,6 @@ public class Queue
     {
         RemoveDisconnectedPlayers();
         AddConnectedPlayers();
-
-        SanitiseQueues();
         
         var playersToAdd = MaxRetakesPlayers - ActivePlayers.Count;
 
@@ -119,33 +117,6 @@ public class Queue
         }
     }
 
-    private void SanitiseQueues()
-    {
-        Console.WriteLine($"{RetakesPlugin.MessagePrefix}SanitiseQueues called.");
-        if (ActivePlayers.Count == 0)
-        {
-            Console.WriteLine($"{RetakesPlugin.MessagePrefix}SanitiseQueues returned early (no active players).");
-            return;
-        }
-
-        var playersToAddToQueue = ActivePlayers.Where(player =>
-            player.TeamNum != (int)CsTeam.Terrorist &&
-            player.TeamNum != (int)CsTeam.CounterTerrorist
-        ).ToList();
-
-        Console.WriteLine($"{RetakesPlugin.MessagePrefix}playersToAddToQueue.Count {playersToAddToQueue.Count}.");
-        
-        if (playersToAddToQueue.Count > 0)
-        {
-            foreach (var player in playersToAddToQueue)
-            {
-                Console.WriteLine($"{RetakesPlugin.MessagePrefix}SanitiseQueues: {player.PlayerName} is not on a team, removing from ActivePlayers and adding to QueuePlayers.");
-                ActivePlayers.Remove(player);
-                QueuePlayers.Add(player);
-            }
-        }
-    }
-
     public void PlayerDisconnected(CCSPlayerController player)
     {
         if (ActivePlayers.Contains(player))
@@ -161,7 +132,7 @@ public class Queue
     
     public void DebugQueues(bool isBefore)
     {
-        if (ActivePlayers == null || !ActivePlayers.Any())
+        if (!ActivePlayers.Any())
         {
             Console.WriteLine($"{RetakesPlugin.MessagePrefix}ActivePlayers ({(isBefore ? "BEFORE" : "AFTER")}): No active players.");
         }
@@ -170,7 +141,7 @@ public class Queue
             Console.WriteLine($"{RetakesPlugin.MessagePrefix}ActivePlayers ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", ActivePlayers.Where(Helpers.IsValidPlayer).Select(player => player.PlayerName))}");
         }
 
-        if (QueuePlayers == null || !QueuePlayers.Any())
+        if (!QueuePlayers.Any())
         {
             Console.WriteLine($"{RetakesPlugin.MessagePrefix}QueuePlayers ({(isBefore ? "BEFORE" : "AFTER")}): No players in the queue.");
         }
