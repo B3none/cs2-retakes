@@ -17,7 +17,7 @@ namespace RetakesPlugin;
 public class RetakesPlugin : BasePlugin
 {
     public override string ModuleName => "Retakes Plugin";
-    public override string ModuleVersion => "1.0.0";
+    public override string ModuleVersion => "1.0.3";
     public override string ModuleAuthor => "B3none";
     public override string ModuleDescription => "Community retakes for CS2.";
 
