@@ -107,6 +107,12 @@ public class Queue
             QueuePlayers.RemoveAll(player => playersToAddList.Contains(player));
 
             ActivePlayers.AddRange(playersToAddList);
+            
+            // loop players to add, and set their team to CT
+            foreach (var player in playersToAddList)
+            {
+                player.SwitchTeam(CsTeam.CounterTerrorist);
+            }
         }
     }
 
