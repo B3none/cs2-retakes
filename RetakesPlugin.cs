@@ -162,7 +162,7 @@ public class RetakesPlugin : BasePlugin
             _mapConfig.Load();
         }
     }
-    
+
     [GameEventHandler]
     public HookResult OnPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
     {
@@ -375,7 +375,8 @@ public class RetakesPlugin : BasePlugin
         // If we are in warmup, skip.
         if (_gameRules.WarmupPeriod)
         {
-            Console.WriteLine($"{MessagePrefix}Warmup round, skipping.");
+            Console.WriteLine($"{MessagePrefix}Warmup round, balance teams.");
+            _gameManager.BalanceTeams();
             return HookResult.Continue;
         }
         
@@ -414,8 +415,6 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnWeaponFire(EventWeaponFire @event, GameEventInfo info)
     {
-        Console.WriteLine($"{MessagePrefix}WeaponFire event fired.");
-
         var player = @event.Userid;
 
         if (!Helpers.IsValidPlayer(player))
@@ -456,8 +455,7 @@ public class RetakesPlugin : BasePlugin
             }
         }
         
-        player.GiveNamedItem(CsItem.Bomb);
-        NativeAPI.IssueClientCommand((int)player.UserId!, "slot5");
+        Helpers.GiveAndSwitchToBomb(player);
         
         return HookResult.Continue;
     }

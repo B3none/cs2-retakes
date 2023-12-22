@@ -1,5 +1,6 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 
 namespace RetakesPlugin.Modules;
@@ -103,28 +104,19 @@ public static class Helpers
         Server.ExecuteCommand("execifexists cs2-retakes/retakes.cfg");
     }
     
-    public static int GetCurrentNumTerrorists()
+    public static int GetCurrentNumPlayers(CsTeam csTeam)
     {
-        Console.WriteLine($"{RetakesPlugin.MessagePrefix} GetCurrentNumTerrorists called");
-        // var gameRules = GetGameRules();
-        //
-        // if (gameRules != null)
-        // {
-        //     return gameRules.NumTerrorist;
-        // }
-        
-        var numTerrorists = 0;
+        var players = 0;
 
         foreach (var player in Utilities.GetPlayers().Where(player => IsValidPlayer(player) && IsPlayerConnected(player)))
         {
-            if (player.TeamNum == (int)CsTeam.Terrorist)
+            if (player.TeamNum == (int)csTeam)
             {
-                Console.WriteLine($"{RetakesPlugin.MessagePrefix} Found terrorist! {player.PlayerName}");
-                numTerrorists++;
+                players++;
             }
         }
 
-        return numTerrorists;
+        return players;
     }
 
     public static bool HasBomb(CCSPlayerController player)
@@ -151,5 +143,11 @@ public static class Helpers
         }
 
         return item != null && item.Value != null;
+    }
+
+    public static void GiveAndSwitchToBomb(CCSPlayerController player)
+    {
+        player.GiveNamedItem(CsItem.Bomb);
+        NativeAPI.IssueClientCommand((int)player.UserId!, "slot5");
     }
 }

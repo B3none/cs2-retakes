@@ -14,7 +14,7 @@ public abstract class Equipment
 
             if (isPlanter)
             {
-                player.GiveNamedItem(CsItem.Bomb);
+                Helpers.GiveAndSwitchToBomb(player);
             }
         }
 

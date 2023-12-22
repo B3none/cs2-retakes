@@ -23,7 +23,8 @@ public class Queue
     
     public int GetTargetNumCounterTerrorists()
     {
-        return ActivePlayers.Count - GetTargetNumTerrorists();
+        var targetPlayers = ActivePlayers.Count - GetTargetNumTerrorists();
+        return targetPlayers > 0 ? targetPlayers : 1;
     }
 
     public void PlayerTriedToJoinTeam(CCSPlayerController player, bool switchToSpectator)
