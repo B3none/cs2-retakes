@@ -126,4 +126,30 @@ public static class Helpers
 
         return numTerrorists;
     }
+
+    public static bool HasBomb(CCSPlayerController player)
+    {
+        if (!IsValidPlayer(player))
+        {
+            return false;
+        }
+        
+        CHandle<CBasePlayerWeapon>? item = null;
+        if (player.PlayerPawn.Value == null || player.PlayerPawn.Value.WeaponServices == null)
+        {
+            return false;
+        }
+
+        foreach (var weapon in player.PlayerPawn.Value.WeaponServices.MyWeapons)
+        {
+            if (weapon is not { IsValid: true, Value.IsValid: true })
+                continue;
+            if (weapon.Value.DesignerName != "weapon_c4")
+                continue;
+
+            item = weapon;
+        }
+
+        return item != null && item.Value != null;
+    }
 }

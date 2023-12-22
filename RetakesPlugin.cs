@@ -163,6 +163,22 @@ public class RetakesPlugin : BasePlugin
     }
     
     [GameEventHandler]
+    public HookResult OnPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
+    {
+        var player = @event.Userid;
+
+        if (!Helpers.IsValidPlayer(player))
+        {
+            return HookResult.Continue;
+        }
+        
+        player.TeamNum = (int)CsTeam.Spectator;
+        player.ForceTeamTime = 3600.0f;
+
+        return HookResult.Continue;
+    }
+    
+    [GameEventHandler]
     public HookResult OnRoundPreStart(EventRoundPrestart @event, GameEventInfo info)
     {
         Console.WriteLine($"{MessagePrefix}Round Pre Start event fired!");
@@ -395,17 +411,25 @@ public class RetakesPlugin : BasePlugin
     }
     
     [GameEventHandler]
-    public HookResult OnPlayerConnectFull(EventPlayerConnectFull @event, GameEventInfo info)
+    public HookResult OnWeaponFire(EventWeaponFire @event, GameEventInfo info)
     {
+        Console.WriteLine($"{MessagePrefix}WeaponFire event fired.");
+
         var player = @event.Userid;
 
         if (!Helpers.IsValidPlayer(player))
         {
             return HookResult.Continue;
         }
-        
-        player.TeamNum = (int)CsTeam.Spectator;
-        player.ForceTeamTime = 3600.0f;
+
+        if (Helpers.HasBomb(player))
+        {
+            Console.WriteLine($"{MessagePrefix}Player has bomb, swap to bomb userid({(int)player.UserId!}).");
+            
+            // TODO: Investigate this because sometimes it doesn't work.
+            // Change to their knife to prevent planting.
+            NativeAPI.IssueClientCommand((int)player.UserId!, "slot5");
+        }
 
         return HookResult.Continue;
     }
