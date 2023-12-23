@@ -54,6 +54,7 @@ public static class Helpers
 
     public static List<T> Shuffle<T>(List<T> list)
     {
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Shuffle helper called.");
         List<T> shuffledList = new List<T>(list); // Create a copy of the original list
 
         int n = shuffledList.Count;
@@ -65,6 +66,7 @@ public static class Helpers
             shuffledList[k] = shuffledList[n];
             shuffledList[n] = value;
         }
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Shuffle helper complete.");
 
         return shuffledList;
     }
@@ -77,6 +79,11 @@ public static class Helpers
     
     public static void RemoveAllItemsAndEntities(CCSPlayerController player)
     {
+        if (!IsValidPlayer(player))
+        {
+            return;
+        }
+        
         if (player.PlayerPawn.Value == null || player.PlayerPawn.Value.WeaponServices == null)
         {
             return;

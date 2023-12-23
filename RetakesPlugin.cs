@@ -16,14 +16,17 @@ namespace RetakesPlugin;
 [MinimumApiVersion(129)]
 public class RetakesPlugin : BasePlugin
 {
+    private const string VERSION = "1.0.3";
+    
     public override string ModuleName => "Retakes Plugin";
-    public override string ModuleVersion => "1.0.3";
+    public override string ModuleVersion => VERSION;
     public override string ModuleAuthor => "B3none";
     public override string ModuleDescription => "Community retakes for CS2.";
 
     // Constants
-    // TODO: Add colours for message prefix.
-    public const string MessagePrefix = "[Retakes] ";
+    // TODO: Add colours.
+    public const string LogPrefix = $"[Retakes {VERSION}] ";
+    public const string MessagePrefix = $"[Retakes] ";
     
     // Config
     private MapConfig? _mapConfig;
@@ -38,7 +41,7 @@ public class RetakesPlugin : BasePlugin
 
     public override void Load(bool hotReload)
     {
-        Console.WriteLine($"{MessagePrefix}Plugin loaded!");
+        Console.WriteLine($"{LogPrefix}Plugin loaded!");
         
         RegisterListener<Listeners.OnMapStart>(OnMapStart);
 
@@ -57,34 +60,34 @@ public class RetakesPlugin : BasePlugin
     {
         if (!Helpers.DoesPlayerHavePawn(player))
         {
-            commandInfo.ReplyToCommand($"{MessagePrefix}You must be a player.");
+            commandInfo.ReplyToCommand($"{LogPrefix}You must be a player.");
             return;
         }
         
         var team = commandInfo.GetArg(1).ToUpper();
         if (team != "T" && team != "CT")
         {
-            commandInfo.ReplyToCommand($"{MessagePrefix}You must specify a team [T / CT] - [Value: {team}].");
+            commandInfo.ReplyToCommand($"{LogPrefix}You must specify a team [T / CT] - [Value: {team}].");
             return;
         }
         
         var bombsite = commandInfo.GetArg(2).ToUpper();
         if (bombsite != "A" && bombsite != "B")
         {
-            commandInfo.ReplyToCommand($"{MessagePrefix}You must specify a bombsite [A / B] - [Value: {bombsite}].");
+            commandInfo.ReplyToCommand($"{LogPrefix}You must specify a bombsite [A / B] - [Value: {bombsite}].");
             return;
         }
 
         var canBePlanter = commandInfo.GetArg(3).ToUpper();
         if (canBePlanter != "" && canBePlanter != "Y" && canBePlanter != "N")
         {
-            commandInfo.ReplyToCommand($"{MessagePrefix}Invalid value passed to can be a planter [Y / N] - [Value: {canBePlanter}].");
+            commandInfo.ReplyToCommand($"{LogPrefix}Invalid value passed to can be a planter [Y / N] - [Value: {canBePlanter}].");
             return;
         }
 
         if (team != "T" && canBePlanter == "Y")
         {
-            commandInfo.ReplyToCommand($"{MessagePrefix}It looks like you tried to place a bomb planter spawn for a CT? Is this correct?");
+            commandInfo.ReplyToCommand($"{LogPrefix}It looks like you tried to place a bomb planter spawn for a CT? Is this correct?");
             return;
         }
 
@@ -100,13 +103,13 @@ public class RetakesPlugin : BasePlugin
 
         if (_mapConfig == null)
         {
-            commandInfo.ReplyToCommand($"{MessagePrefix}Map config not loaded for some reason...");
+            commandInfo.ReplyToCommand($"{LogPrefix}Map config not loaded for some reason...");
             return;
         }
         
         var didAddSpawn = _mapConfig.AddSpawn(spawn);
         
-        commandInfo.ReplyToCommand($"{MessagePrefix}{(didAddSpawn ? "Spawn added" : "Error adding spawn")}");
+        commandInfo.ReplyToCommand($"{LogPrefix}{(didAddSpawn ? "Spawn added" : "Error adding spawn")}");
     }
     
     [ConsoleCommand("css_teleport", "This command teleports the player to the given coordinates")]
@@ -160,7 +163,7 @@ public class RetakesPlugin : BasePlugin
     // Listeners
     private void OnMapStart(string mapName)
     {
-        Console.WriteLine($"{MessagePrefix}OnMapStart listener triggered!");
+        Console.WriteLine($"{LogPrefix}OnMapStart listener triggered!");
         
         // Execute the retakes configuration.
         Helpers.ExecuteRetakesConfiguration();
@@ -192,27 +195,27 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnRoundPreStart(EventRoundPrestart @event, GameEventInfo info)
     {
-        Console.WriteLine($"{MessagePrefix}Round Pre Start event fired!");
+        Console.WriteLine($"{LogPrefix}Round Pre Start event fired!");
 
         // If we don't have the game rules, get them.
         _gameRules = Helpers.GetGameRules();
         
         if (_gameRules == null)
         {
-            Console.WriteLine($"{MessagePrefix}Game rules not found.");
+            Console.WriteLine($"{LogPrefix}Game rules not found.");
             return HookResult.Continue;
         }
         
         // If we are in warmup, skip.
         if (_gameRules.WarmupPeriod)
         {
-            Console.WriteLine($"{MessagePrefix}Warmup round, skipping.");
+            Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
             return HookResult.Continue;
         }
         
         if (!_gameManager.Queue.ActivePlayers.Any())
         {
-            Console.WriteLine($"{MessagePrefix}No active players, skipping.");
+            Console.WriteLine($"{LogPrefix}No active players, skipping.");
             _gameManager.SetupActivePlayers();
             return HookResult.Continue;
         }
@@ -238,21 +241,21 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
     {
-        Console.WriteLine($"{MessagePrefix}Round Start event fired!");
+        Console.WriteLine($"{LogPrefix}Round Start event fired!");
 
         // If we don't have the game rules, get them.
         _gameRules = Helpers.GetGameRules();
         
         if (_gameRules == null)
         {
-            Console.WriteLine($"{MessagePrefix}Game rules not found.");
+            Console.WriteLine($"{LogPrefix}Game rules not found.");
             return HookResult.Continue;
         }
         
         // If we are in warmup, skip.
         if (_gameRules.WarmupPeriod)
         {
-            Console.WriteLine($"{MessagePrefix}Warmup round, skipping.");
+            Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
             return HookResult.Continue;
         }
         
@@ -286,10 +289,10 @@ public class RetakesPlugin : BasePlugin
             }
         }
         
-        Console.WriteLine($"{MessagePrefix}There are {tSpawns.Count} Terrorist, and {ctSpawns.Count} Counter-Terrorist spawns available for bombsite {(_currentBombsite == Bombsite.A ? "A" : "B")}.");
-        Server.PrintToChatAll($"{MessagePrefix}There are {tSpawns.Count} Terrorist, and {ctSpawns.Count} Counter-Terrorist spawns available for bombsite {(_currentBombsite == Bombsite.A ? "A" : "B")}.");
+        Console.WriteLine($"{LogPrefix}There are {tSpawns.Count} Terrorist, and {ctSpawns.Count} Counter-Terrorist spawns available for bombsite {(_currentBombsite == Bombsite.A ? "A" : "B")}.");
+        // Server.PrintToChatAll($"{MessagePrefix}There are {tSpawns.Count} Terrorist, and {ctSpawns.Count} Counter-Terrorist spawns available for bombsite {(_currentBombsite == Bombsite.A ? "A" : "B")}.");
         
-        Console.WriteLine($"{MessagePrefix}Moving players to spawns.");
+        Console.WriteLine($"{LogPrefix}Moving players to spawns.");
         // Now move the players to their spawns.
         // We shuffle this list to ensure that 1 player does not have to plant every round.
         foreach (var player in Helpers.Shuffle(_gameManager.Queue.ActivePlayers))
@@ -318,7 +321,7 @@ public class RetakesPlugin : BasePlugin
 
                 if (spawnIndex == -1)
                 {
-                    Console.WriteLine($"{MessagePrefix}No bomb planter spawn found in configuration.");
+                    Console.WriteLine($"{LogPrefix}No bomb planter spawn found in configuration.");
                     throw new Exception("No bomb planter spawn found in configuration.");
                 }
                 
@@ -328,18 +331,18 @@ public class RetakesPlugin : BasePlugin
             }
             else
             {
-                Console.WriteLine($"{MessagePrefix}GetAndRemoveRandomItem called.");
+                Console.WriteLine($"{LogPrefix}GetAndRemoveRandomItem called.");
                 spawn = Helpers.GetAndRemoveRandomItem(isTerrorist ? tSpawns : ctSpawns);
-                Console.WriteLine($"{MessagePrefix}GetAndRemoveRandomItem complete.");
+                Console.WriteLine($"{LogPrefix}GetAndRemoveRandomItem complete.");
             }
             
             playerPawn.Teleport(spawn.Vector, spawn.QAngle, new Vector());
         }
-        Console.WriteLine($"{MessagePrefix}Moving players to spawns COMPLETE.");
+        Console.WriteLine($"{LogPrefix}Moving players to spawns COMPLETE.");
         
-        Console.WriteLine($"{MessagePrefix}Printing bombsite output to all players.");
+        Console.WriteLine($"{LogPrefix}Printing bombsite output to all players.");
         Server.PrintToChatAll($"{MessagePrefix}Bombsite: {(_currentBombsite == Bombsite.A ? "A" : "B")}");
-        Console.WriteLine($"{MessagePrefix}Printing bombsite output to all players COMPLETE.");
+        Console.WriteLine($"{LogPrefix}Printing bombsite output to all players COMPLETE.");
         
         return HookResult.Continue;
     }
@@ -347,10 +350,15 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnRoundPostStart(EventRoundPoststart @event, GameEventInfo info)
     {
-        Console.WriteLine($"{MessagePrefix}OnRoundPostStart event fired.");
-
+        Console.WriteLine($"{LogPrefix}OnRoundPostStart event fired.");
+        
         foreach (var player in _gameManager.Queue.ActivePlayers)
         {
+            if (!Helpers.IsValidPlayer(player))
+            {
+                continue;
+            }
+                
             // Strip the player of all of their weapons and the bomb before any spawn / allocation occurs.
             // TODO: Figure out why this is crashing the server / undo workaround.
             // player.RemoveWeapons();
@@ -371,37 +379,37 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
     {
-        Console.WriteLine($"{MessagePrefix}OnPlayerSpawn event fired.");
+        Console.WriteLine($"{LogPrefix}OnPlayerSpawn event fired.");
         
         // If we don't have the game rules, get them.
         _gameRules = Helpers.GetGameRules();
         
         if (_gameRules == null)
         {
-            Console.WriteLine($"{MessagePrefix}Game rules not found.");
+            Console.WriteLine($"{LogPrefix}Game rules not found.");
             return HookResult.Continue;
         }
         
         // If we are in warmup, skip.
         if (_gameRules.WarmupPeriod)
         {
-            Console.WriteLine($"{MessagePrefix}Warmup round, balance teams.");
+            Console.WriteLine($"{LogPrefix}Warmup round, balance teams.");
             _gameManager.BalanceTeams();
             return HookResult.Continue;
         }
         
         var player = @event.Userid;
 
-        if (!Helpers.IsValidPlayer(player) && Helpers.IsPlayerConnected(player))
+        if (!Helpers.IsValidPlayer(player) || !Helpers.IsPlayerConnected(player))
         {
             return HookResult.Continue;
         }
         
         // debug and check if the player is in the queue.
-        Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Checking ActivePlayers.");
+        Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking ActivePlayers.");
         if (!_gameManager.Queue.ActivePlayers.Contains(player))
         {
-            Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Player not in ActivePlayers, moving to spectator.");
+            Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Player not in ActivePlayers, moving to spectator.");
             if (!player.IsBot)
             {
                 player.ChangeTeam(CsTeam.Spectator);
@@ -416,7 +424,7 @@ public class RetakesPlugin : BasePlugin
         }
         else
         {
-            Console.WriteLine($"{MessagePrefix}[{player.PlayerName}] Player is in ActivePlayers.");
+            Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Player is in ActivePlayers.");
         }
 
         return HookResult.Continue;
@@ -434,7 +442,7 @@ public class RetakesPlugin : BasePlugin
 
         if (Helpers.HasBomb(player))
         {
-            Console.WriteLine($"{MessagePrefix}Player has bomb, swap to bomb userid({(int)player.UserId!}).");
+            Console.WriteLine($"{LogPrefix}Player has bomb, swap to bomb userid({(int)player.UserId!}).");
             
             // TODO: Investigate this because sometimes it doesn't work.
             // Change to their knife to prevent planting.
@@ -505,7 +513,7 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnRoundEnd(EventRoundEnd @event, GameEventInfo info)
     {
-        Console.WriteLine($"{MessagePrefix}OnRoundEnd event fired.");
+        Console.WriteLine($"{LogPrefix}OnRoundEnd event fired.");
 
         _didTerroristsWinLastRound = @event.Winner == (int)CsTeam.Terrorist;
 
@@ -515,10 +523,28 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnPlayerTeam(EventPlayerTeam @event, GameEventInfo info)
     {
-        Console.WriteLine($"{MessagePrefix}[{@event.Userid.PlayerName}] OnPlayerTeam event fired. ({(@event.Isbot ? "BOT" : "NOT BOT")}) {(CsTeam)@event.Oldteam} -> {(CsTeam)@event.Team}");
+        Console.WriteLine($"{LogPrefix}OnRoundEnd event fired.");
+        
+        var player = @event.Userid;
+
+        if (!Helpers.IsValidPlayer(player))
+        {
+            return HookResult.Continue;
+        }
+        
+        Console.WriteLine($"{LogPrefix}[{player.PlayerName}] OnPlayerTeam event fired. ({(@event.Isbot ? "BOT" : "NOT BOT")}) {(CsTeam)@event.Oldteam} -> {(CsTeam)@event.Team}");
+        
+        // If we don't have the game rules, get them.
+        _gameRules = Helpers.GetGameRules();
+        
+        if (_gameRules == null)
+        {
+            Console.WriteLine($"{LogPrefix}Game rules not found.");
+            return HookResult.Continue;
+        }
         
         _gameManager.Queue.DebugQueues(true);
-        _gameManager.Queue.PlayerTriedToJoinTeam(@event.Userid, @event.Team != (int)CsTeam.Spectator);
+        _gameManager.Queue.PlayerTriedToJoinTeam(player, @event.Team != (int)CsTeam.Spectator, _gameRules.WarmupPeriod);
         _gameManager.Queue.DebugQueues(false);
 
         return HookResult.Continue;
@@ -527,7 +553,7 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
     {
-        Console.WriteLine($"{MessagePrefix}OnPlayerDisconnect event fired.");
+        Console.WriteLine($"{LogPrefix}OnPlayerDisconnect event fired.");
 
         _gameManager.Queue.DebugQueues(true);
         _gameManager.Queue.PlayerDisconnected(@event.Userid);
