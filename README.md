@@ -14,12 +14,14 @@ Retakes plugin written in C# for CounterStrikeSharp
 - [ ] Better weapon allocation
 - [ ] Better grenade allocation
 - [ ] Add autoplant
-- [ ] Add instadefuse
 - [ ] Implement better spawn management system
 
 ## Installation
 1. Download the zip file from the [latest release](https://github.com/B3none/cs2-retakes/releases), and extract the contents into your `counterstrikesharp/plugins` directory.
 2. Copy `cfg/cs2-retakes/retakes.cfg` to `/game/csgo/cfg/cs2-retakes/retakes.cfg`
+
+## Recommendations
+I also recommend installing this plugin for an improved player experience - https://github.com/B3none/cs2-instadefuse
 
 ## Setup for local development
 Download the latest release of CounterStrikeSharp, and put the contents into the `CounterStrikeSharp` directory.
