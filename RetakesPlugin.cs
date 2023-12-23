@@ -16,17 +16,17 @@ namespace RetakesPlugin;
 [MinimumApiVersion(129)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string VERSION = "1.0.3";
+    private const string Version = "1.0.4";
     
     public override string ModuleName => "Retakes Plugin";
-    public override string ModuleVersion => VERSION;
+    public override string ModuleVersion => Version;
     public override string ModuleAuthor => "B3none";
     public override string ModuleDescription => "Community retakes for CS2.";
 
     // Constants
     // TODO: Add colours.
-    public const string LogPrefix = $"[Retakes {VERSION}] ";
-    public const string MessagePrefix = $"[Retakes] ";
+    public static string LogPrefix = $"[{ConsoleColor.Green}Retakes {Version}{ConsoleColor.White}] ";
+    public static string MessagePrefix = $"[{ChatColors.Green}Retakes{ChatColors.White}] ";
     
     // Config
     private MapConfig? _mapConfig;
