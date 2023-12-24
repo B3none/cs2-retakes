@@ -24,7 +24,7 @@ public class RetakesPlugin : BasePlugin
     public override string ModuleDescription => "Community retakes for CS2.";
 
     // Constants
-    public static readonly string LogPrefix = $"[{ConsoleColor.Green}Retakes {Version}{ConsoleColor.White}] ";
+    public static readonly string LogPrefix = $"[Retakes {Version}] ";
     public static readonly string MessagePrefix = $"[{ChatColors.Green}Retakes{ChatColors.White}] ";
     
     // Config

@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Globalization;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using CounterStrikeSharp.API.Modules.Utils;
 
@@ -26,11 +27,12 @@ public class VectorConverter : JsonConverter<Vector>
             throw new JsonException("String value is not in the correct format (X Y Z).");
         }
 
-        if (!float.TryParse(values[0], out var x) ||
-            !float.TryParse(values[1], out var y) ||
-            !float.TryParse(values[2], out var z))
+        if (!float.TryParse(values[0], NumberStyles.Any, CultureInfo.InvariantCulture, out var x) ||
+            !float.TryParse(values[1], NumberStyles.Any, CultureInfo.InvariantCulture, out var y) ||
+            !float.TryParse(values[2], NumberStyles.Any, CultureInfo.InvariantCulture, out var z))
         {
-            throw new JsonException("Unable to parse float values.");
+            Console.WriteLine($"{RetakesPlugin.LogPrefix}Unable to parse Vector float values for: {stringValue}");
+            throw new JsonException("Unable to parse Vector float values.");
         }
 
         return new Vector(x, y, z);
