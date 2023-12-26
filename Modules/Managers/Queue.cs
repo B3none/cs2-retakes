@@ -6,6 +6,7 @@ namespace RetakesPlugin.Modules.Managers;
 
 public class Queue
 {
+    // TODO: Get these values from the config file
     private const int MaxRetakesPlayers = 9;
     private const float TerroristRatio = 0.45f;
 
