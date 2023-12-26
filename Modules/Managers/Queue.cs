@@ -41,7 +41,7 @@ public class Queue
         Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Checking QueuePlayers.");
         if (!QueuePlayers.Contains(player))
         {
-            if (isWarmup)
+            if (isWarmup && ActivePlayers.Count < MaxRetakesPlayers)
             {
                 Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Not found, adding to ActivePlayers (because in warmup).");
                 ActivePlayers.Add(player);
