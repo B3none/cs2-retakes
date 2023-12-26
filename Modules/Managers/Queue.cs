@@ -115,10 +115,8 @@ public class Queue
         {
             // Take players from QueuePlayers and add them to ActivePlayers
             var playersToAddList = QueuePlayers.Take(playersToAdd).ToList();
-
-            // Remove the players that will be added from the Queue
+            
             QueuePlayers.RemoveAll(player => playersToAddList.Contains(player));
-
             ActivePlayers.AddRange(playersToAddList);
             
             // loop players to add, and set their team to CT
