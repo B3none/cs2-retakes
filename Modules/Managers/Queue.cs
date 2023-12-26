@@ -6,16 +6,21 @@ namespace RetakesPlugin.Modules.Managers;
 
 public class Queue
 {
-    // TODO: Get these values from the config file
-    private const int MaxRetakesPlayers = 9;
-    private const float TerroristRatio = 0.45f;
+    private readonly int _maxRetakesPlayers;
+    private readonly float _terroristRatio;
 
     public List<CCSPlayerController> QueuePlayers = new();
     public List<CCSPlayerController> ActivePlayers = new();
 
+    public Queue(int? retakesMaxPlayers, float? retakesTerroristRatio)
+    {
+        _maxRetakesPlayers = retakesMaxPlayers ?? 9;
+        _terroristRatio = retakesTerroristRatio ?? 0.45f;
+    }
+
     public int GetTargetNumTerrorists()
     {
-        var ratio = TerroristRatio * ActivePlayers.Count;
+        var ratio = _terroristRatio * ActivePlayers.Count;
         var numTerrorists = (int)Math.Round(ratio);
 
         // Ensure at least one terrorist if the calculated number is zero
@@ -42,7 +47,7 @@ public class Queue
         Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Checking QueuePlayers.");
         if (!QueuePlayers.Contains(player))
         {
-            if (isWarmup)
+            if (isWarmup && ActivePlayers.Count < _maxRetakesPlayers)
             {
                 Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Not found, adding to ActivePlayers (because in warmup).");
                 ActivePlayers.Add(player);
@@ -104,7 +109,7 @@ public class Queue
         RemoveDisconnectedPlayers();
         AddConnectedPlayers();
         
-        var playersToAdd = MaxRetakesPlayers - ActivePlayers.Count;
+        var playersToAdd = _maxRetakesPlayers - ActivePlayers.Count;
 
         if (playersToAdd > 0 && QueuePlayers.Count > 0)
         {

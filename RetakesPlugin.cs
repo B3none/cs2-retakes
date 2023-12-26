@@ -34,7 +34,7 @@ public class RetakesPlugin : BasePlugin
     // State
     private static CCSGameRules? _gameRules;
     private Bombsite _currentBombsite = Bombsite.A;
-    private readonly Game _gameManager = new();
+    private Game? _gameManager;
     private CCSPlayerController? _planter;
     private readonly Random _random = new();
     private bool _didTerroristsWinLastRound = false;
@@ -156,8 +156,8 @@ public class RetakesPlugin : BasePlugin
         {
             return;
         }
-        
-        _gameManager.BalanceTeams();
+
+        _gameManager?.BalanceTeams();
     }
 
     // Listeners
@@ -180,6 +180,14 @@ public class RetakesPlugin : BasePlugin
             _retakesConfig = new RetakesConfig(ModuleDirectory);
             _retakesConfig.Load();
         }
+        
+        _gameManager = new Game(
+            new Queue(
+                _retakesConfig?.RetakesConfigData?.MaxPlayers,
+                _retakesConfig?.RetakesConfigData?.TerroristRatio
+            ),
+            _retakesConfig?.RetakesConfigData?.RoundsToScramble
+        );
     }
 
     [GameEventHandler]
@@ -216,6 +224,12 @@ public class RetakesPlugin : BasePlugin
         if (_gameRules.WarmupPeriod)
         {
             Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
+            return HookResult.Continue;
+        }
+        
+        if (_gameManager == null)
+        {
+            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
             return HookResult.Continue;
         }
         
@@ -262,6 +276,12 @@ public class RetakesPlugin : BasePlugin
         if (_gameRules.WarmupPeriod)
         {
             Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
+            return HookResult.Continue;
+        }
+        
+        if (_gameManager == null)
+        {
+            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
             return HookResult.Continue;
         }
         
@@ -358,6 +378,12 @@ public class RetakesPlugin : BasePlugin
     {
         Console.WriteLine($"{LogPrefix}OnRoundPostStart event fired.");
         
+        if (_gameManager == null)
+        {
+            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
+            return HookResult.Continue;
+        }
+        
         foreach (var player in _gameManager.Queue.ActivePlayers.Where(Helpers.IsValidPlayer))
         {
             // Create a timer to do this as it would occasionally fire too early.
@@ -401,6 +427,12 @@ public class RetakesPlugin : BasePlugin
         if (_gameRules == null)
         {
             Console.WriteLine($"{LogPrefix}Game rules not found.");
+            return HookResult.Continue;
+        }
+        
+        if (_gameManager == null)
+        {
+            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
             return HookResult.Continue;
         }
         
@@ -495,16 +527,26 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
     {
+        Console.WriteLine($"{LogPrefix}OnPlayerDeath event fired.");
+
+        if (_gameManager == null)
+        {
+            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
+            return HookResult.Continue;
+        }
+
         var attacker = @event.Attacker;
         var assister = @event.Assister;
 
-        if (!Helpers.IsValidPlayer(attacker))
+        if (Helpers.IsValidPlayer(attacker))
         {
-            return HookResult.Continue;
+            _gameManager.AddScore(attacker, Game.ScoreForKill);
         }
-        
-        _gameManager.AddScore(attacker, Game.ScoreForKill);
-        _gameManager.AddScore(assister, Game.ScoreForAssist);
+
+        if (Helpers.IsValidPlayer(assister))
+        {
+            _gameManager.AddScore(assister, Game.ScoreForAssist);
+        }
 
         return HookResult.Continue;
     }
@@ -512,14 +554,20 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnBombDefused(EventBombDefused @event, GameEventInfo info)
     {
-        var player = @event.Userid;
-
-        if (!Helpers.IsValidPlayer(player))
+        Console.WriteLine($"{LogPrefix}OnBombDefused event fired.");
+        
+        if (_gameManager == null)
         {
+            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
             return HookResult.Continue;
         }
         
-        _gameManager.AddScore(player, Game.ScoreForDefuse);
+        var player = @event.Userid;
+
+        if (Helpers.IsValidPlayer(player))
+        {
+            _gameManager.AddScore(player, Game.ScoreForDefuse);
+        }
 
         return HookResult.Continue;
     }
@@ -538,6 +586,12 @@ public class RetakesPlugin : BasePlugin
     public HookResult OnPlayerTeam(EventPlayerTeam @event, GameEventInfo info)
     {
         Console.WriteLine($"{LogPrefix}OnRoundEnd event fired.");
+        
+        if (_gameManager == null)
+        {
+            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
+            return HookResult.Continue;
+        }
         
         var player = @event.Userid;
 
@@ -568,7 +622,13 @@ public class RetakesPlugin : BasePlugin
     public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
     {
         Console.WriteLine($"{LogPrefix}OnPlayerDisconnect event fired.");
-
+        
+        if (_gameManager == null)
+        {
+            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
+            return HookResult.Continue;
+        }
+        
         _gameManager.Queue.DebugQueues(true);
         _gameManager.Queue.PlayerDisconnected(@event.Userid);
         _gameManager.Queue.DebugQueues(false);
