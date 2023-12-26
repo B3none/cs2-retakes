@@ -4,6 +4,7 @@ using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules;
 using RetakesPlugin.Modules.Allocators;
@@ -383,32 +384,71 @@ public class RetakesPlugin : BasePlugin
             Console.WriteLine($"{LogPrefix}Game manager not loaded.");
             return HookResult.Continue;
         }
+
+        // If we don't have the game rules, get them.
+        _gameRules = Helpers.GetGameRules();
         
+        if (_gameRules == null)
+        {
+            Console.WriteLine($"{LogPrefix}Game rules not found.");
+            return HookResult.Continue;
+        }
+        
+        // If we are in warmup, skip.
+        if (_gameRules.WarmupPeriod)
+        {
+            Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
+            return HookResult.Continue;
+        }
+        
+        Console.WriteLine($"{LogPrefix}Trying to loop valid active players.");
         foreach (var player in _gameManager.Queue.ActivePlayers.Where(Helpers.IsValidPlayer))
         {
+            Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Adding timer for allocation...");
+
             // Create a timer to do this as it would occasionally fire too early.
             AddTimer(0.05f, () =>
             {
+                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Timer hit, allocating...");
+                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking if retakes config is loaded.");
                 var isRetakesConfigLoaded = !RetakesConfig.IsLoaded(_retakesConfig);
                 
+                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Retakes config loaded: {isRetakesConfigLoaded}");
+                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Is allocation enabled: {_retakesConfig!.RetakesConfigData!.EnableAllocation}");
                 if (!isRetakesConfigLoaded || _retakesConfig!.RetakesConfigData!.EnableAllocation)
                 {
+                    Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Removing all weapons and entities");
+                    
                     // Strip the player of all of their weapons before allocation occurs.
                     // TODO: Figure out why this is crashing the server / undo workaround.
                     // player.RemoveWeapons();
                     Helpers.RemoveAllWeaponsAndEntities(player);
                     
+                    Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Allocating weapons");
                     Weapons.Allocate(player);
+                    
+                    Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Allocating grenades");
                     Grenades.Allocate(player);
+                    
+                    Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Allocating equipment");
                     Equipment.Allocate(player);
                 }
-                
-                // Remove the bomb from the player.
-                player.RemoveItemByDesignerName("weapon_c4", true);
-                
-                if (player == _planter)
+
+                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking if terrorist");
+                if (player.TeamNum == (int)CsTeam.Terrorist)
                 {
-                    Helpers.GiveAndSwitchToBomb(player);
+                    Console.WriteLine($"{LogPrefix}[{player.PlayerName}] is terrorist");
+                    Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Removing bomb");
+                    // Remove the bomb from the player.
+                    player.RemoveItemByDesignerName("weapon_c4", true);
+
+                    if (player == _planter)
+                    {
+                        Console.WriteLine(
+                            $"{LogPrefix}[{player.PlayerName}] Player IS planter, giving bomb (player.givenameditem)");
+                        // Helpers.GiveAndSwitchToBomb(player);
+                        player.GiveNamedItem(CsItem.Bomb);
+                    }
                 }
             });
         }
