@@ -11,7 +11,7 @@ Retakes plugin written in C# for CounterStrikeSharp
 - [x] Equipment allocation
 - [x] Queue manager (Queue system)
 - [x] Team manager (with team switch calculations)
-- [ ] Add fastplant
+- [x] Add fastplant
 - [ ] Implement config files
 - [ ] Implement better spawn management system
 
