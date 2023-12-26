@@ -6,27 +6,16 @@ namespace RetakesPlugin.Modules.Allocators;
 
 public abstract class Equipment
 {
-    public static void Allocate(CCSPlayerController player, bool isPlanter = false)
+    public static void Allocate(CCSPlayerController player)
     {
-        if (player.TeamNum == (int)CsTeam.Terrorist)
-        {
-            player.GiveNamedItem(CsItem.AssaultSuit);
+        player.GiveNamedItem(CsItem.AssaultSuit);
 
-            if (isPlanter)
-            {
-                Helpers.GiveAndSwitchToBomb(player);
-            }
-        }
-
-        if (player.TeamNum == (int)CsTeam.CounterTerrorist)
-        {
-            player.GiveNamedItem(CsItem.AssaultSuit);
-
-            if (player.PlayerPawn.Value?.ItemServices?.Handle != null)
-            {
-                var itemServices = new CCSPlayer_ItemServices(player.PlayerPawn.Value.ItemServices.Handle);
-                itemServices.HasDefuser = true;
-            }
+        if (
+            player.TeamNum == (int)CsTeam.CounterTerrorist
+            && player.PlayerPawn.Value?.ItemServices?.Handle != null
+        ) {
+            var itemServices = new CCSPlayer_ItemServices(player.PlayerPawn.Value.ItemServices.Handle);
+            itemServices.HasDefuser = true;
         }
     }
 }

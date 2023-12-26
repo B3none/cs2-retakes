@@ -13,10 +13,10 @@ public class Spawn
     }
 
     [JsonConverter(typeof(VectorConverter))]
-    public Vector Vector { get; set; }
+    public Vector Vector { get; }
     
     [JsonConverter(typeof(QAngleConverter))]
-    public QAngle QAngle { get; set; }
+    public QAngle QAngle { get; }
     public CsTeam Team { get; set; }
     public Bombsite Bombsite { get; set; }
     public bool CanBePlanter { get; set; }

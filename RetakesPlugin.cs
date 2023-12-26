@@ -27,8 +27,9 @@ public class RetakesPlugin : BasePlugin
     public static readonly string LogPrefix = $"[Retakes {Version}] ";
     public static readonly string MessagePrefix = $"[{ChatColors.Green}Retakes{ChatColors.White}] ";
     
-    // Config
+    // Configs
     private MapConfig? _mapConfig;
+    private RetakesConfig? _retakesConfig;
     
     // State
     private static CCSGameRules? _gameRules;
@@ -168,10 +169,16 @@ public class RetakesPlugin : BasePlugin
         Helpers.ExecuteRetakesConfiguration();
         
         // If we don't have a map config loaded, load it.
-        if (_mapConfig == null || _mapConfig.MapName != Server.MapName)
+        if (!MapConfig.IsLoaded(_mapConfig, Server.MapName))
         {
             _mapConfig = new MapConfig(ModuleDirectory, Server.MapName);
             _mapConfig.Load();
+        }
+        
+        if (!RetakesConfig.IsLoaded(_retakesConfig))
+        {
+            _retakesConfig = new RetakesConfig(ModuleDirectory);
+            _retakesConfig.Load();
         }
     }
 
@@ -351,24 +358,32 @@ public class RetakesPlugin : BasePlugin
     {
         Console.WriteLine($"{LogPrefix}OnRoundPostStart event fired.");
         
-        foreach (var player in _gameManager.Queue.ActivePlayers)
+        foreach (var player in _gameManager.Queue.ActivePlayers.Where(Helpers.IsValidPlayer))
         {
-            if (!Helpers.IsValidPlayer(player))
-            {
-                continue;
-            }
-                
-            // Strip the player of all of their weapons and the bomb before any spawn / allocation occurs.
-            // TODO: Figure out why this is crashing the server / undo workaround.
-            // player.RemoveWeapons();
-            Helpers.RemoveAllItemsAndEntities(player);
-            
             // Create a timer to do this as it would occasionally fire too early.
             AddTimer(0.05f, () =>
             {
-                Weapons.Allocate(player);
-                Equipment.Allocate(player, player == _planter);
-                Grenades.Allocate(player);
+                var isRetakesConfigLoaded = !RetakesConfig.IsLoaded(_retakesConfig);
+                
+                if (!isRetakesConfigLoaded || _retakesConfig!.RetakesConfigData!.EnableAllocation)
+                {
+                    // Strip the player of all of their weapons before allocation occurs.
+                    // TODO: Figure out why this is crashing the server / undo workaround.
+                    // player.RemoveWeapons();
+                    Helpers.RemoveAllWeaponsAndEntities(player);
+                    
+                    Weapons.Allocate(player);
+                    Grenades.Allocate(player);
+                    Equipment.Allocate(player);
+                }
+                
+                // Remove the bomb from the player.
+                player.RemoveItemByDesignerName("weapon_c4", true);
+                
+                if (player == _planter)
+                {
+                    Helpers.GiveAndSwitchToBomb(player);
+                }
             });
         }
 
