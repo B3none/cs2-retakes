@@ -157,23 +157,4 @@ public static class Helpers
         player.GiveNamedItem(CsItem.Bomb);
         NativeAPI.IssueClientCommand((int)player.UserId!, "slot5");
     }
-
-    public static void FastPlantBomb()
-    {
-        var bombEntities = Utilities.FindAllEntitiesByDesignerName<CC4>("weapon_c4").ToList();
-
-        if (!bombEntities.Any())
-        {
-            return;
-        }
-
-        var bomb = bombEntities.FirstOrDefault();
-        if (bomb == null)
-        {
-            return;
-        }
-
-        bomb.BombPlacedAnimation = false;
-        bomb.ArmedTime = 0.0f;
-    }
 }

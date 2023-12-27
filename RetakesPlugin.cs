@@ -434,14 +434,6 @@ public class RetakesPlugin : BasePlugin
     }
     
     [GameEventHandler]
-    public HookResult OnBombBeginPlant(EventBombBeginplant @event, GameEventInfo info)
-    {
-        Helpers.FastPlantBomb();
-
-        return HookResult.Continue;
-    }
-    
-    [GameEventHandler]
     public HookResult OnWeaponFire(EventWeaponFire @event, GameEventInfo info)
     {
         var player = @event.Userid;

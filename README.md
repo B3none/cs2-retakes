@@ -11,7 +11,6 @@ Retakes plugin written in C# for CounterStrikeSharp
 - [x] Equipment allocation
 - [x] Queue manager (Queue system)
 - [x] Team manager (with team switch calculations)
-- [x] Add fastplant
 - [ ] Implement config files
 - [ ] Implement better spawn management system
 
@@ -20,7 +19,9 @@ Retakes plugin written in C# for CounterStrikeSharp
 2. Copy `cfg/cs2-retakes/retakes.cfg` to `/game/csgo/cfg/cs2-retakes/retakes.cfg`
 
 ## Recommendations
-I also recommend installing this plugin for an improved player experience - https://github.com/B3none/cs2-instadefuse
+I also recommend installing these plugin for an improved player experience
+- Instadefuse: https://github.com/B3none/cs2-instadefuse
+- Instaplant: https://github.com/B3none/cs2-instaplant
 
 ## Share the love
 If you appreciate the project then please take the time to star the repository.
