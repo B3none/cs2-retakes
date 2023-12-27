@@ -415,11 +415,12 @@ public class RetakesPlugin : BasePlugin
                 player.ChangeTeam(CsTeam.Spectator);
             }
             
-            Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking player pawn.");
-            if (player.PlayerPawn.Value != null)
+            Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking player pawn {player.PlayerPawn.Value != null}.");
+            if (player.PlayerPawn.Value != null && player.PlayerPawn.IsValid && player.PlayerPawn.Value.IsValid)
             {
-                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] setting pawn health to 0.");
-                player.PlayerPawn.Value.Health = 0;
+                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking player pawn is valid {player.PlayerPawn.IsValid} && {player.PlayerPawn.Value.IsValid}.");
+                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] calling playerpawn.commitsuicide()");
+                player.PlayerPawn.Value.CommitSuicide(false, true);
                 Console.WriteLine($"{LogPrefix}[{player.PlayerName}] removing pawn entity.");
                 player.PlayerPawn.Value.Remove();
             }
@@ -557,9 +558,15 @@ public class RetakesPlugin : BasePlugin
     public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
     {
         Console.WriteLine($"{LogPrefix}OnPlayerDisconnect event fired.");
-
+        var player = @event.Userid;
+        
+        if (!Helpers.IsValidPlayer(player))
+        {
+            return HookResult.Continue;
+        }
+        
         _gameManager.Queue.DebugQueues(true);
-        _gameManager.Queue.PlayerDisconnected(@event.Userid);
+        _gameManager.Queue.PlayerDisconnected(player);
         _gameManager.Queue.DebugQueues(false);
 
         return HookResult.Continue;
