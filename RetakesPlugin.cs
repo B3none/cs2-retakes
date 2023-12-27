@@ -411,12 +411,16 @@ public class RetakesPlugin : BasePlugin
             Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Player not in ActivePlayers, moving to spectator.");
             if (!player.IsBot)
             {
+                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] moving to spectator.");
                 player.ChangeTeam(CsTeam.Spectator);
             }
-
+            
+            Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking player pawn.");
             if (player.PlayerPawn.Value != null)
             {
+                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] setting pawn health to 0.");
                 player.PlayerPawn.Value.Health = 0;
+                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] removing pawn entity.");
                 player.PlayerPawn.Value.Remove();
             }
             return HookResult.Continue;
