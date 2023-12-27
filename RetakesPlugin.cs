@@ -36,7 +36,7 @@ public class RetakesPlugin : BasePlugin
     private readonly Game _gameManager = new();
     private CCSPlayerController? _planter;
     private readonly Random _random = new();
-    private bool _didTerroristsWinLastRound = false;
+    private bool _didTerroristsWinLastRound;
 
     public override void Load(bool hotReload)
     {
@@ -490,11 +490,13 @@ public class RetakesPlugin : BasePlugin
 
         if (!Helpers.IsValidPlayer(attacker))
         {
-            return HookResult.Continue;
+            _gameManager.AddScore(attacker, Game.ScoreForKill);
         }
-        
-        _gameManager.AddScore(attacker, Game.ScoreForKill);
-        _gameManager.AddScore(assister, Game.ScoreForAssist);
+
+        if (!Helpers.IsValidPlayer(assister))
+        {
+            _gameManager.AddScore(assister, Game.ScoreForKill);
+        }
 
         return HookResult.Continue;
     }
