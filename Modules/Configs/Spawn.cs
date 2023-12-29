@@ -2,7 +2,7 @@
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules.Converters;
 
-namespace RetakesPlugin.Modules.Config;
+namespace RetakesPlugin.Modules.Configs;
 
 public class Spawn
 {

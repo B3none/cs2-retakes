@@ -8,7 +8,7 @@ using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules;
 using RetakesPlugin.Modules.Allocators;
-using RetakesPlugin.Modules.Config;
+using RetakesPlugin.Modules.Configs;
 using RetakesPlugin.Modules.Managers;
 using Helpers = RetakesPlugin.Modules.Helpers;
 
@@ -418,8 +418,8 @@ public class RetakesPlugin : BasePlugin
                 var isRetakesConfigLoaded = RetakesConfig.IsLoaded(_retakesConfig);
                 
                 Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Retakes config loaded: {isRetakesConfigLoaded}");
-                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Is allocation enabled: {_retakesConfig!.RetakesConfigData!.EnableAllocation}");
-                if (!isRetakesConfigLoaded || _retakesConfig!.RetakesConfigData!.EnableAllocation)
+                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Is allocation enabled: {_retakesConfig!.RetakesConfigData!.EnableFallbackAllocation}");
+                if (!isRetakesConfigLoaded || _retakesConfig!.RetakesConfigData!.EnableFallbackAllocation)
                 {
                     Weapons.Allocate(player);
                     Equipment.Allocate(player);

@@ -1,6 +1,6 @@
 ﻿using System.Text.Json;
 
-namespace RetakesPlugin.Modules.Config;
+namespace RetakesPlugin.Modules.Configs;
 
 public class MapConfig
 {
