@@ -480,12 +480,12 @@ public class RetakesPlugin : BasePlugin
         var attacker = @event.Attacker;
         var assister = @event.Assister;
 
-        if (!Helpers.IsValidPlayer(attacker))
+        if (Helpers.IsValidPlayer(attacker))
         {
             _gameManager.AddScore(attacker, Game.ScoreForKill);
         }
 
-        if (!Helpers.IsValidPlayer(assister))
+        if (Helpers.IsValidPlayer(assister))
         {
             _gameManager.AddScore(assister, Game.ScoreForKill);
         }
