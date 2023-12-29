@@ -32,7 +32,6 @@ public class RetakesConfig
                 throw new Exception("Retakes config is null after deserialization");
             }
             
-            // TODO: Implement check to ensure the config is not outdated.
             if (RetakesConfigData.Version != RetakesConfigData.CurrentVersion)
             {
                 throw new Exception("Config is outdated");
