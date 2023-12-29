@@ -3,7 +3,7 @@ Retakes plugin written in C# for CounterStrikeSharp
 
 ## Progress
 - [x] Bombsite selection
-- [x] Per map spawns configuration
+- [x] Per map configurations
 - [x] Ability to add spawns
 - [x] Spawn system
 - [x] Temporary weapon allocation (hard coded)
@@ -11,7 +11,9 @@ Retakes plugin written in C# for CounterStrikeSharp
 - [x] Equipment allocation
 - [x] Queue manager (Queue system)
 - [x] Team manager (with team switch calculations)
-- [ ] Implement config files
+- [x] Retakes config file
+- [x] Add translations
+- [ ] Improve plugin output (specifically for a single player)
 - [ ] Implement better spawn management system
 
 ## Installation
