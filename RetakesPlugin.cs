@@ -147,18 +147,6 @@ public class RetakesPlugin : BasePlugin
         player?.PlayerPawn?.Value?.Teleport(new Vector(positionX, positionY, positionZ), new QAngle(0f,0f,0f), new Vector(0f, 0f, 0f));
     }
 
-    [ConsoleCommand("css_balance", "Manually trigger team balance")]
-    [RequiresPermissions("@css/root")]
-    public void OnCommandBalance(CCSPlayerController? player, CommandInfo command)
-    {
-        if (!Helpers.IsValidPlayer(player))
-        {
-            return;
-        }
-        
-        _gameManager.BalanceTeams();
-    }
-
     // Listeners
     private void OnMapStart(string mapName)
     {
