@@ -366,6 +366,12 @@ public class RetakesPlugin : BasePlugin
             // Create a timer to do this as it would occasionally fire too early.
             AddTimer(0.05f, () =>
             {
+                if (!Helpers.IsValidPlayer(player))
+                {
+                    Console.WriteLine($"{LogPrefix}Allocating weapons: Player is not valid.");
+                    return;
+                }
+                
                 Weapons.Allocate(player);
                 Equipment.Allocate(player, player == _planter);
                 Grenades.Allocate(player);
@@ -418,11 +424,9 @@ public class RetakesPlugin : BasePlugin
             Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking player pawn {player.PlayerPawn.Value != null}.");
             if (player.PlayerPawn.Value != null && player.PlayerPawn.IsValid && player.PlayerPawn.Value.IsValid)
             {
-                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking player pawn is valid {player.PlayerPawn.IsValid} && {player.PlayerPawn.Value.IsValid}.");
+                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] player pawn is valid {player.PlayerPawn.IsValid} && {player.PlayerPawn.Value.IsValid}.");
                 Console.WriteLine($"{LogPrefix}[{player.PlayerName}] calling playerpawn.commitsuicide()");
                 player.PlayerPawn.Value.CommitSuicide(false, true);
-                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] removing pawn entity.");
-                player.PlayerPawn.Value.Remove();
             }
             return HookResult.Continue;
         }
