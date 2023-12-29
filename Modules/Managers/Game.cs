@@ -133,7 +133,6 @@ public class Game
         Console.WriteLine($"{RetakesPlugin.LogPrefix}Balancing teams...");
         
         var currentNumTerrorist = Helpers.GetCurrentNumPlayers(CsTeam.Terrorist);
-        var currentNumCounterTerrorist = Helpers.GetCurrentNumPlayers(CsTeam.CounterTerrorist);
         
         var numTerroristsNeeded = Queue.GetTargetNumTerrorists() - currentNumTerrorist;
         Console.WriteLine($"{RetakesPlugin.LogPrefix}Checking if they terrorists need a player. Queue.GetTargetNumTerrorists() = {Queue.GetTargetNumTerrorists()} | Helpers.GetCurrentNumPlayers(CsTeam.Terrorist) = {currentNumTerrorist} | numTerroristsNeeded {numTerroristsNeeded}");

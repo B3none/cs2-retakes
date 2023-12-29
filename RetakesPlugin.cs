@@ -17,7 +17,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(129)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.0.5";
+    private const string Version = "1.0.8";
     
     public override string ModuleName => "Retakes Plugin";
     public override string ModuleVersion => Version;
@@ -38,7 +38,7 @@ public class RetakesPlugin : BasePlugin
     private Game? _gameManager;
     private CCSPlayerController? _planter;
     private readonly Random _random = new();
-    private bool _didTerroristsWinLastRound = false;
+    private bool _didTerroristsWinLastRound;
 
     public override void Load(bool hotReload)
     {
@@ -147,18 +147,6 @@ public class RetakesPlugin : BasePlugin
         }
 
         player?.PlayerPawn?.Value?.Teleport(new Vector(positionX, positionY, positionZ), new QAngle(0f,0f,0f), new Vector(0f, 0f, 0f));
-    }
-
-    [ConsoleCommand("css_balance", "Manually trigger team balance")]
-    [RequiresPermissions("@css/root")]
-    public void OnCommandBalance(CCSPlayerController? player, CommandInfo command)
-    {
-        if (!Helpers.IsValidPlayer(player))
-        {
-            return;
-        }
-
-        _gameManager?.BalanceTeams();
     }
 
     // Listeners
@@ -368,7 +356,7 @@ public class RetakesPlugin : BasePlugin
         Console.WriteLine($"{LogPrefix}Moving players to spawns COMPLETE.");
         
         Console.WriteLine($"{LogPrefix}Printing bombsite output to all players.");
-        Server.PrintToChatAll($"{MessagePrefix}Bombsite: {(_currentBombsite == Bombsite.A ? "A" : "B")}");
+        Server.PrintToChatAll($"{MessagePrefix}{Localizer["bombsite.announcement", _currentBombsite == Bombsite.A ? "A" : "B"]}");
         Console.WriteLine($"{LogPrefix}Printing bombsite output to all players COMPLETE.");
         
         return HookResult.Continue;
@@ -406,9 +394,25 @@ public class RetakesPlugin : BasePlugin
         {
             Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Adding timer for allocation...");
 
+            if (!Helpers.IsValidPlayer(player))
+            {
+                continue;
+            }
+            
+            // Strip the player of all of their weapons and the bomb before any spawn / allocation occurs.
+            // TODO: Figure out why this is crashing the server / undo workaround.
+            // player.RemoveWeapons();
+            Helpers.RemoveAllWeaponsAndEntities(player);
+            
             // Create a timer to do this as it would occasionally fire too early.
             AddTimer(0.05f, () =>
             {
+                if (!Helpers.IsValidPlayer(player))
+                {
+                    Console.WriteLine($"{LogPrefix}Allocating weapons: Player is not valid.");
+                    return;
+                }
+                
                 Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Timer hit, allocating...");
                 Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking if retakes config is loaded.");
                 var isRetakesConfigLoaded = !RetakesConfig.IsLoaded(_retakesConfig);
@@ -417,21 +421,9 @@ public class RetakesPlugin : BasePlugin
                 Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Is allocation enabled: {_retakesConfig!.RetakesConfigData!.EnableAllocation}");
                 if (!isRetakesConfigLoaded || _retakesConfig!.RetakesConfigData!.EnableAllocation)
                 {
-                    Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Removing all weapons and entities");
-                    
-                    // Strip the player of all of their weapons before allocation occurs.
-                    // TODO: Figure out why this is crashing the server / undo workaround.
-                    // player.RemoveWeapons();
-                    Helpers.RemoveAllWeaponsAndEntities(player);
-                    
-                    Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Allocating weapons");
                     Weapons.Allocate(player);
-                    
-                    Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Allocating grenades");
-                    Grenades.Allocate(player);
-                    
-                    Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Allocating equipment");
                     Equipment.Allocate(player);
+                    Grenades.Allocate(player);
                 }
 
                 Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking if terrorist");
@@ -498,13 +490,16 @@ public class RetakesPlugin : BasePlugin
             Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Player not in ActivePlayers, moving to spectator.");
             if (!player.IsBot)
             {
+                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] moving to spectator.");
                 player.ChangeTeam(CsTeam.Spectator);
             }
-
-            if (player.PlayerPawn.Value != null)
+            
+            Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking player pawn {player.PlayerPawn.Value != null}.");
+            if (player.PlayerPawn.Value != null && player.PlayerPawn.IsValid && player.PlayerPawn.Value.IsValid)
             {
-                player.PlayerPawn.Value.Health = 0;
-                player.PlayerPawn.Value.Remove();
+                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] player pawn is valid {player.PlayerPawn.IsValid} && {player.PlayerPawn.Value.IsValid}.");
+                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] calling playerpawn.commitsuicide()");
+                player.PlayerPawn.Value.CommitSuicide(false, true);
             }
             return HookResult.Continue;
         }
@@ -662,6 +657,12 @@ public class RetakesPlugin : BasePlugin
     public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
     {
         Console.WriteLine($"{LogPrefix}OnPlayerDisconnect event fired.");
+        var player = @event.Userid;
+        
+        if (!Helpers.IsValidPlayer(player))
+        {
+            return HookResult.Continue;
+        }
         
         if (_gameManager == null)
         {
@@ -670,7 +671,7 @@ public class RetakesPlugin : BasePlugin
         }
         
         _gameManager.Queue.DebugQueues(true);
-        _gameManager.Queue.PlayerDisconnected(@event.Userid);
+        _gameManager.Queue.PlayerDisconnected(player);
         _gameManager.Queue.DebugQueues(false);
 
         return HookResult.Continue;
