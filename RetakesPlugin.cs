@@ -415,7 +415,7 @@ public class RetakesPlugin : BasePlugin
                 
                 Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Timer hit, allocating...");
                 Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking if retakes config is loaded.");
-                var isRetakesConfigLoaded = !RetakesConfig.IsLoaded(_retakesConfig);
+                var isRetakesConfigLoaded = RetakesConfig.IsLoaded(_retakesConfig);
                 
                 Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Retakes config loaded: {isRetakesConfigLoaded}");
                 Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Is allocation enabled: {_retakesConfig!.RetakesConfigData!.EnableAllocation}");
