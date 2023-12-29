@@ -9,7 +9,7 @@ public class RetakesConfig
     
     public RetakesConfig(string moduleDirectory)
     {
-        _retakesConfigPath = Path.Combine(moduleDirectory, "retakes.json");
+        _retakesConfigPath = Path.Combine(moduleDirectory, "retakes_config.json");
         RetakesConfigData = null;
     }
 
