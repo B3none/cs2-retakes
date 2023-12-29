@@ -4,6 +4,7 @@ using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules;
 using RetakesPlugin.Modules.Allocators;
@@ -16,7 +17,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(129)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.0.8";
+    private const string Version = "1.1.0";
     
     public override string ModuleName => "Retakes Plugin";
     public override string ModuleVersion => Version;
@@ -27,13 +28,14 @@ public class RetakesPlugin : BasePlugin
     public static readonly string LogPrefix = $"[Retakes {Version}] ";
     public static readonly string MessagePrefix = $"[{ChatColors.Green}Retakes{ChatColors.White}] ";
     
-    // Config
+    // Configs
     private MapConfig? _mapConfig;
+    private RetakesConfig? _retakesConfig;
     
     // State
     private static CCSGameRules? _gameRules;
     private Bombsite _currentBombsite = Bombsite.A;
-    private readonly Game _gameManager = new();
+    private Game? _gameManager;
     private CCSPlayerController? _planter;
     private readonly Random _random = new();
     private bool _didTerroristsWinLastRound;
@@ -156,11 +158,25 @@ public class RetakesPlugin : BasePlugin
         Helpers.ExecuteRetakesConfiguration();
         
         // If we don't have a map config loaded, load it.
-        if (_mapConfig == null || _mapConfig.MapName != Server.MapName)
+        if (!MapConfig.IsLoaded(_mapConfig, Server.MapName))
         {
             _mapConfig = new MapConfig(ModuleDirectory, Server.MapName);
             _mapConfig.Load();
         }
+        
+        if (!RetakesConfig.IsLoaded(_retakesConfig))
+        {
+            _retakesConfig = new RetakesConfig(ModuleDirectory);
+            _retakesConfig.Load();
+        }
+        
+        _gameManager = new Game(
+            new Queue(
+                _retakesConfig?.RetakesConfigData?.MaxPlayers,
+                _retakesConfig?.RetakesConfigData?.TerroristRatio
+            ),
+            _retakesConfig?.RetakesConfigData?.RoundsToScramble
+        );
     }
 
     [GameEventHandler]
@@ -197,6 +213,12 @@ public class RetakesPlugin : BasePlugin
         if (_gameRules.WarmupPeriod)
         {
             Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
+            return HookResult.Continue;
+        }
+        
+        if (_gameManager == null)
+        {
+            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
             return HookResult.Continue;
         }
         
@@ -243,6 +265,12 @@ public class RetakesPlugin : BasePlugin
         if (_gameRules.WarmupPeriod)
         {
             Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
+            return HookResult.Continue;
+        }
+        
+        if (_gameManager == null)
+        {
+            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
             return HookResult.Continue;
         }
         
@@ -339,17 +367,42 @@ public class RetakesPlugin : BasePlugin
     {
         Console.WriteLine($"{LogPrefix}OnRoundPostStart event fired.");
         
-        foreach (var player in _gameManager.Queue.ActivePlayers)
+        if (_gameManager == null)
         {
+            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
+            return HookResult.Continue;
+        }
+
+        // If we don't have the game rules, get them.
+        _gameRules = Helpers.GetGameRules();
+        
+        if (_gameRules == null)
+        {
+            Console.WriteLine($"{LogPrefix}Game rules not found.");
+            return HookResult.Continue;
+        }
+        
+        // If we are in warmup, skip.
+        if (_gameRules.WarmupPeriod)
+        {
+            Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
+            return HookResult.Continue;
+        }
+        
+        Console.WriteLine($"{LogPrefix}Trying to loop valid active players.");
+        foreach (var player in _gameManager.Queue.ActivePlayers.Where(Helpers.IsValidPlayer))
+        {
+            Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Adding timer for allocation...");
+
             if (!Helpers.IsValidPlayer(player))
             {
                 continue;
             }
-                
+            
             // Strip the player of all of their weapons and the bomb before any spawn / allocation occurs.
             // TODO: Figure out why this is crashing the server / undo workaround.
             // player.RemoveWeapons();
-            Helpers.RemoveAllItemsAndEntities(player);
+            Helpers.RemoveAllWeaponsAndEntities(player);
             
             // Create a timer to do this as it would occasionally fire too early.
             AddTimer(0.05f, () =>
@@ -360,9 +413,35 @@ public class RetakesPlugin : BasePlugin
                     return;
                 }
                 
-                Weapons.Allocate(player);
-                Equipment.Allocate(player, player == _planter);
-                Grenades.Allocate(player);
+                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Timer hit, allocating...");
+                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking if retakes config is loaded.");
+                var isRetakesConfigLoaded = RetakesConfig.IsLoaded(_retakesConfig);
+                
+                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Retakes config loaded: {isRetakesConfigLoaded}");
+                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Is allocation enabled: {_retakesConfig!.RetakesConfigData!.EnableAllocation}");
+                if (!isRetakesConfigLoaded || _retakesConfig!.RetakesConfigData!.EnableAllocation)
+                {
+                    Weapons.Allocate(player);
+                    Equipment.Allocate(player);
+                    Grenades.Allocate(player);
+                }
+
+                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking if terrorist");
+                if (player.TeamNum == (int)CsTeam.Terrorist)
+                {
+                    Console.WriteLine($"{LogPrefix}[{player.PlayerName}] is terrorist");
+                    Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Removing bomb");
+                    // Remove the bomb from the player.
+                    player.RemoveItemByDesignerName("weapon_c4", true);
+
+                    if (player == _planter)
+                    {
+                        Console.WriteLine(
+                            $"{LogPrefix}[{player.PlayerName}] Player IS planter, giving bomb (player.givenameditem)");
+                        // Helpers.GiveAndSwitchToBomb(player);
+                        player.GiveNamedItem(CsItem.Bomb);
+                    }
+                }
             });
         }
 
@@ -380,6 +459,12 @@ public class RetakesPlugin : BasePlugin
         if (_gameRules == null)
         {
             Console.WriteLine($"{LogPrefix}Game rules not found.");
+            return HookResult.Continue;
+        }
+        
+        if (_gameManager == null)
+        {
+            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
             return HookResult.Continue;
         }
         
@@ -477,6 +562,14 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
     {
+        Console.WriteLine($"{LogPrefix}OnPlayerDeath event fired.");
+
+        if (_gameManager == null)
+        {
+            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
+            return HookResult.Continue;
+        }
+
         var attacker = @event.Attacker;
         var assister = @event.Assister;
 
@@ -487,7 +580,7 @@ public class RetakesPlugin : BasePlugin
 
         if (Helpers.IsValidPlayer(assister))
         {
-            _gameManager.AddScore(assister, Game.ScoreForKill);
+            _gameManager.AddScore(assister, Game.ScoreForAssist);
         }
 
         return HookResult.Continue;
@@ -496,14 +589,20 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnBombDefused(EventBombDefused @event, GameEventInfo info)
     {
-        var player = @event.Userid;
-
-        if (!Helpers.IsValidPlayer(player))
+        Console.WriteLine($"{LogPrefix}OnBombDefused event fired.");
+        
+        if (_gameManager == null)
         {
+            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
             return HookResult.Continue;
         }
         
-        _gameManager.AddScore(player, Game.ScoreForDefuse);
+        var player = @event.Userid;
+
+        if (Helpers.IsValidPlayer(player))
+        {
+            _gameManager.AddScore(player, Game.ScoreForDefuse);
+        }
 
         return HookResult.Continue;
     }
@@ -522,6 +621,12 @@ public class RetakesPlugin : BasePlugin
     public HookResult OnPlayerTeam(EventPlayerTeam @event, GameEventInfo info)
     {
         Console.WriteLine($"{LogPrefix}OnRoundEnd event fired.");
+        
+        if (_gameManager == null)
+        {
+            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
+            return HookResult.Continue;
+        }
         
         var player = @event.Userid;
 
@@ -556,6 +661,12 @@ public class RetakesPlugin : BasePlugin
         
         if (!Helpers.IsValidPlayer(player))
         {
+            return HookResult.Continue;
+        }
+        
+        if (_gameManager == null)
+        {
+            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
             return HookResult.Continue;
         }
         

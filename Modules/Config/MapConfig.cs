@@ -19,7 +19,7 @@ public class MapConfig
 
     public void Load()
     {
-        Console.WriteLine($"{RetakesPlugin.LogPrefix}Attempting to load data from {_mapConfigPath}");
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Attempting to load map data from {_mapConfigPath}");
         
         try
         {
@@ -128,5 +128,15 @@ public class MapConfig
         {
             Console.WriteLine($"{RetakesPlugin.LogPrefix}An error occurred while writing to the file: {e.Message}");
         }
+    }
+
+    public static bool IsLoaded(MapConfig? mapConfig, string currentMap)
+    {
+        if (mapConfig == null || mapConfig.MapName != currentMap)
+        {
+            return false;
+        }
+
+        return true;
     }
 }

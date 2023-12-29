@@ -77,7 +77,7 @@ public static class Helpers
         return gameRulesEntities.First().GameRules!;
     }
     
-    public static void RemoveAllItemsAndEntities(CCSPlayerController player)
+    public static void RemoveAllWeaponsAndEntities(CCSPlayerController player)
     {
         if (!IsValidPlayer(player))
         {
