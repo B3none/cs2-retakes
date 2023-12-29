@@ -16,7 +16,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(129)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.0.7";
+    private const string Version = "1.0.8";
     
     public override string ModuleName => "Retakes Plugin";
     public override string ModuleVersion => Version;
@@ -328,7 +328,7 @@ public class RetakesPlugin : BasePlugin
         Console.WriteLine($"{LogPrefix}Moving players to spawns COMPLETE.");
         
         Console.WriteLine($"{LogPrefix}Printing bombsite output to all players.");
-        Server.PrintToChatAll($"{MessagePrefix}Bombsite: {(_currentBombsite == Bombsite.A ? "A" : "B")}");
+        Server.PrintToChatAll($"{MessagePrefix}{Localizer["bombsite.announcement", _currentBombsite == Bombsite.A ? "A" : "B"]}");
         Console.WriteLine($"{LogPrefix}Printing bombsite output to all players COMPLETE.");
         
         return HookResult.Continue;
