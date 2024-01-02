@@ -12,9 +12,6 @@ public class Queue
     public List<CCSPlayerController> QueuePlayers = new();
     public List<CCSPlayerController> ActivePlayers = new();
 
-    public List<CCSPlayerController> RoundTerrorists = new();
-    public List<CCSPlayerController> RoundCounterTerrorists = new();
-
     public Queue(int? retakesMaxPlayers, float? retakesTerroristRatio)
     {
         _maxRetakesPlayers = retakesMaxPlayers ?? 9;
@@ -59,11 +56,11 @@ public class Queue
             }
             
             if (
-                RoundTerrorists.Count > 0 
-                && RoundCounterTerrorists.Count > 0
+                _roundTerrorists.Count > 0 
+                && _roundCounterTerrorists.Count > 0
                 && (
-                    (toTeam == CsTeam.CounterTerrorist && !RoundCounterTerrorists.Contains(player))
-                    || (toTeam == CsTeam.Terrorist && !RoundTerrorists.Contains(player))
+                    (toTeam == CsTeam.CounterTerrorist && !_roundCounterTerrorists.Contains(player))
+                    || (toTeam == CsTeam.Terrorist && !_roundTerrorists.Contains(player))
                 )
             )
             {
@@ -174,15 +171,18 @@ public class Queue
         }
     }
 
+    private List<CCSPlayerController> _roundTerrorists = new();
+    private List<CCSPlayerController> _roundCounterTerrorists = new();
+    
     public void ClearRoundTeams()
     {
-        RoundTerrorists.Clear();
-        RoundCounterTerrorists.Clear();
+        _roundTerrorists.Clear();
+        _roundCounterTerrorists.Clear();
     }
     
     public void SetRoundTeams()
     {
-        RoundTerrorists = Utilities.GetPlayers().Where(player => Helpers.IsValidPlayer(player) && (CsTeam)player.TeamNum == CsTeam.Terrorist).ToList();
-        RoundCounterTerrorists = Utilities.GetPlayers().Where(player => Helpers.IsValidPlayer(player) && (CsTeam)player.TeamNum == CsTeam.CounterTerrorist).ToList();
+        _roundTerrorists = Utilities.GetPlayers().Where(player => Helpers.IsValidPlayer(player) && (CsTeam)player.TeamNum == CsTeam.Terrorist).ToList();
+        _roundCounterTerrorists = Utilities.GetPlayers().Where(player => Helpers.IsValidPlayer(player) && (CsTeam)player.TeamNum == CsTeam.CounterTerrorist).ToList();
     }
 }
