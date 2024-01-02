@@ -93,7 +93,7 @@ public class Game
         Console.WriteLine($"{RetakesPlugin.LogPrefix}There are currently {newTerrorists.Count} new terrorists.");
         foreach (var player in Utilities.GetPlayers().Where(Helpers.IsValidPlayer))
         {
-            if (player.TeamNum == (int)CsTeam.Terrorist)
+            if ((CsTeam)player.TeamNum == CsTeam.Terrorist)
             {
                 player.SwitchTeam(CsTeam.CounterTerrorist);
                 continue;
@@ -167,7 +167,7 @@ public class Game
         {
             var terroristsWithZeroScore = Queue.ActivePlayers
                 .Where(player => 
-                    player.TeamNum == (int)CsTeam.Terrorist
+                    (CsTeam)player.TeamNum == CsTeam.Terrorist
                     && Helpers.IsValidPlayer(player) 
                     && _playerRoundScores.GetValueOrDefault((int)player.UserId!, 0) == 0
                 )
@@ -187,7 +187,7 @@ public class Game
                     Queue.ActivePlayers
                         .Except(newCounterTerrorists)
                         .Except(newTerrorists)
-                        .Where(player => player.TeamNum == (int)CsTeam.Terrorist && Helpers.IsValidPlayer(player))
+                        .Where(player => (CsTeam)player.TeamNum == CsTeam.Terrorist && Helpers.IsValidPlayer(player))
                         .OrderBy(player => _playerRoundScores.GetValueOrDefault((int)player.UserId!, 0))
                         .Take(numTerroristsNeeded - newCounterTerrorists.Count)
                         .ToList()

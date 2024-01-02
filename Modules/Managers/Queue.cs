@@ -47,8 +47,6 @@ public class Queue
             return;
         }
         
-        // TODO: Check RoundPlayer variables.
-        
         var switchToSpectator = toTeam != CsTeam.Spectator;
         
         Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Checking ActivePlayers.");
@@ -130,7 +128,7 @@ public class Queue
     public void Update()
     {
         RemoveDisconnectedPlayers();
-        AddConnectedPlayers();
+        // AddConnectedPlayers();
         
         var playersToAdd = _maxRetakesPlayers - ActivePlayers.Count;
 
@@ -145,7 +143,7 @@ public class Queue
             // loop players to add, and set their team to CT
             foreach (var player in playersToAddList)
             {
-                if (player.TeamNum == (int)CsTeam.Spectator)
+                if ((CsTeam)player.TeamNum == CsTeam.Spectator)
                 {
                     player.SwitchTeam(CsTeam.CounterTerrorist);
                 }
@@ -183,9 +181,9 @@ public class Queue
     public void SetRoundTeams()
     {
         RoundTerrorists.Clear();
-        RoundTerrorists = Utilities.GetPlayers().Where(player => Helpers.IsValidPlayer(player) && player.TeamNum == (int)CsTeam.Terrorist).ToList();
+        RoundTerrorists = Utilities.GetPlayers().Where(player => Helpers.IsValidPlayer(player) && (CsTeam)player.TeamNum == CsTeam.Terrorist).ToList();
         
         RoundCounterTerrorists.Clear();
-        RoundCounterTerrorists = Utilities.GetPlayers().Where(player => Helpers.IsValidPlayer(player) && player.TeamNum == (int)CsTeam.CounterTerrorist).ToList();
+        RoundCounterTerrorists = Utilities.GetPlayers().Where(player => Helpers.IsValidPlayer(player) && (CsTeam)player.TeamNum == CsTeam.CounterTerrorist).ToList();
     }
 }

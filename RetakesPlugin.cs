@@ -332,7 +332,7 @@ public class RetakesPlugin : BasePlugin
         // We shuffle this list to ensure that 1 player does not have to plant every round.
         foreach (var player in Helpers.Shuffle(_gameManager.Queue.ActivePlayers))
         {
-            if (!Helpers.IsValidPlayer(player) || player.TeamNum < (int)CsTeam.Terrorist)
+            if (!Helpers.IsValidPlayer(player) || (CsTeam)player.TeamNum < CsTeam.Terrorist)
             {
                 continue;
             }
@@ -445,7 +445,7 @@ public class RetakesPlugin : BasePlugin
                 }
 
                 Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking if terrorist");
-                if (player.TeamNum == (int)CsTeam.Terrorist)
+                if ((CsTeam)player.TeamNum == CsTeam.Terrorist)
                 {
                     Console.WriteLine($"{LogPrefix}[{player.PlayerName}] is terrorist");
                     Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Removing bomb");
