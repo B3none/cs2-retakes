@@ -231,10 +231,11 @@ public class RetakesPlugin : BasePlugin
         _gameManager.Queue.Update();
         _gameManager.Queue.DebugQueues(false);
         Console.WriteLine($"{LogPrefix}Updated queues.");
-
-        // Handle team swaps during round pre-start.
+        
+        // Reset round teams to allow team changes.
         _gameManager.Queue.ClearRoundTeams();
         
+        // Handle team swaps during round pre-start.
         switch (_lastRoundWinner)
         {
             case CsTeam.CounterTerrorist:
@@ -251,10 +252,9 @@ public class RetakesPlugin : BasePlugin
         }
 
         _gameManager.BalanceTeams();
-
-        Console.WriteLine($"{LogPrefix}Setting round teams.");
+        
+        // Set round teams to prevent team changes mid round
         _gameManager.Queue.SetRoundTeams();
-        Console.WriteLine($"{LogPrefix}Finished setting round teams.");
 
         return HookResult.Continue;
     }

@@ -157,10 +157,7 @@ public class Queue
             // loop players to add, and set their team to CT
             foreach (var player in playersToAddList)
             {
-                if ((CsTeam)player.TeamNum == CsTeam.Spectator)
-                {
-                    player.SwitchTeam(CsTeam.CounterTerrorist);
-                }
+                player.SwitchTeam(CsTeam.CounterTerrorist);
             }
         }
     }
