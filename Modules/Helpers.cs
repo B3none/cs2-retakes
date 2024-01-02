@@ -54,10 +54,9 @@ public static class Helpers
 
     public static List<T> Shuffle<T>(List<T> list)
     {
-        Console.WriteLine($"{RetakesPlugin.LogPrefix}Shuffle helper called.");
-        List<T> shuffledList = new List<T>(list); // Create a copy of the original list
+        var shuffledList = new List<T>(list); // Create a copy of the original list
 
-        int n = shuffledList.Count;
+        var n = shuffledList.Count;
         while (n > 1)
         {
             n--;
@@ -66,7 +65,6 @@ public static class Helpers
             shuffledList[k] = shuffledList[n];
             shuffledList[n] = value;
         }
-        Console.WriteLine($"{RetakesPlugin.LogPrefix}Shuffle helper complete.");
 
         return shuffledList;
     }
@@ -88,7 +86,7 @@ public static class Helpers
         {
             return;
         }
-
+        
         foreach(var weapon in player.PlayerPawn.Value.WeaponServices.MyWeapons)
         {
             if (weapon is not { IsValid: true, Value.IsValid: true })

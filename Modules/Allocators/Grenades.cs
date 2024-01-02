@@ -20,7 +20,7 @@ public abstract class Grenades
                 player.GiveNamedItem(CsItem.HEGrenade);
                 break;
             case 3:
-                player.GiveNamedItem(player.TeamNum == (int)CsTeam.Terrorist ? CsItem.Molotov : CsItem.Incendiary);
+                player.GiveNamedItem((CsTeam)player.TeamNum == CsTeam.Terrorist ? CsItem.Molotov : CsItem.Incendiary);
                 break;
         }
     }

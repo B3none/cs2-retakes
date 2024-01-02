@@ -11,7 +11,7 @@ public abstract class Equipment
         player.GiveNamedItem(CsItem.AssaultSuit);
 
         if (
-            player.TeamNum == (int)CsTeam.CounterTerrorist
+            (CsTeam)player.TeamNum == CsTeam.CounterTerrorist
             && player.PlayerPawn.IsValid
             && player.PlayerPawn.Value != null
             && player.PlayerPawn.Value.IsValid

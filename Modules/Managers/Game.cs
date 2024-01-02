@@ -62,10 +62,7 @@ public class Game
         {
             _consecutiveRoundsWon = 0;
             ScrambleTeams();
-            return;
         }
-
-        BalanceTeams();
     }
     
     public void CounterTerroristRoundWin()
@@ -74,10 +71,7 @@ public class Game
         
         var targetNumTerrorists = Queue.GetTargetNumTerrorists();
         
-        var sortedCounterTerroristPlayers = Queue.ActivePlayers
-            .Where(player => player.TeamNum == (int)CsTeam.CounterTerrorist && Helpers.IsValidPlayer(player))
-            .OrderByDescending(player => _playerRoundScores.GetValueOrDefault((int)player.UserId!, 0))
-            .ToList();
+        var sortedCounterTerroristPlayers = GetSortedActivePlayers(CsTeam.CounterTerrorist);
         
         var newTerrorists = sortedCounterTerroristPlayers.Where(player => player.Score > 0).Take(targetNumTerrorists).ToList();
 
@@ -94,28 +88,12 @@ public class Game
             newTerrorists.AddRange(playersLeft.Take(targetNumTerrorists - newTerrorists.Count));
         }
         
-        var sortedTerroristPlayers = Queue.ActivePlayers
-            .Where(player => Helpers.IsValidPlayer(player) && player.TeamNum == (int)CsTeam.Terrorist)
-            .OrderByDescending(player => _playerRoundScores.GetValueOrDefault((int)player.UserId!, 0))
-            .ToList();
-        
-        Console.WriteLine($"{RetakesPlugin.LogPrefix}Got {sortedTerroristPlayers.Count} sortedTerroristPlayers.");
-        
         newTerrorists.AddRange(sortedCounterTerroristPlayers.Where(player => player.Score > 0).Take(targetNumTerrorists - newTerrorists.Count).ToList());
-        
-        Console.WriteLine($"{RetakesPlugin.LogPrefix}{sortedTerroristPlayers.Where(player => player.Score > 0).ToList().Count} sortedTerroristPlayers with more than 0 score found.");
+
         Console.WriteLine($"{RetakesPlugin.LogPrefix}There are currently {newTerrorists.Count} new terrorists.");
-
-        if (newTerrorists.Count < targetNumTerrorists)
-        {
-            Console.WriteLine($"{RetakesPlugin.LogPrefix}Still not enough terrorists needed.");
-            var playersLeft = Helpers.Shuffle(sortedCounterTerroristPlayers.Except(newTerrorists).ToList());
-            newTerrorists.AddRange(playersLeft.Take(targetNumTerrorists - newTerrorists.Count));
-        }
-
         foreach (var player in Utilities.GetPlayers().Where(Helpers.IsValidPlayer))
         {
-            if (player.TeamNum == (int)CsTeam.Terrorist)
+            if ((CsTeam)player.TeamNum == CsTeam.Terrorist)
             {
                 player.SwitchTeam(CsTeam.CounterTerrorist);
                 continue;
@@ -138,16 +116,12 @@ public class Game
         Console.WriteLine($"{RetakesPlugin.LogPrefix}Checking if they terrorists need a player. Queue.GetTargetNumTerrorists() = {Queue.GetTargetNumTerrorists()} | Helpers.GetCurrentNumPlayers(CsTeam.Terrorist) = {currentNumTerrorist} | numTerroristsNeeded {numTerroristsNeeded}");
         
         List<CCSPlayerController> newTerrorists = new();
-        List<CCSPlayerController> newCounterTerrorists = new();
         
         if (numTerroristsNeeded > 0)
         {
             Console.WriteLine($"{RetakesPlugin.LogPrefix}{numTerroristsNeeded} terrorists needed");
 
-            var sortedCounterTerroristPlayers = /*Queue.ActivePlayers*/Utilities.GetPlayers()
-                .Where(player => Helpers.IsValidPlayer(player) && player.TeamNum == (int)CsTeam.CounterTerrorist)
-                .OrderByDescending(player => _playerRoundScores.GetValueOrDefault((int)player.UserId!, 0))
-                .ToList();
+            var sortedCounterTerroristPlayers = GetSortedActivePlayers(CsTeam.CounterTerrorist);
 
             Console.WriteLine(
                 $"{RetakesPlugin.LogPrefix}Got {sortedCounterTerroristPlayers.Count} sortedCounterTerroristPlayers.");
@@ -162,8 +136,16 @@ public class Game
 
             if (newTerrorists.Count < numTerroristsNeeded)
             {
-                Console.WriteLine($"{RetakesPlugin.LogPrefix}Still not enough terrorists needed.");
+                Console.WriteLine($"{RetakesPlugin.LogPrefix}Still not enough terrorists needed - getting anyone left");
                 var playersLeft = Helpers.Shuffle(sortedCounterTerroristPlayers.Except(newTerrorists).ToList());
+                newTerrorists.AddRange(playersLeft.Take(numTerroristsNeeded - newTerrorists.Count));
+            }
+
+            if (newTerrorists.Count < numTerroristsNeeded)
+            {
+                Console.WriteLine($"{RetakesPlugin.LogPrefix}Still not enough terrorists needed - starting to look at previous terrorists");
+                var sortedTerrorists = GetSortedActivePlayers(CsTeam.Terrorist);
+                var playersLeft = Helpers.Shuffle(sortedTerrorists.Except(newTerrorists).ToList());
                 newTerrorists.AddRange(playersLeft.Take(numTerroristsNeeded - newTerrorists.Count));
             }
 
@@ -180,11 +162,11 @@ public class Game
         var numCounterTerroristsNeeded = Queue.GetTargetNumCounterTerrorists() - currentNumCounterTerroristAfterBalance;
         Console.WriteLine($"{RetakesPlugin.LogPrefix}checking if CT need a player. Queue.GetTargetNumCounterTerrorists() = {Queue.GetTargetNumCounterTerrorists()} | Helpers.GetCurrentNumPlayers(CsTeam.CounterTerrorist) = {currentNumTerroristAfterBalance} | numCounterTerroristsNeeded {numCounterTerroristsNeeded}");
         
-        if (currentNumTerroristAfterBalance > 1 && numCounterTerroristsNeeded > 0)
+        if (numCounterTerroristsNeeded > 0)
         {
-            var terroristsWithZeroScore = /*Queue.ActivePlayers*/Utilities.GetPlayers()
+            var terroristsWithZeroScore = Queue.ActivePlayers
                 .Where(player => 
-                    player.TeamNum == (int)CsTeam.Terrorist
+                    (CsTeam)player.TeamNum == CsTeam.Terrorist
                     && Helpers.IsValidPlayer(player) 
                     && _playerRoundScores.GetValueOrDefault((int)player.UserId!, 0) == 0
                 )
@@ -195,16 +177,16 @@ public class Game
             Console.WriteLine($"{RetakesPlugin.LogPrefix}Moving terrorists with 0 score to CT.");
 
             // Shuffle to avoid repetitive swapping of the same players
-            newCounterTerrorists = Helpers.Shuffle(terroristsWithZeroScore).Take(numCounterTerroristsNeeded).ToList();
+            var newCounterTerrorists = Helpers.Shuffle(terroristsWithZeroScore).Take(numCounterTerroristsNeeded).ToList();
 
             if (numCounterTerroristsNeeded > newCounterTerrorists.Count)
             {
                 // For remaining excess terrorists, move the ones with the lowest score to CT
                 newCounterTerrorists.AddRange(
-                    /*Queue.ActivePlayers*/Utilities.GetPlayers()
+                    Queue.ActivePlayers
                         .Except(newCounterTerrorists)
                         .Except(newTerrorists)
-                        .Where(player => player.TeamNum == (int)CsTeam.Terrorist && Helpers.IsValidPlayer(player))
+                        .Where(player => (CsTeam)player.TeamNum == CsTeam.Terrorist && Helpers.IsValidPlayer(player))
                         .OrderBy(player => _playerRoundScores.GetValueOrDefault((int)player.UserId!, 0))
                         .Take(numTerroristsNeeded - newCounterTerrorists.Count)
                         .ToList()
@@ -235,5 +217,14 @@ public class Game
         
         Queue.ActivePlayers = Queue.QueuePlayers;
         Queue.QueuePlayers = new List<CCSPlayerController>();
+    }
+
+    private List<CCSPlayerController> GetSortedActivePlayers(CsTeam? team = null)
+    {
+        return Queue.ActivePlayers
+            .Where(Helpers.IsValidPlayer)
+            .Where(player => team == null || (CsTeam)player.TeamNum == team)
+            .OrderByDescending(player => _playerRoundScores.GetValueOrDefault((int)player.UserId!, 0))
+            .ToList();
     }
 }

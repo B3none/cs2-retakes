@@ -8,14 +8,14 @@ public abstract class Weapons
 {
     public static void Allocate(CCSPlayerController player)
     {
-        if (player.TeamNum == (int)CsTeam.Terrorist)
+        if ((CsTeam)player.TeamNum == CsTeam.Terrorist)
         {
             player.GiveNamedItem(CsItem.AK47);
             // player.GiveNamedItem(CsItem.Glock);
             player.GiveNamedItem(CsItem.Deagle);
         }
         
-        if (player.TeamNum == (int)CsTeam.CounterTerrorist)
+        if ((CsTeam)player.TeamNum == CsTeam.CounterTerrorist)
         {
             player.GiveNamedItem(CsItem.M4A1S);
             // player.GiveNamedItem(CsItem.USPS);
