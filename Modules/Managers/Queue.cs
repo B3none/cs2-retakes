@@ -63,9 +63,10 @@ public class Queue
                 || (toTeam == CsTeam.Terrorist && !RoundTerrorists.Contains(player))
             )
             {
-                Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] player is not in round CT list, switching to spectator.");
+                Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] player is not in round list for {toTeam}, switching to spectator.");
                 ActivePlayers.Remove(player);
                 QueuePlayers.Add(player);
+                player.CommitSuicide(false, true);
                 player.ChangeTeam(CsTeam.Spectator);
                 return;
             }
@@ -77,6 +78,13 @@ public class Queue
         Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Checking QueuePlayers.");
         if (!QueuePlayers.Contains(player))
         {
+            if (isWarmup && ActivePlayers.Count < _maxRetakesPlayers)
+            {
+                Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Not found, adding to ActivePlayers (because in warmup).");
+                ActivePlayers.Add(player);
+                return;
+            }
+            
             Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Not found, adding to QueuePlayers.");
             QueuePlayers.Add(player);
         }
@@ -86,9 +94,10 @@ public class Queue
         }
 
         Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Should switch to spectator? {(toTeam != CsTeam.Spectator ? "yes" : "no")}");
-        if (toTeam != CsTeam.Spectator && !isWarmup)
+        if (toTeam != CsTeam.Spectator)
         {
             Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Changing to spectator.");
+            player.CommitSuicide(false, true);
             player.ChangeTeam(CsTeam.Spectator);
         }
     }

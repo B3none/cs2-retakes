@@ -461,13 +461,6 @@ public class RetakesPlugin : BasePlugin
         Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking ActivePlayers.");
         if (!_gameManager.Queue.ActivePlayers.Contains(player))
         {
-            Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Player not in ActivePlayers, moving to spectator.");
-            if (!player.IsBot)
-            {
-                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] moving to spectator.");
-                player.ChangeTeam(CsTeam.Spectator);
-            }
-            
             Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking player pawn {player.PlayerPawn.Value != null}.");
             if (player.PlayerPawn.Value != null && player.PlayerPawn.IsValid && player.PlayerPawn.Value.IsValid)
             {
@@ -475,6 +468,14 @@ public class RetakesPlugin : BasePlugin
                 Console.WriteLine($"{LogPrefix}[{player.PlayerName}] calling playerpawn.commitsuicide()");
                 player.PlayerPawn.Value.CommitSuicide(false, true);
             }
+            
+            Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Player not in ActivePlayers, moving to spectator.");
+            if (!player.IsBot)
+            {
+                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] moving to spectator.");
+                player.ChangeTeam(CsTeam.Spectator);
+            }
+            
             return HookResult.Continue;
         }
         else
