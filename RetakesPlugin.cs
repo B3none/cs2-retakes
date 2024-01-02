@@ -233,6 +233,8 @@ public class RetakesPlugin : BasePlugin
         Console.WriteLine($"{LogPrefix}Updated queues.");
 
         // Handle team swaps during round pre-start.
+        _gameManager.Queue.ClearRoundTeams();
+        
         switch (_lastRoundWinner)
         {
             case CsTeam.CounterTerrorist:

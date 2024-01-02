@@ -59,7 +59,8 @@ public class Queue
             }
             
             if (
-                RetakesPlugin.GetGameRules().TotalRoundsPlayed > 0
+                RoundTerrorists.Count > 0 
+                && RoundCounterTerrorists.Count > 0
                 && (
                     (toTeam == CsTeam.CounterTerrorist && !RoundCounterTerrorists.Contains(player))
                     || (toTeam == CsTeam.Terrorist && !RoundTerrorists.Contains(player))
@@ -190,13 +191,16 @@ public class Queue
             Console.WriteLine($"{RetakesPlugin.LogPrefix}QueuePlayers ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", QueuePlayers.Where(Helpers.IsValidPlayer).Select(player => player.PlayerName))}");
         }
     }
+
+    public void ClearRoundTeams()
+    {
+        RoundTerrorists.Clear();
+        RoundCounterTerrorists.Clear();
+    }
     
     public void SetRoundTeams()
     {
-        RoundTerrorists.Clear();
         RoundTerrorists = Utilities.GetPlayers().Where(player => Helpers.IsValidPlayer(player) && (CsTeam)player.TeamNum == CsTeam.Terrorist).ToList();
-        
-        RoundCounterTerrorists.Clear();
         RoundCounterTerrorists = Utilities.GetPlayers().Where(player => Helpers.IsValidPlayer(player) && (CsTeam)player.TeamNum == CsTeam.CounterTerrorist).ToList();
     }
 }
