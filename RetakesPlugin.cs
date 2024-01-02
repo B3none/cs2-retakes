@@ -33,7 +33,6 @@ public class RetakesPlugin : BasePlugin
     private RetakesConfig? _retakesConfig;
     
     // State
-    private static CCSGameRules? _gameRules;
     private Bombsite _currentBombsite = Bombsite.A;
     private Game? _gameManager;
     private CCSPlayerController? _planter;
@@ -645,18 +644,13 @@ public class RetakesPlugin : BasePlugin
     
     public static CCSGameRules GetGameRules()
     {
-        if (_gameRules != null)
-        {
-            return _gameRules;
-        }
-
-        _gameRules = Helpers.GetGameRules();
+        var gameRules = Helpers.GetGameRules();
         
-        if (_gameRules == null)
+        if (gameRules == null)
         {
             throw new Exception($"{LogPrefix}Game rules not found!");
         }
         
-        return _gameRules;
+        return gameRules;
     }
 }
