@@ -21,7 +21,7 @@ Retakes plugin written in C# for CounterStrikeSharp
 2. Copy `cfg/cs2-retakes/retakes.cfg` to `/game/csgo/cfg/cs2-retakes/retakes.cfg`
 
 ## Recommendations
-I also recommend installing these plugin for an improved player experience
+I also recommend installing these plugins for an improved player experience
 - Instadefuse: https://github.com/B3none/cs2-instadefuse
 - Instaplant: https://github.com/B3none/cs2-instaplant
 
