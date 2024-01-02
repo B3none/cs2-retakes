@@ -191,6 +191,12 @@ public class RetakesPlugin : BasePlugin
         
         player.TeamNum = (int)CsTeam.Spectator;
         player.ForceTeamTime = 3600.0f;
+        
+        if (Utilities.GetPlayers().ToList().Count == 1)
+        {
+            Console.WriteLine($"{LogPrefix}First player connected, resetting game.");
+            Server.ExecuteCommand("mp_restartgame 1");
+        }
 
         return HookResult.Continue;
     }
@@ -230,19 +236,31 @@ public class RetakesPlugin : BasePlugin
         }
         
         // Update Queue status
+        Console.WriteLine($"{LogPrefix}Updating queues...");
         _gameManager.Queue.DebugQueues(true);
         _gameManager.Queue.Update();
         _gameManager.Queue.DebugQueues(false);
+        Console.WriteLine($"{LogPrefix}Updated queues.");
         
         // Handle team swaps at the start of the round
         if (!_didTerroristsWinLastRound)
         {
+            Console.WriteLine($"{LogPrefix}Calling CounterTerroristRoundWin()");
             _gameManager.CounterTerroristRoundWin();
-
-            return HookResult.Continue;
+            Console.WriteLine($"{LogPrefix}CounterTerroristRoundWin call complete");
+        }
+        else
+        {
+            Console.WriteLine($"{LogPrefix}Calling TerroristRoundWin()");
+            _gameManager.TerroristRoundWin();
+            Console.WriteLine($"{LogPrefix}TerroristRoundWin call complete");
         }
         
-        _gameManager.TerroristRoundWin();
+        _gameManager.BalanceTeams();
+
+        Console.WriteLine($"{LogPrefix}Setting round teams.");
+        _gameManager.Queue.SetRoundTeams();
+        Console.WriteLine($"{LogPrefix}Finished setting round teams.");
 
         return HookResult.Continue;
     }
@@ -346,9 +364,7 @@ public class RetakesPlugin : BasePlugin
             }
             else
             {
-                Console.WriteLine($"{LogPrefix}GetAndRemoveRandomItem called.");
                 spawn = Helpers.GetAndRemoveRandomItem(isTerrorist ? tSpawns : ctSpawns);
-                Console.WriteLine($"{LogPrefix}GetAndRemoveRandomItem complete.");
             }
             
             playerPawn.Teleport(spawn.Vector, spawn.QAngle, new Vector());
@@ -453,26 +469,9 @@ public class RetakesPlugin : BasePlugin
     {
         Console.WriteLine($"{LogPrefix}OnPlayerSpawn event fired.");
         
-        // If we don't have the game rules, get them.
-        _gameRules = Helpers.GetGameRules();
-        
-        if (_gameRules == null)
-        {
-            Console.WriteLine($"{LogPrefix}Game rules not found.");
-            return HookResult.Continue;
-        }
-        
         if (_gameManager == null)
         {
             Console.WriteLine($"{LogPrefix}Game manager not loaded.");
-            return HookResult.Continue;
-        }
-        
-        // If we are in warmup, skip.
-        if (_gameRules.WarmupPeriod)
-        {
-            Console.WriteLine($"{LogPrefix}Warmup round, balance teams.");
-            _gameManager.BalanceTeams();
             return HookResult.Continue;
         }
         
@@ -647,7 +646,7 @@ public class RetakesPlugin : BasePlugin
         }
         
         _gameManager.Queue.DebugQueues(true);
-        _gameManager.Queue.PlayerTriedToJoinTeam(player, @event.Team != (int)CsTeam.Spectator, _gameRules.WarmupPeriod);
+        _gameManager.Queue.PlayerTriedToJoinTeam(player, (CsTeam)@event.Oldteam, (CsTeam)@event.Team, _gameRules.WarmupPeriod);
         _gameManager.Queue.DebugQueues(false);
 
         return HookResult.Continue;

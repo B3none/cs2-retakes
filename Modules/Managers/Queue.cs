@@ -12,6 +12,9 @@ public class Queue
     public List<CCSPlayerController> QueuePlayers = new();
     public List<CCSPlayerController> ActivePlayers = new();
 
+    public List<CCSPlayerController> RoundTerrorists = new();
+    public List<CCSPlayerController> RoundCounterTerrorists = new();
+
     public Queue(int? retakesMaxPlayers, float? retakesTerroristRatio)
     {
         _maxRetakesPlayers = retakesMaxPlayers ?? 9;
@@ -33,14 +36,34 @@ public class Queue
         return targetPlayers > 0 ? targetPlayers : 1;
     }
 
-    public void PlayerTriedToJoinTeam(CCSPlayerController player, bool switchToSpectator, bool isWarmup)
+    public void PlayerTriedToJoinTeam(CCSPlayerController player, CsTeam fromTeam, CsTeam toTeam, bool isWarmup)
     {
         Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] PlayerTriedToJoinTeam called.");
+        
+        if (fromTeam == CsTeam.None && toTeam == CsTeam.Spectator)
+        {
+            // This is called when a player first joins.
+            Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] None -> Spectator.");
+            return;
+        }
+        
+        // TODO: Check RoundPlayer variables.
+        
+        var switchToSpectator = toTeam != CsTeam.Spectator;
         
         Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Checking ActivePlayers.");
         if (ActivePlayers.Contains(player))
         {
-            Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Already an active player.");
+            Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Player is an active player.");
+            
+            if (toTeam == CsTeam.Spectator)
+            {
+                Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Switching to spectator.");
+                ActivePlayers.Remove(player);
+                return;
+            }
+            
+            Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Do nothing.");
             return;
         }
 
@@ -132,15 +155,8 @@ public class Queue
 
     public void PlayerDisconnected(CCSPlayerController player)
     {
-        if (ActivePlayers.Contains(player))
-        {
-            ActivePlayers.Remove(player);
-        }
-
-        if (QueuePlayers.Contains(player))
-        {
-            QueuePlayers.Remove(player);
-        }
+        ActivePlayers.Remove(player);
+        QueuePlayers.Remove(player);
     }
     
     public void DebugQueues(bool isBefore)
@@ -162,5 +178,14 @@ public class Queue
         {
             Console.WriteLine($"{RetakesPlugin.LogPrefix}QueuePlayers ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", QueuePlayers.Where(Helpers.IsValidPlayer).Select(player => player.PlayerName))}");
         }
+    }
+    
+    public void SetRoundTeams()
+    {
+        RoundTerrorists.Clear();
+        RoundTerrorists = Utilities.GetPlayers().Where(player => Helpers.IsValidPlayer(player) && player.TeamNum == (int)CsTeam.Terrorist).ToList();
+        
+        RoundCounterTerrorists.Clear();
+        RoundCounterTerrorists = Utilities.GetPlayers().Where(player => Helpers.IsValidPlayer(player) && player.TeamNum == (int)CsTeam.CounterTerrorist).ToList();
     }
 }
