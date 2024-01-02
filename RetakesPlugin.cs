@@ -546,7 +546,7 @@ public class RetakesPlugin : BasePlugin
         // Remove the bomb entity and give the player that dropped it the bomb
         var bombEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("weapon_c4").ToList();
 
-        if (bombEntities.Any())
+        if (bombEntities.Count > 0)
         {
             foreach (var bomb in bombEntities)
             {
