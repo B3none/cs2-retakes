@@ -47,8 +47,6 @@ public class Queue
             return;
         }
         
-        var switchToSpectator = toTeam != CsTeam.Spectator;
-        
         Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Checking ActivePlayers.");
         if (ActivePlayers.Contains(player))
         {
@@ -58,6 +56,18 @@ public class Queue
             {
                 Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Switching to spectator.");
                 ActivePlayers.Remove(player);
+                return;
+            }
+            
+            if (
+                (toTeam == CsTeam.CounterTerrorist && !RoundCounterTerrorists.Contains(player))
+                || (toTeam == CsTeam.Terrorist && !RoundTerrorists.Contains(player))
+            )
+            {
+                Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] player is not in round CT list, switching to spectator.");
+                ActivePlayers.Remove(player);
+                QueuePlayers.Add(player);
+                player.ChangeTeam(CsTeam.Spectator);
                 return;
             }
             
@@ -76,8 +86,8 @@ public class Queue
             Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Found in QueuePlayers, do nothing.");
         }
 
-        Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Should switch to spectator? {(switchToSpectator ? "yes" : "no")}");
-        if (switchToSpectator)
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Should switch to spectator? {(toTeam != CsTeam.Spectator ? "yes" : "no")}");
+        if (toTeam != CsTeam.Spectator)
         {
             Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Changing to spectator.");
             player.ChangeTeam(CsTeam.Spectator);
