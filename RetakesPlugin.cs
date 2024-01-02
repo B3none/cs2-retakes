@@ -638,17 +638,8 @@ public class RetakesPlugin : BasePlugin
         
         Console.WriteLine($"{LogPrefix}[{player.PlayerName}] OnPlayerTeam event fired. ({(@event.Isbot ? "BOT" : "NOT BOT")}) {(CsTeam)@event.Oldteam} -> {(CsTeam)@event.Team}");
         
-        // If we don't have the game rules, get them.
-        _gameRules = Helpers.GetGameRules();
-        
-        if (_gameRules == null)
-        {
-            Console.WriteLine($"{LogPrefix}Game rules not found.");
-            return HookResult.Continue;
-        }
-        
         _gameManager.Queue.DebugQueues(true);
-        _gameManager.Queue.PlayerTriedToJoinTeam(player, (CsTeam)@event.Oldteam, (CsTeam)@event.Team, _gameRules.WarmupPeriod);
+        _gameManager.Queue.PlayerTriedToJoinTeam(player, (CsTeam)@event.Oldteam, (CsTeam)@event.Team);
         _gameManager.Queue.DebugQueues(false);
 
         return HookResult.Continue;

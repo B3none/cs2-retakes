@@ -36,7 +36,7 @@ public class Queue
         return targetPlayers > 0 ? targetPlayers : 1;
     }
 
-    public void PlayerTriedToJoinTeam(CCSPlayerController player, CsTeam fromTeam, CsTeam toTeam, bool isWarmup)
+    public void PlayerTriedToJoinTeam(CCSPlayerController player, CsTeam fromTeam, CsTeam toTeam)
     {
         Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] PlayerTriedToJoinTeam called.");
         
@@ -68,16 +68,8 @@ public class Queue
         Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Checking QueuePlayers.");
         if (!QueuePlayers.Contains(player))
         {
-            if (isWarmup && ActivePlayers.Count < _maxRetakesPlayers)
-            {
-                Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Not found, adding to ActivePlayers (because in warmup).");
-                ActivePlayers.Add(player);
-            }
-            else
-            {
-                Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Not found, adding to QueuePlayers.");
-                QueuePlayers.Add(player);
-            }
+            Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Not found, adding to QueuePlayers.");
+            QueuePlayers.Add(player);
         }
         else
         {
