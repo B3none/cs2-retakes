@@ -162,7 +162,7 @@ public class Game
         var numCounterTerroristsNeeded = Queue.GetTargetNumCounterTerrorists() - currentNumCounterTerroristAfterBalance;
         Console.WriteLine($"{RetakesPlugin.LogPrefix}checking if CT need a player. Queue.GetTargetNumCounterTerrorists() = {Queue.GetTargetNumCounterTerrorists()} | Helpers.GetCurrentNumPlayers(CsTeam.CounterTerrorist) = {currentNumTerroristAfterBalance} | numCounterTerroristsNeeded {numCounterTerroristsNeeded}");
         
-        if (currentNumTerroristAfterBalance > 1 && numCounterTerroristsNeeded > 0)
+        if (numCounterTerroristsNeeded > 0)
         {
             var terroristsWithZeroScore = Queue.ActivePlayers
                 .Where(player => 
