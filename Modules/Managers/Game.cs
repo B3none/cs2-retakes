@@ -116,7 +116,6 @@ public class Game
         Console.WriteLine($"{RetakesPlugin.LogPrefix}Checking if they terrorists need a player. Queue.GetTargetNumTerrorists() = {Queue.GetTargetNumTerrorists()} | Helpers.GetCurrentNumPlayers(CsTeam.Terrorist) = {currentNumTerrorist} | numTerroristsNeeded {numTerroristsNeeded}");
         
         List<CCSPlayerController> newTerrorists = new();
-        List<CCSPlayerController> newCounterTerrorists = new();
         
         if (numTerroristsNeeded > 0)
         {
@@ -178,7 +177,7 @@ public class Game
             Console.WriteLine($"{RetakesPlugin.LogPrefix}Moving terrorists with 0 score to CT.");
 
             // Shuffle to avoid repetitive swapping of the same players
-            newCounterTerrorists = Helpers.Shuffle(terroristsWithZeroScore).Take(numCounterTerroristsNeeded).ToList();
+            var newCounterTerrorists = Helpers.Shuffle(terroristsWithZeroScore).Take(numCounterTerroristsNeeded).ToList();
 
             if (numCounterTerroristsNeeded > newCounterTerrorists.Count)
             {

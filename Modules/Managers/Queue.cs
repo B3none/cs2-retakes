@@ -36,7 +36,7 @@ public class Queue
         return targetPlayers > 0 ? targetPlayers : 1;
     }
 
-    public void PlayerTriedToJoinTeam(CCSPlayerController player, CsTeam fromTeam, CsTeam toTeam)
+    public void PlayerTriedToJoinTeam(CCSPlayerController player, CsTeam fromTeam, CsTeam toTeam, bool isWarmup)
     {
         Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] PlayerTriedToJoinTeam called.");
         
@@ -87,7 +87,7 @@ public class Queue
         }
 
         Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Should switch to spectator? {(toTeam != CsTeam.Spectator ? "yes" : "no")}");
-        if (toTeam != CsTeam.Spectator)
+        if (toTeam != CsTeam.Spectator && !isWarmup)
         {
             Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Changing to spectator.");
             player.ChangeTeam(CsTeam.Spectator);

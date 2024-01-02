@@ -205,18 +205,9 @@ public class RetakesPlugin : BasePlugin
     public HookResult OnRoundPreStart(EventRoundPrestart @event, GameEventInfo info)
     {
         Console.WriteLine($"{LogPrefix}Round Pre Start event fired!");
-
-        // If we don't have the game rules, get them.
-        _gameRules = Helpers.GetGameRules();
-        
-        if (_gameRules == null)
-        {
-            Console.WriteLine($"{LogPrefix}Game rules not found.");
-            return HookResult.Continue;
-        }
         
         // If we are in warmup, skip.
-        if (_gameRules.WarmupPeriod)
+        if (GetGameRules().WarmupPeriod)
         {
             Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
             return HookResult.Continue;
@@ -272,17 +263,8 @@ public class RetakesPlugin : BasePlugin
     {
         Console.WriteLine($"{LogPrefix}Round Start event fired!");
 
-        // If we don't have the game rules, get them.
-        _gameRules = Helpers.GetGameRules();
-        
-        if (_gameRules == null)
-        {
-            Console.WriteLine($"{LogPrefix}Game rules not found.");
-            return HookResult.Continue;
-        }
-        
         // If we are in warmup, skip.
-        if (_gameRules.WarmupPeriod)
+        if (GetGameRules().WarmupPeriod)
         {
             Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
             return HookResult.Continue;
@@ -390,18 +372,9 @@ public class RetakesPlugin : BasePlugin
             Console.WriteLine($"{LogPrefix}Game manager not loaded.");
             return HookResult.Continue;
         }
-
-        // If we don't have the game rules, get them.
-        _gameRules = Helpers.GetGameRules();
-        
-        if (_gameRules == null)
-        {
-            Console.WriteLine($"{LogPrefix}Game rules not found.");
-            return HookResult.Continue;
-        }
         
         // If we are in warmup, skip.
-        if (_gameRules.WarmupPeriod)
+        if (GetGameRules().WarmupPeriod)
         {
             Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
             return HookResult.Continue;
@@ -639,7 +612,7 @@ public class RetakesPlugin : BasePlugin
         Console.WriteLine($"{LogPrefix}[{player.PlayerName}] OnPlayerTeam event fired. ({(@event.Isbot ? "BOT" : "NOT BOT")}) {(CsTeam)@event.Oldteam} -> {(CsTeam)@event.Team}");
         
         _gameManager.Queue.DebugQueues(true);
-        _gameManager.Queue.PlayerTriedToJoinTeam(player, (CsTeam)@event.Oldteam, (CsTeam)@event.Team);
+        _gameManager.Queue.PlayerTriedToJoinTeam(player, (CsTeam)@event.Oldteam, (CsTeam)@event.Team, GetGameRules().WarmupPeriod);
         _gameManager.Queue.DebugQueues(false);
 
         return HookResult.Continue;
@@ -667,5 +640,22 @@ public class RetakesPlugin : BasePlugin
         _gameManager.Queue.DebugQueues(false);
 
         return HookResult.Continue;
+    }
+    
+    private static CCSGameRules GetGameRules()
+    {
+        if (_gameRules != null)
+        {
+            return _gameRules;
+        }
+
+        _gameRules = Helpers.GetGameRules();
+        
+        if (_gameRules == null)
+        {
+            throw new Exception($"{LogPrefix}Game rules not found!");
+        }
+        
+        return _gameRules;
     }
 }
