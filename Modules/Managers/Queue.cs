@@ -124,25 +124,10 @@ public class Queue
             QueuePlayers.RemoveAll(player => disconnectedQueuePlayers.Contains(player));
         }
     }
-
-    private void AddConnectedPlayers()
-    {
-        var connectedPlayers = Utilities.GetPlayers().Where(player => Helpers.IsValidPlayer(player) && Helpers.IsPlayerConnected(player)).ToList();
-
-        foreach (var connectedPlayer in connectedPlayers)
-        {
-            if (!ActivePlayers.Contains(connectedPlayer) && !QueuePlayers.Contains(connectedPlayer))
-            {
-                Console.WriteLine($"{RetakesPlugin.LogPrefix}Adding {connectedPlayer.PlayerName} to QueuePlayers.");
-                QueuePlayers.Add(connectedPlayer);
-            }
-        }
-    }
     
     public void Update()
     {
         RemoveDisconnectedPlayers();
-        // AddConnectedPlayers();
         
         var playersToAdd = _maxRetakesPlayers - ActivePlayers.Count;
 
