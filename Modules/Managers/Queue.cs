@@ -35,7 +35,7 @@ public class Queue
         return ActivePlayers.Count - GetTargetNumTerrorists();
     }
 
-    public void PlayerTriedToJoinTeam(CCSPlayerController player, CsTeam fromTeam, CsTeam toTeam, bool isWarmup)
+    public void PlayerTriedToJoinTeam(CCSPlayerController player, CsTeam fromTeam, CsTeam toTeam)
     {
         Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] PlayerTriedToJoinTeam called.");
         
@@ -59,8 +59,11 @@ public class Queue
             }
             
             if (
-                (toTeam == CsTeam.CounterTerrorist && !RoundCounterTerrorists.Contains(player))
-                || (toTeam == CsTeam.Terrorist && !RoundTerrorists.Contains(player))
+                RetakesPlugin.GetGameRules().TotalRoundsPlayed > 0
+                && (
+                    (toTeam == CsTeam.CounterTerrorist && !RoundCounterTerrorists.Contains(player))
+                    || (toTeam == CsTeam.Terrorist && !RoundTerrorists.Contains(player))
+                )
             )
             {
                 Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] player is not in round list for {toTeam}, switching to spectator.");
@@ -78,7 +81,7 @@ public class Queue
         Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Checking QueuePlayers.");
         if (!QueuePlayers.Contains(player))
         {
-            if (isWarmup && ActivePlayers.Count < _maxRetakesPlayers)
+            if (RetakesPlugin.GetGameRules().WarmupPeriod && ActivePlayers.Count < _maxRetakesPlayers)
             {
                 Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Not found, adding to ActivePlayers (because in warmup).");
                 ActivePlayers.Add(player);

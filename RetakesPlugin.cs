@@ -613,7 +613,7 @@ public class RetakesPlugin : BasePlugin
         Console.WriteLine($"{LogPrefix}[{player.PlayerName}] OnPlayerTeam event fired. ({(@event.Isbot ? "BOT" : "NOT BOT")}) {(CsTeam)@event.Oldteam} -> {(CsTeam)@event.Team}");
         
         _gameManager.Queue.DebugQueues(true);
-        _gameManager.Queue.PlayerTriedToJoinTeam(player, (CsTeam)@event.Oldteam, (CsTeam)@event.Team, GetGameRules().WarmupPeriod);
+        _gameManager.Queue.PlayerTriedToJoinTeam(player, (CsTeam)@event.Oldteam, (CsTeam)@event.Team);
         _gameManager.Queue.DebugQueues(false);
 
         return HookResult.Continue;
@@ -643,7 +643,7 @@ public class RetakesPlugin : BasePlugin
         return HookResult.Continue;
     }
     
-    private static CCSGameRules GetGameRules()
+    public static CCSGameRules GetGameRules()
     {
         if (_gameRules != null)
         {
