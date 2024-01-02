@@ -12,7 +12,10 @@ public abstract class Equipment
 
         if (
             player.TeamNum == (int)CsTeam.CounterTerrorist
-            && player.PlayerPawn.Value?.ItemServices?.Handle != null
+            && player.PlayerPawn.IsValid
+            && player.PlayerPawn.Value != null
+            && player.PlayerPawn.Value.IsValid
+            && player.PlayerPawn.Value.ItemServices != null
         ) {
             var itemServices = new CCSPlayer_ItemServices(player.PlayerPawn.Value.ItemServices.Handle);
             itemServices.HasDefuser = true;
