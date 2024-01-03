@@ -14,4 +14,8 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="7.0.0" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(CopyPath)' != '' ">
+    <Exec Command="copy &quot;$(TargetPath)&quot; &quot;$(CopyPath)&quot; " />
+  </Target>
 </Project>
