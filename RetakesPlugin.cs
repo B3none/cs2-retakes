@@ -112,6 +112,48 @@ public class RetakesPlugin : BasePlugin
         commandInfo.ReplyToCommand($"{LogPrefix}{(didAddSpawn ? "Spawn added" : "Error adding spawn")}");
     }
 
+    [ConsoleCommand("css_showspawns", "This command shows the spawns")]
+    [CommandHelper(minArgs: 1, usage: "[A/B]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
+    [RequiresPermissions("@css/root")]
+    public void OnCommandShowSpawns(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        if (!Helpers.IsValidPlayer(player))
+        {
+            return;
+        }
+        
+        var bombsite = commandInfo.GetArg(1).ToUpper();
+        if (bombsite != "A" && bombsite != "B")
+        {
+            commandInfo.ReplyToCommand($"{LogPrefix}You must specify a bombsite [A / B].");
+            return;
+        }
+        
+        if (_mapConfig == null)
+        {
+            commandInfo.ReplyToCommand($"{LogPrefix}Map config not loaded for some reason...");
+            return;
+        }
+        
+        var spawns = _mapConfig.GetSpawnsClone().Where(spawn => spawn.Bombsite == (bombsite == "A" ? Bombsite.A : Bombsite.B)).ToList();
+        
+        if (spawns.Count == 0)
+        {
+            commandInfo.ReplyToCommand($"{LogPrefix}No spawns found for bombsite {bombsite}.");
+            return;
+        }
+        
+        // Pre cache the sprites.
+        Server.PrecacheModel("sprites/laserbeam.vmt");
+        Server.PrecacheModel("sprites/halo.vmt");
+        
+        // TODO: Cache the sprites to show each spawn.
+        foreach (var spawn in spawns)
+        {
+            player!.PrintToChat($"{LogPrefix}Spawn: {spawn.Vector} {spawn.QAngle} {spawn.Team} {spawn.Bombsite} {(spawn.CanBePlanter ? "Y" : "N")}");
+        }
+    }
+
     [ConsoleCommand("css_teleport", "This command teleports the player to the given coordinates")]
     [RequiresPermissions("@css/root")]
     public void OnCommandTeleport(CCSPlayerController? player, CommandInfo commandInfo)
