@@ -392,10 +392,9 @@ public class RetakesPlugin : BasePlugin
             }
             
             // Strip the player of all of their weapons and the bomb before any spawn / allocation occurs.
-            // TODO: Figure out why this is crashing the server / undo workaround.
-            // player.RemoveWeapons();
+            Helpers.RemoveHelmetAndHeavyArmour(player);
             Helpers.RemoveAllWeaponsAndEntities(player);
-            
+
             // Create a timer to do this as it would occasionally fire too early.
             AddTimer(0.05f, () =>
             {
