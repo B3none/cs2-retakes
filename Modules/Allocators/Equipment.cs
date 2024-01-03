@@ -8,7 +8,7 @@ public abstract class Equipment
 {
     public static void Allocate(CCSPlayerController player)
     {
-        player.GiveNamedItem(CsItem.AssaultSuit);
+        player.GiveNamedItem(CsItem.KevlarHelmet);
 
         if (
             (CsTeam)player.TeamNum == CsTeam.CounterTerrorist
