@@ -31,8 +31,5 @@ If you appreciate the project then please take the time to star the repository.
 
 ![Star us](https://github.com/b3none/gdprconsent/raw/development/.github/README_ASSETS/star_us.png)
 
-## Setup for local development
-Download the latest release of CounterStrikeSharp, and put the contents into the `CounterStrikeSharp` directory.
-
 ## Credits
 This was inspired by the [CS:GO Retakes project](https://github.com/splewis/csgo-retakes) written by [splewis](https://github.com/splewis).

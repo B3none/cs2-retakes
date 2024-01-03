@@ -4,15 +4,10 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
+  
   <ItemGroup>
-      <Reference Include="CounterStrikeSharp.API">
-         <HintPath>.\CounterStrikeSharp\addons\counterstrikesharp\api\CounterStrikeSharp.API.dll</HintPath>
-      </Reference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="7.0.0" />
+    <PackageReference Include="CounterStrikeSharp.API" Version="1.0.142" />
+    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="7.0.14" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(CopyPath)' != '' ">
