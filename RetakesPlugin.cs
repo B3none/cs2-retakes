@@ -111,41 +111,42 @@ public class RetakesPlugin : BasePlugin
         
         commandInfo.ReplyToCommand($"{LogPrefix}{(didAddSpawn ? "Spawn added" : "Error adding spawn")}");
     }
-    
+
     [ConsoleCommand("css_teleport", "This command teleports the player to the given coordinates")]
     [RequiresPermissions("@css/root")]
-    public void OnCommandTeleport(CCSPlayerController? player, CommandInfo command)
+    public void OnCommandTeleport(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (player == null)
-        {
-            return;
-        }
-        if (!player.PlayerPawn.IsValid)
+        if (!Helpers.IsValidPlayer(player))
         {
             return;
         }
         
-        if (command.ArgCount != 4)
+        if (!player!.PlayerPawn.IsValid)
+        {
+            return;
+        }
+        
+        if (commandInfo.ArgCount != 4)
         {
             return;
         }
 
-        if (!float.TryParse(command.ArgByIndex(1), out float positionX))
+        if (!float.TryParse(commandInfo.ArgByIndex(1), out var positionX))
         {
             return;
         }
 
-        if (!float.TryParse(command.ArgByIndex(2), out float positionY))
+        if (!float.TryParse(commandInfo.ArgByIndex(2), out var positionY))
         {
             return;
         }
 
-        if (!float.TryParse(command.ArgByIndex(3), out float positionZ))
+        if (!float.TryParse(commandInfo.ArgByIndex(3), out var positionZ))
         {
             return;
         }
 
-        player?.PlayerPawn?.Value?.Teleport(new Vector(positionX, positionY, positionZ), new QAngle(0f,0f,0f), new Vector(0f, 0f, 0f));
+        player.PlayerPawn.Value?.Teleport(new Vector(positionX, positionY, positionZ), new QAngle(0f,0f,0f), new Vector(0f, 0f, 0f));
     }
 
     // Listeners

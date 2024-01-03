@@ -1,5 +1,6 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Utils;
 
 namespace RetakesPlugin.Modules.Managers;
@@ -121,17 +122,48 @@ public class Queue
             QueuePlayers.RemoveAll(player => disconnectedQueuePlayers.Contains(player));
         }
     }
+
+    private void HandleQueuePriority()
+    {
+        var vipsInQueue = QueuePlayers.Where(player => AdminManager.PlayerHasPermissions(player, "@css/vip")).ToList().Count;
+
+        if (vipsInQueue > 0)
+        {
+            Helpers.Shuffle(
+                ActivePlayers
+                .Where(player => !AdminManager.PlayerHasPermissions(player, "@css/vip"))
+                .ToList()
+            )
+                .ForEach(player =>
+                {
+                    if (vipsInQueue <= 0)
+                    {
+                        return;
+                    }
+
+                    ActivePlayers.Remove(player);
+                    QueuePlayers.Add(player);
+                    vipsInQueue--;
+                });
+        }
+    }
     
     public void Update()
     {
         RemoveDisconnectedPlayers();
+        HandleQueuePriority();
         
         var playersToAdd = _maxRetakesPlayers - ActivePlayers.Count;
 
         if (playersToAdd > 0 && QueuePlayers.Count > 0)
         {
             // Take players from QueuePlayers and add them to ActivePlayers
-            var playersToAddList = QueuePlayers.Take(playersToAdd).ToList();
+            // Ordered by players with @retakes/queue group first since they
+            // have queue priority.
+            var playersToAddList = QueuePlayers
+                .OrderBy(player => AdminManager.PlayerHasPermissions(player, "@css/vip"))
+                .Take(playersToAdd)
+                .ToList();
             
             QueuePlayers.RemoveAll(player => playersToAddList.Contains(player));
             ActivePlayers.AddRange(playersToAddList);
