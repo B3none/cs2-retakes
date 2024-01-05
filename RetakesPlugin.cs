@@ -722,9 +722,9 @@ public class RetakesPlugin : BasePlugin
                 );
             }
 
+            // Do this here so every player hears a random announcer each round.
             var bombsiteAnnouncer = bombsiteAnnouncers[_random.Next(bombsiteAnnouncers.Length)];
             
-            player.PrintToChat($"play sounds/vo/agents/{bombsiteAnnouncer}/loc_{bombsite.ToString().ToLower()}_01");
             player.ExecuteClientCommand($"play sounds/vo/agents/{bombsiteAnnouncer}/loc_{bombsite.ToString().ToLower()}_01");
         }
         
