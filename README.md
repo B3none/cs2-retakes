@@ -1,7 +1,7 @@
 # CS2 Retakes
 Retakes plugin written in C# for CounterStrikeSharp
 
-## Progress
+## Features / Roadmap
 - [x] Bombsite selection
 - [x] Per map configurations
 - [x] Ability to add spawns
@@ -14,6 +14,7 @@ Retakes plugin written in C# for CounterStrikeSharp
 - [x] Retakes config file
 - [x] Add translations
 - [ ] Improve plugin output (specifically for a single player)
+- [ ] Add a command to view the spawns for the current map
 - [ ] Implement better spawn management system
 
 ## Installation
