@@ -234,9 +234,9 @@ public class RetakesPlugin : BasePlugin
         player.TeamNum = (int)CsTeam.Spectator;
         player.ForceTeamTime = 3600.0f;
         
-        if (Utilities.GetPlayers().ToList().Count == 1)
+        if (Utilities.GetPlayers().ToList().Count <= 2)
         {
-            Console.WriteLine($"{LogPrefix}First player connected, resetting game.");
+            Console.WriteLine($"{LogPrefix}First or second player connected, resetting game.");
             Server.ExecuteCommand("mp_restartgame 1");
         }
 
