@@ -13,7 +13,7 @@ Retakes plugin written in C# for CounterStrikeSharp
 - [x] Team manager (with team switch calculations)
 - [x] Retakes config file
 - [x] Add translations
-- [ ] Improve plugin output (specifically for a single player)
+- [x] Improve bombsite announcement
 - [ ] Add a command to view the spawns for the current map
 - [ ] Implement better spawn management system
 
@@ -28,8 +28,8 @@ I also recommend installing these plugins for an improved player experience
 - Clutch Announce: https://github.com/B3none/cs2-clutch-announce
 
 This package comes with a weapon allocation system, however I recommend using **one** of the following plugins for a better experience
-- Ravid's Allocator: https://github.com/Ravid-A/cs2-retakes-weapon-allocator
 - Yoni's Allocator: https://github.com/yonilerner/cs2-retakes-allocator
+- Ravid's Allocator: https://github.com/Ravid-A/cs2-retakes-weapon-allocator
 
 ## Share the love
 If you appreciate the project then please take the time to star the repository.

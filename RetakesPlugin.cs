@@ -399,13 +399,11 @@ public class RetakesPlugin : BasePlugin
         }
         Console.WriteLine($"{LogPrefix}Moving players to spawns COMPLETE.");
         
-        Console.WriteLine($"{LogPrefix}Printing bombsite output to all players.");
-        Server.PrintToChatAll($"{MessagePrefix}{Localizer["bombsite.announcement", _currentBombsite == Bombsite.A ? "A" : "B"]}");
-        Console.WriteLine($"{LogPrefix}Printing bombsite output to all players COMPLETE.");
+        AnnounceBombsite(_currentBombsite);
         
         return HookResult.Continue;
     }
-    
+
     [GameEventHandler]
     public HookResult OnRoundPostStart(EventRoundPoststart @event, GameEventInfo info)
     {
@@ -696,5 +694,40 @@ public class RetakesPlugin : BasePlugin
         }
         
         return gameRules;
+    }
+    
+    // Helpers (with localization so they must be in here until I can figure out how to use it elsewhere)
+    private void AnnounceBombsite(Bombsite bombsite)
+    {
+        Console.WriteLine($"{LogPrefix}Announcing bombsite output to all players.");
+        
+        string[] bombsiteAnnouncers =
+        {
+            "balkan_epic",
+            "leet_epic",
+            "professional_epic",
+            "professional_fem",
+            "seal_epic",
+            "swat_epic",
+            "swat_fem"
+        };
+        
+        foreach (var player in Utilities.GetPlayers())
+        {
+            // Print this 3 times to ensure that the player sees it.
+            for (var i = 0; i < 3; i++)
+            {
+                player.PrintToChat(
+                $"{MessagePrefix}{Localizer["bombsite.announcement", bombsite == Bombsite.A ? "A" : "B"]}"
+                );
+            }
+
+            var bombsiteAnnouncer = bombsiteAnnouncers[_random.Next(bombsiteAnnouncers.Length)];
+            
+            player.PrintToChat($"play sounds/vo/agents/{bombsiteAnnouncer}/loc_{bombsite.ToString().ToLower()}_01");
+            player.ExecuteClientCommand($"play sounds/vo/agents/{bombsiteAnnouncer}/loc_{bombsite.ToString().ToLower()}_01");
+        }
+        
+        Console.WriteLine($"{LogPrefix}Printing bombsite output to all players COMPLETE.");
     }
 }
