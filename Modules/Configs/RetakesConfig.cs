@@ -34,7 +34,7 @@ public class RetakesConfig
             
             if (RetakesConfigData.Version != RetakesConfigData.CurrentVersion)
             {
-                UpdateVersion(this);
+                UpdateVersion();
                 throw new Exception("Config is outdated");
             }
             
@@ -88,20 +88,20 @@ public class RetakesConfig
         return true;
     }
     
-    private static bool UpdateVersion(RetakesConfig? retakesConfig)
+    private bool UpdateVersion()
     {
-        if (!IsLoaded(retakesConfig))
+        if (RetakesConfigData == null)
         {
             return false;
         }
         
-        if (retakesConfig!.RetakesConfigData!.Version == RetakesConfigData.CurrentVersion)
+        if (RetakesConfigData.Version == RetakesConfigData.CurrentVersion)
         {
             return true;
         }
 
-        retakesConfig.RetakesConfigData.Version = RetakesConfigData.CurrentVersion;
-        retakesConfig.Save();
+        RetakesConfigData.Version = RetakesConfigData.CurrentVersion;
+        Save();
         
         return true;
     }
