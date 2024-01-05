@@ -34,6 +34,7 @@ public class RetakesConfig
             
             if (RetakesConfigData.Version != RetakesConfigData.CurrentVersion)
             {
+                UpdateVersion(this);
                 throw new Exception("Config is outdated");
             }
             
@@ -83,6 +84,24 @@ public class RetakesConfig
             Console.WriteLine($"{RetakesPlugin.LogPrefix}Retakes config data is null");
             return false;
         }
+        
+        return true;
+    }
+    
+    private static bool UpdateVersion(RetakesConfig? retakesConfig)
+    {
+        if (!IsLoaded(retakesConfig))
+        {
+            return false;
+        }
+        
+        if (retakesConfig!.RetakesConfigData!.Version == RetakesConfigData.CurrentVersion)
+        {
+            return true;
+        }
+
+        retakesConfig.RetakesConfigData.Version = RetakesConfigData.CurrentVersion;
+        retakesConfig.Save();
         
         return true;
     }
