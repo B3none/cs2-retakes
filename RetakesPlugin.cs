@@ -4,7 +4,6 @@ using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules;
 using RetakesPlugin.Modules.Allocators;
@@ -17,7 +16,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(131)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.1.5";
+    private const string Version = "1.1.6";
     
     public override string ModuleName => "Retakes Plugin";
     public override string ModuleVersion => Version;
@@ -445,20 +444,19 @@ public class RetakesPlugin : BasePlugin
                     return;
                 }
                 
-                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Timer hit, allocating...");
-                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking if retakes config is loaded.");
-                var isRetakesConfigLoaded = RetakesConfig.IsLoaded(_retakesConfig);
-                
-                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Retakes config loaded: {isRetakesConfigLoaded}");
-                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Is allocation enabled: {_retakesConfig!.RetakesConfigData!.EnableFallbackAllocation}");
-                if (!isRetakesConfigLoaded || _retakesConfig!.RetakesConfigData!.EnableFallbackAllocation)
+                if (!RetakesConfig.IsLoaded(_retakesConfig) || _retakesConfig!.RetakesConfigData!.EnableFallbackAllocation)
                 {
+                    Console.WriteLine($"{LogPrefix}Allocating...");
                     Weapons.Allocate(player);
                     Equipment.Allocate(player);
                     Grenades.Allocate(player);
                 }
+                else
+                {
+                    Console.WriteLine($"{LogPrefix}Fallback allocation disabled, skipping.");
+                }
 
-                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking if terrorist");
+                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Handling bomb allocation:");
                 if ((CsTeam)player.TeamNum == CsTeam.Terrorist)
                 {
                     Console.WriteLine($"{LogPrefix}[{player.PlayerName}] is terrorist");
@@ -468,10 +466,8 @@ public class RetakesPlugin : BasePlugin
 
                     if (player == _planter)
                     {
-                        Console.WriteLine(
-                            $"{LogPrefix}[{player.PlayerName}] Player IS planter, giving bomb (player.givenameditem)");
-                        // Helpers.GiveAndSwitchToBomb(player);
-                        player.GiveNamedItem(CsItem.Bomb);
+                        Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Player IS planter, giving bomb (player.givenameditem)");
+                        Helpers.GiveAndSwitchToBomb(player);
                     }
                 }
             });
@@ -711,6 +707,8 @@ public class RetakesPlugin : BasePlugin
             "swat_epic",
             "swat_fem"
         };
+
+        var isRetakesConfigLoaded = RetakesConfig.IsLoaded(_retakesConfig);
         
         foreach (var player in Utilities.GetPlayers())
         {
@@ -721,17 +719,17 @@ public class RetakesPlugin : BasePlugin
                 $"{MessagePrefix}{Localizer["bombsite.announcement", bombsite == Bombsite.A ? "A" : "B"]}"
                 );
             }
-
-            // Do this here so every player hears a random announcer each round.
-            var bombsiteAnnouncer = bombsiteAnnouncers[_random.Next(bombsiteAnnouncers.Length)];
             
-            if (!RetakesConfig.IsLoaded(_retakesConfig) || _retakesConfig!.RetakesConfigData!.EnableBombsiteAnnouncementVoices)
+            if (!isRetakesConfigLoaded || _retakesConfig!.RetakesConfigData!.EnableBombsiteAnnouncementVoices)
             {
+                // Do this here so every player hears a random announcer each round.
+                var bombsiteAnnouncer = bombsiteAnnouncers[_random.Next(bombsiteAnnouncers.Length)];
+                
                 player.ExecuteClientCommand(
                     $"play sounds/vo/agents/{bombsiteAnnouncer}/loc_{bombsite.ToString().ToLower()}_01");
             }
             
-            if (!RetakesConfig.IsLoaded(_retakesConfig) || _retakesConfig!.RetakesConfigData!.EnableBombsiteAnnouncementCenter)
+            if (!isRetakesConfigLoaded || _retakesConfig!.RetakesConfigData!.EnableBombsiteAnnouncementCenter)
             {
                 player.PrintToCenterHtml(Localizer["bombsite.announcement", bombsite == Bombsite.A ? "A" : "B"]);
             }
