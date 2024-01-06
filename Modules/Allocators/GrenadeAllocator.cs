@@ -8,7 +8,7 @@ public abstract class GrenadeAllocator
 {
     public static void Allocate(CCSPlayerController player)
     {
-        switch (new Random().Next(4))
+        switch (Helpers.Random.Next(4))
         {
             case 0:
                 player.GiveNamedItem(CsItem.SmokeGrenade);    

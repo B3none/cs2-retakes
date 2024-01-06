@@ -7,7 +7,7 @@ namespace RetakesPlugin.Modules;
 
 public static class Helpers
 {
-    private static readonly Random Random = new();
+    internal static readonly Random Random = new();
     
     public static bool IsValidPlayer(CCSPlayerController? player)
     {
@@ -43,8 +43,7 @@ public static class Helpers
             throw new ArgumentException("List is null or empty");
         }
 
-        var random = new Random();
-        var randomIndex = random.Next(list.Count);
+        var randomIndex = Random.Next(list.Count);
         var randomItem = list[randomIndex];
 
         list.RemoveAt(randomIndex);
@@ -52,7 +51,7 @@ public static class Helpers
         return randomItem;
     }
 
-    public static List<T> Shuffle<T>(List<T> list)
+    public static List<T> Shuffle<T>(IEnumerable<T> list)
     {
         var shuffledList = new List<T>(list); // Create a copy of the original list
 
@@ -72,7 +71,7 @@ public static class Helpers
     public static CCSGameRules? GetGameRules()
     {
         var gameRulesEntities = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules");
-        return gameRulesEntities.First().GameRules!;
+        return gameRulesEntities.First().GameRules;
     }
     
     public static void RemoveAllWeaponsAndEntities(CCSPlayerController player)
@@ -140,9 +139,14 @@ public static class Helpers
         foreach (var weapon in player.PlayerPawn.Value.WeaponServices.MyWeapons)
         {
             if (weapon is not { IsValid: true, Value.IsValid: true })
+            {
                 continue;
+            }
+
             if (weapon.Value.DesignerName != "weapon_c4")
+            {
                 continue;
+            }
 
             item = weapon;
         }
