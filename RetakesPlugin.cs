@@ -146,7 +146,7 @@ public class RetakesPlugin : BasePlugin
         Server.PrecacheModel("sprites/laserbeam.vmt");
         Server.PrecacheModel("sprites/halo.vmt");
         
-        // TODO: Cache the sprites to show each spawn.
+        // TODO: Display the sprites to show each spawn.
         foreach (var spawn in spawns)
         {
             player!.PrintToChat($"{LogPrefix}Spawn: {spawn.Vector} {spawn.QAngle} {spawn.Team} {spawn.Bombsite} {(spawn.CanBePlanter ? "Y" : "N")}");
@@ -369,7 +369,7 @@ public class RetakesPlugin : BasePlugin
                 continue;
             }
             
-            var isTerrorist = player.TeamNum == (byte)CsTeam.Terrorist;
+            var isTerrorist = (CsTeam)player.TeamNum == CsTeam.Terrorist;
 
             Spawn spawn;
             

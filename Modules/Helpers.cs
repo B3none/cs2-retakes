@@ -43,9 +43,9 @@ public static class Helpers
             throw new ArgumentException("List is null or empty");
         }
 
-        Random random = new Random();
-        int randomIndex = random.Next(list.Count);
-        T randomItem = list[randomIndex];
+        var random = new Random();
+        var randomIndex = random.Next(list.Count);
+        var randomItem = list[randomIndex];
 
         list.RemoveAt(randomIndex);
 
@@ -60,7 +60,7 @@ public static class Helpers
         while (n > 1)
         {
             n--;
-            int k = Random.Next(n + 1);
+            var k = Random.Next(n + 1);
             T value = shuffledList[k];
             shuffledList[k] = shuffledList[n];
             shuffledList[n] = value;
@@ -115,7 +115,7 @@ public static class Helpers
 
         foreach (var player in Utilities.GetPlayers().Where(player => IsValidPlayer(player) && IsPlayerConnected(player)))
         {
-            if (player.TeamNum == (int)csTeam)
+            if ((CsTeam)player.TeamNum == csTeam)
             {
                 players++;
             }
