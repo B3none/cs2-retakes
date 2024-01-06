@@ -5,7 +5,7 @@ using CounterStrikeSharp.API.Modules.Utils;
 
 namespace RetakesPlugin.Modules.Managers;
 
-public class Queue
+public class QueueManager
 {
     private readonly int _maxRetakesPlayers;
     private readonly float _terroristRatio;
@@ -13,7 +13,7 @@ public class Queue
     public List<CCSPlayerController> QueuePlayers = new();
     public List<CCSPlayerController> ActivePlayers = new();
 
-    public Queue(int? retakesMaxPlayers, float? retakesTerroristRatio)
+    public QueueManager(int? retakesMaxPlayers, float? retakesTerroristRatio)
     {
         _maxRetakesPlayers = retakesMaxPlayers ?? 9;
         _terroristRatio = retakesTerroristRatio ?? 0.45f;

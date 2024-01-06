@@ -33,7 +33,7 @@ public class RetakesPlugin : BasePlugin
     
     // State
     private Bombsite _currentBombsite = Bombsite.A;
-    private Game? _gameManager;
+    private GameManager? _gameManager;
     private CCSPlayerController? _planter;
     private readonly Random _random = new();
     private CsTeam _lastRoundWinner;
@@ -211,8 +211,8 @@ public class RetakesPlugin : BasePlugin
             _retakesConfig.Load();
         }
         
-        _gameManager = new Game(
-            new Queue(
+        _gameManager = new GameManager(
+            new QueueManager(
                 _retakesConfig?.RetakesConfigData?.MaxPlayers,
                 _retakesConfig?.RetakesConfigData?.TerroristRatio
             ),
@@ -260,22 +260,22 @@ public class RetakesPlugin : BasePlugin
             return HookResult.Continue;
         }
         
-        if (!_gameManager.Queue.ActivePlayers.Any())
+        if (!_gameManager.QueueManager.ActivePlayers.Any())
         {
             Console.WriteLine($"{LogPrefix}No active players, skipping.");
-            _gameManager.Queue.SetupActivePlayers();
+            _gameManager.QueueManager.SetupActivePlayers();
             return HookResult.Continue;
         }
         
         // Update Queue status
         Console.WriteLine($"{LogPrefix}Updating queues...");
-        _gameManager.Queue.DebugQueues(true);
-        _gameManager.Queue.Update();
-        _gameManager.Queue.DebugQueues(false);
+        _gameManager.QueueManager.DebugQueues(true);
+        _gameManager.QueueManager.Update();
+        _gameManager.QueueManager.DebugQueues(false);
         Console.WriteLine($"{LogPrefix}Updated queues.");
         
         // Reset round teams to allow team changes.
-        _gameManager.Queue.ClearRoundTeams();
+        _gameManager.QueueManager.ClearRoundTeams();
         
         // Handle team swaps during round pre-start.
         switch (_lastRoundWinner)
@@ -296,7 +296,7 @@ public class RetakesPlugin : BasePlugin
         _gameManager.BalanceTeams();
         
         // Set round teams to prevent team changes mid round
-        _gameManager.Queue.SetRoundTeams();
+        _gameManager.QueueManager.SetRoundTeams();
 
         return HookResult.Continue;
     }
@@ -355,7 +355,7 @@ public class RetakesPlugin : BasePlugin
         Console.WriteLine($"{LogPrefix}Moving players to spawns.");
         // Now move the players to their spawns.
         // We shuffle this list to ensure that 1 player does not have to plant every round.
-        foreach (var player in Helpers.Shuffle(_gameManager.Queue.ActivePlayers))
+        foreach (var player in Helpers.Shuffle(_gameManager.QueueManager.ActivePlayers))
         {
             if (!Helpers.IsValidPlayer(player) || (CsTeam)player.TeamNum < CsTeam.Terrorist)
             {
@@ -422,7 +422,7 @@ public class RetakesPlugin : BasePlugin
         }
         
         Console.WriteLine($"{LogPrefix}Trying to loop valid active players.");
-        foreach (var player in _gameManager.Queue.ActivePlayers.Where(Helpers.IsValidPlayer))
+        foreach (var player in _gameManager.QueueManager.ActivePlayers.Where(Helpers.IsValidPlayer))
         {
             Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Adding timer for allocation...");
 
@@ -447,9 +447,9 @@ public class RetakesPlugin : BasePlugin
                 if (!RetakesConfig.IsLoaded(_retakesConfig) || _retakesConfig!.RetakesConfigData!.EnableFallbackAllocation)
                 {
                     Console.WriteLine($"{LogPrefix}Allocating...");
-                    Weapons.Allocate(player);
-                    Equipment.Allocate(player);
-                    Grenades.Allocate(player);
+                    WeaponsAllocator.Allocate(player);
+                    EquipmentAllocator.Allocate(player);
+                    GrenadeAllocator.Allocate(player);
                 }
                 else
                 {
@@ -496,7 +496,7 @@ public class RetakesPlugin : BasePlugin
         
         // debug and check if the player is in the queue.
         Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking ActivePlayers.");
-        if (!_gameManager.Queue.ActivePlayers.Contains(player))
+        if (!_gameManager.QueueManager.ActivePlayers.Contains(player))
         {
             Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking player pawn {player.PlayerPawn.Value != null}.");
             if (player.PlayerPawn.Value != null && player.PlayerPawn.IsValid && player.PlayerPawn.Value.IsValid)
@@ -587,12 +587,12 @@ public class RetakesPlugin : BasePlugin
 
         if (Helpers.IsValidPlayer(attacker))
         {
-            _gameManager.AddScore(attacker, Game.ScoreForKill);
+            _gameManager.AddScore(attacker, GameManager.ScoreForKill);
         }
 
         if (Helpers.IsValidPlayer(assister))
         {
-            _gameManager.AddScore(assister, Game.ScoreForAssist);
+            _gameManager.AddScore(assister, GameManager.ScoreForAssist);
         }
 
         return HookResult.Continue;
@@ -613,7 +613,7 @@ public class RetakesPlugin : BasePlugin
 
         if (Helpers.IsValidPlayer(player))
         {
-            _gameManager.AddScore(player, Game.ScoreForDefuse);
+            _gameManager.AddScore(player, GameManager.ScoreForDefuse);
         }
 
         return HookResult.Continue;
@@ -649,9 +649,9 @@ public class RetakesPlugin : BasePlugin
         
         Console.WriteLine($"{LogPrefix}[{player.PlayerName}] OnPlayerTeam event fired. ({(@event.Isbot ? "BOT" : "NOT BOT")}) {(CsTeam)@event.Oldteam} -> {(CsTeam)@event.Team}");
         
-        _gameManager.Queue.DebugQueues(true);
-        _gameManager.Queue.PlayerTriedToJoinTeam(player, (CsTeam)@event.Oldteam, (CsTeam)@event.Team);
-        _gameManager.Queue.DebugQueues(false);
+        _gameManager.QueueManager.DebugQueues(true);
+        _gameManager.QueueManager.PlayerTriedToJoinTeam(player, (CsTeam)@event.Oldteam, (CsTeam)@event.Team);
+        _gameManager.QueueManager.DebugQueues(false);
 
         return HookResult.Continue;
     }
@@ -673,9 +673,9 @@ public class RetakesPlugin : BasePlugin
             return HookResult.Continue;
         }
         
-        _gameManager.Queue.DebugQueues(true);
-        _gameManager.Queue.PlayerDisconnected(player);
-        _gameManager.Queue.DebugQueues(false);
+        _gameManager.QueueManager.DebugQueues(true);
+        _gameManager.QueueManager.PlayerDisconnected(player);
+        _gameManager.QueueManager.DebugQueues(false);
 
         return HookResult.Continue;
     }

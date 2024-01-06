@@ -3,9 +3,9 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using CounterStrikeSharp.API.Modules.Utils;
 
-namespace RetakesPlugin.Modules.Converters;
+namespace RetakesPlugin.Modules.Configs.JsonConverters;
 
-public class QAngleConverter : JsonConverter<QAngle>
+public class QAngleJsonConverter : JsonConverter<QAngle>
 {
     public override QAngle Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

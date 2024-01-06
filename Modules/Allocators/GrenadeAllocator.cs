@@ -4,7 +4,7 @@ using CounterStrikeSharp.API.Modules.Utils;
 
 namespace RetakesPlugin.Modules.Allocators;
 
-public abstract class Grenades
+public abstract class GrenadeAllocator
 {
     public static void Allocate(CCSPlayerController player)
     {

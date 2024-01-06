@@ -4,7 +4,7 @@ using CounterStrikeSharp.API.Modules.Utils;
 
 namespace RetakesPlugin.Modules.Allocators;
 
-public abstract class Equipment
+public abstract class EquipmentAllocator
 {
     public static void Allocate(CCSPlayerController player)
     {

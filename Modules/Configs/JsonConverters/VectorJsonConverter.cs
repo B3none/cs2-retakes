@@ -3,9 +3,9 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using CounterStrikeSharp.API.Modules.Utils;
 
-namespace RetakesPlugin.Modules.Converters;
+namespace RetakesPlugin.Modules.Configs.JsonConverters;
 
-public class VectorConverter : JsonConverter<Vector>
+public class VectorJsonConverter : JsonConverter<Vector>
 {
     public override Vector Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {

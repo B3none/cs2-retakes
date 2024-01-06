@@ -4,27 +4,27 @@ using CounterStrikeSharp.API.Modules.Utils;
 
 namespace RetakesPlugin.Modules.Managers;
 
-public class Game
+public class GameManager
 {
     private Dictionary<int, int> _playerRoundScores = new();
-    public readonly Queue Queue;
+    public readonly QueueManager QueueManager;
     private readonly int _consecutiveRoundWinsToScramble;
 
     public const int ScoreForKill = 50;
     public const int ScoreForAssist = 25;
     public const int ScoreForDefuse = 50;
 
-    public Game(Queue queue, int? roundsToScramble)
+    public GameManager(QueueManager queueManager, int? roundsToScramble)
     {
-        Queue = queue;
+        QueueManager = queueManager;
         _consecutiveRoundWinsToScramble = roundsToScramble ?? 5;
     }
     
     private void ScrambleTeams()
     {
-        var shuffledActivePlayers = Helpers.Shuffle(Queue.ActivePlayers);
+        var shuffledActivePlayers = Helpers.Shuffle(QueueManager.ActivePlayers);
         
-        var newTerrorists = shuffledActivePlayers.Take(Queue.GetTargetNumTerrorists()).ToList();
+        var newTerrorists = shuffledActivePlayers.Take(QueueManager.GetTargetNumTerrorists()).ToList();
         var newCounterTerrorists = shuffledActivePlayers.Except(newTerrorists).ToList();
         
         SetTeams(newTerrorists, newCounterTerrorists);
@@ -71,7 +71,7 @@ public class Game
     {
         _consecutiveRoundsWon = 0;
         
-        var targetNumTerrorists = Queue.GetTargetNumTerrorists();
+        var targetNumTerrorists = QueueManager.GetTargetNumTerrorists();
         var sortedCounterTerroristPlayers = GetSortedActivePlayers(CsTeam.CounterTerrorist);
         
         // Ensure that the players with the scores are set as new terrorists first.
@@ -95,7 +95,7 @@ public class Game
         
         newTerrorists.AddRange(sortedCounterTerroristPlayers.Where(player => player.Score > 0).Take(targetNumTerrorists - newTerrorists.Count).ToList());
 
-        var newCounterTerrorists = Queue.ActivePlayers.Except(newTerrorists).ToList();
+        var newCounterTerrorists = QueueManager.ActivePlayers.Except(newTerrorists).ToList();
         
         SetTeams(newTerrorists, newCounterTerrorists);
     }
@@ -106,7 +106,7 @@ public class Game
         List<CCSPlayerController> newCounterTerrorists = new();
      
         var currentNumTerrorist = Helpers.GetCurrentNumPlayers(CsTeam.Terrorist);
-        var numTerroristsNeeded = Queue.GetTargetNumTerrorists() - currentNumTerrorist;
+        var numTerroristsNeeded = QueueManager.GetTargetNumTerrorists() - currentNumTerrorist;
         
         if (numTerroristsNeeded > 0)
         {
@@ -130,11 +130,11 @@ public class Game
         }
         
         var currentNumCounterTerroristAfterBalance = Helpers.GetCurrentNumPlayers(CsTeam.CounterTerrorist);
-        var numCounterTerroristsNeeded = Queue.GetTargetNumCounterTerrorists() - currentNumCounterTerroristAfterBalance;
+        var numCounterTerroristsNeeded = QueueManager.GetTargetNumCounterTerrorists() - currentNumCounterTerroristAfterBalance;
         
         if (numCounterTerroristsNeeded > 0)
         {
-            var terroristsWithZeroScore = Queue.ActivePlayers
+            var terroristsWithZeroScore = QueueManager.ActivePlayers
                 .Where(player => 
                     (CsTeam)player.TeamNum == CsTeam.Terrorist
                     && Helpers.IsValidPlayer(player) 
@@ -150,7 +150,7 @@ public class Game
             {
                 // For remaining excess terrorists, move the ones with the lowest score to CT
                 newCounterTerrorists.AddRange(
-                    Queue.ActivePlayers
+                    QueueManager.ActivePlayers
                         .Except(newCounterTerrorists)
                         .Except(newTerrorists)
                         .Where(player => (CsTeam)player.TeamNum == CsTeam.Terrorist && Helpers.IsValidPlayer(player))
@@ -166,7 +166,7 @@ public class Game
 
     private List<CCSPlayerController> GetSortedActivePlayers(CsTeam? team = null)
     {
-        return Queue.ActivePlayers
+        return QueueManager.ActivePlayers
             .Where(Helpers.IsValidPlayer)
             .Where(player => team == null || (CsTeam)player.TeamNum == team)
             .OrderByDescending(player => _playerRoundScores.GetValueOrDefault((int)player.UserId!, 0))
@@ -178,7 +178,7 @@ public class Game
         terrorists ??= new List<CCSPlayerController>();
         counterTerrorists ??= new List<CCSPlayerController>();
         
-        foreach (var player in Queue.ActivePlayers)
+        foreach (var player in QueueManager.ActivePlayers)
         {
             if (terrorists.Contains(player))
             {

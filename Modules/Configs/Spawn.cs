@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 using CounterStrikeSharp.API.Modules.Utils;
-using RetakesPlugin.Modules.Converters;
+using RetakesPlugin.Modules.Configs.JsonConverters;
 
 namespace RetakesPlugin.Modules.Configs;
 
@@ -12,10 +12,10 @@ public class Spawn
         QAngle = qAngle;
     }
 
-    [JsonConverter(typeof(VectorConverter))]
+    [JsonConverter(typeof(VectorJsonConverter))]
     public Vector Vector { get; }
     
-    [JsonConverter(typeof(QAngleConverter))]
+    [JsonConverter(typeof(QAngleJsonConverter))]
     public QAngle QAngle { get; }
     public CsTeam Team { get; set; }
     public Bombsite Bombsite { get; set; }
