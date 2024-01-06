@@ -217,4 +217,15 @@ public class Queue
         _roundTerrorists = Utilities.GetPlayers().Where(player => Helpers.IsValidPlayer(player) && (CsTeam)player.TeamNum == CsTeam.Terrorist).ToList();
         _roundCounterTerrorists = Utilities.GetPlayers().Where(player => Helpers.IsValidPlayer(player) && (CsTeam)player.TeamNum == CsTeam.CounterTerrorist).ToList();
     }
+    
+    public void SetupActivePlayers()
+    {
+        if (ActivePlayers.Count != 0)
+        {
+            return;
+        }
+        
+        ActivePlayers = QueuePlayers;
+        QueuePlayers = new List<CCSPlayerController>();
+    }
 }

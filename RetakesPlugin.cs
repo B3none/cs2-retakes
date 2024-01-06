@@ -263,7 +263,7 @@ public class RetakesPlugin : BasePlugin
         if (!_gameManager.Queue.ActivePlayers.Any())
         {
             Console.WriteLine($"{LogPrefix}No active players, skipping.");
-            _gameManager.SetupActivePlayers();
+            _gameManager.Queue.SetupActivePlayers();
             return HookResult.Continue;
         }
         

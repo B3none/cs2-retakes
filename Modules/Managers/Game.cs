@@ -208,17 +208,6 @@ public class Game
         Console.WriteLine($"{RetakesPlugin.LogPrefix}Balance teams DONE");
     }
 
-    public void SetupActivePlayers()
-    {
-        if (Queue.ActivePlayers.Count != 0)
-        {
-            return;
-        }
-        
-        Queue.ActivePlayers = Queue.QueuePlayers;
-        Queue.QueuePlayers = new List<CCSPlayerController>();
-    }
-
     private List<CCSPlayerController> GetSortedActivePlayers(CsTeam? team = null)
     {
         return Queue.ActivePlayers
