@@ -1,4 +1,5 @@
-﻿using CounterStrikeSharp.API;
+﻿using System.Drawing;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
@@ -110,9 +111,28 @@ public class RetakesPlugin : BasePlugin
         commandInfo.ReplyToCommand($"{LogPrefix}{(didAddSpawn ? "Spawn added" : "Error adding spawn")}");
     }
 
+    [ConsoleCommand("css_showqangle", "This command shows the players current QAngle")]
+    // [RequiresPermissions("@css/root")]
+    public void OnCommandShowQangle(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        if (!Helpers.IsValidPlayer(player))
+        {
+            return;
+        }
+
+        var playerPawn = player!.PlayerPawn.Value!; 
+        var qAngle = playerPawn.AbsRotation;
+        var lookTargetPosition = playerPawn.LookTargetPosition;
+        var eyeAngles = playerPawn.EyeAngles;
+
+        Server.PrintToChatAll($"{MessagePrefix}lookTargetPosition: x({lookTargetPosition!.X}) y({lookTargetPosition!.Y}) z({lookTargetPosition!.Z})");
+        Server.PrintToChatAll($"{MessagePrefix}qAngle: x({qAngle!.X}) y({qAngle!.Y}) z({qAngle!.Z})");
+        Server.PrintToChatAll($"{MessagePrefix}eyeAngles: x({eyeAngles!.X}) y({eyeAngles!.Y}) z({eyeAngles!.Z})");
+    }
+
     [ConsoleCommand("css_showspawns", "This command shows the spawns")]
     [CommandHelper(minArgs: 1, usage: "[A/B]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
-    [RequiresPermissions("@css/root")]
+    // [RequiresPermissions("@css/root")]
     public void OnCommandShowSpawns(CCSPlayerController? player, CommandInfo commandInfo)
     {
         if (!Helpers.IsValidPlayer(player))
@@ -143,12 +163,36 @@ public class RetakesPlugin : BasePlugin
         
         // Pre cache the sprites.
         Server.PrecacheModel("sprites/laserbeam.vmt");
-        Server.PrecacheModel("sprites/halo.vmt");
         
-        // TODO: Display the sprites to show each spawn.
         foreach (var spawn in spawns)
         {
+            // Tell the player about the spawn.
             player!.PrintToChat($"{LogPrefix}Spawn: {spawn.Vector} {spawn.QAngle} {spawn.Team} {spawn.Bombsite} {(spawn.CanBePlanter ? "Y" : "N")}");
+            
+            // Create beam
+            var beam = Utilities.CreateEntityByName<CEnvBeam>("env_beam");
+
+            if (beam == null)
+            {
+                throw new Exception("Failed to create beam entity.");
+            }
+
+            var endBeam = spawn.Vector;
+            endBeam.Z = spawn.Vector.Z + 3000; 
+            
+            Helpers.MoveBeam(beam, spawn.Vector, endBeam);
+            beam.SetModel("sprites/laserbeam.vmt");
+            beam.Radius = 10;
+            beam.StartFrame = 0;
+            beam.FrameRate = 0;
+            beam.LifeState = 1;
+            beam.Width = 1;
+            beam.EndWidth = 1;
+            beam.Amplitude = 0;
+            beam.Speed = 50;
+            beam.Flags = 0;
+            beam.FadeLength = 0;
+            beam.Render = spawn.Team == CsTeam.Terrorist ? Color.Red : Color.Blue;
         }
     }
 

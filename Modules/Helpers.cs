@@ -1,7 +1,9 @@
-﻿using CounterStrikeSharp.API;
+﻿using System.Drawing;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
+using RetakesPlugin.Modules.Configs;
 
 namespace RetakesPlugin.Modules;
 
@@ -175,5 +177,42 @@ public static class Helpers
     public static void RestartGame()
     {
         Server.ExecuteCommand("mp_restartgame 1");
+    }
+    
+    public static void MoveBeam(CEnvBeam? laser, Vector start, Vector end)
+    {
+        if (laser == null)
+        {
+            return;
+        }
+
+        // set pos
+        laser.Teleport(start, new QAngle(), new Vector());
+
+        // end pos
+        // NOTE: we cant just move the whole vec
+        laser.EndPos.X = end.X;
+        laser.EndPos.Y = end.Y;
+        laser.EndPos.Z = end.Z;
+
+        Utilities.SetStateChanged(laser,"CBeam", "m_vecEndPos");
+    }
+
+    public static void SetBeamColour(CEnvBeam? laser, Color colour)
+    {
+        if (laser != null)
+        {
+            laser.Render = colour;
+        }
+    }
+
+    public static Color GetSpawnColour(Spawn spawn)
+    {
+        if (spawn.Team == CsTeam.CounterTerrorist)
+        {
+            return Color.Blue;
+        }
+
+        return spawn.CanBePlanter ? Color.Yellow : Color.Red;
     }
 }
