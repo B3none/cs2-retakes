@@ -5,7 +5,7 @@ using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Utils;
-using RetakesPlugin.Modules;
+using RetakesPlugin.Modules.Enums;
 using RetakesPlugin.Modules.Allocators;
 using RetakesPlugin.Modules.Configs;
 using RetakesPlugin.Modules.Managers;
