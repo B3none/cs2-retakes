@@ -35,7 +35,6 @@ public class RetakesPlugin : BasePlugin
     private Bombsite _currentBombsite = Bombsite.A;
     private GameManager? _gameManager;
     private CCSPlayerController? _planter;
-    private readonly Random _random = new();
     private CsTeam _lastRoundWinner;
 
     public override void Load(bool hotReload)
@@ -320,7 +319,7 @@ public class RetakesPlugin : BasePlugin
         }
         
         // Reset round state.
-        _currentBombsite = _random.Next(0, 2) == 0 ? Bombsite.A : Bombsite.B;
+        _currentBombsite = Helpers.Random.Next(0, 2) == 0 ? Bombsite.A : Bombsite.B;
         _planter = null;
         _gameManager.ResetPlayerScores();
         
@@ -723,7 +722,7 @@ public class RetakesPlugin : BasePlugin
             if (!isRetakesConfigLoaded || _retakesConfig!.RetakesConfigData!.EnableBombsiteAnnouncementVoices)
             {
                 // Do this here so every player hears a random announcer each round.
-                var bombsiteAnnouncer = bombsiteAnnouncers[_random.Next(bombsiteAnnouncers.Length)];
+                var bombsiteAnnouncer = bombsiteAnnouncers[Helpers.Random.Next(bombsiteAnnouncers.Length)];
                 
                 player.ExecuteClientCommand(
                     $"play sounds/vo/agents/{bombsiteAnnouncer}/loc_{bombsite.ToString().ToLower()}_01");
