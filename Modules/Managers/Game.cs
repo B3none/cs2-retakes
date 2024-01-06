@@ -59,6 +59,7 @@ public class Game
         
         if (_consecutiveRoundsWon == _consecutiveRoundWinsToScramble)
         {
+            // TODO: Translate this message.
             Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}Terrorists have won {_consecutiveRoundWinsToScramble} rounds in a row! Teams will be scrambled.");
          
             _consecutiveRoundsWon = 0;
