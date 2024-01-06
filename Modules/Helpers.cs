@@ -171,4 +171,9 @@ public static class Helpers
         itemServices.HasHelmet = false;
         itemServices.HasHeavyArmor = false;
     }
+
+    public static void RestartGame()
+    {
+        Server.ExecuteCommand("mp_restartgame 1");
+    }
 }

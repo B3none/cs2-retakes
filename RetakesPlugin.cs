@@ -235,7 +235,7 @@ public class RetakesPlugin : BasePlugin
         if (Utilities.GetPlayers().ToList().Count <= 2)
         {
             Console.WriteLine($"{LogPrefix}First or second player connected, resetting game.");
-            Server.ExecuteCommand("mp_restartgame 1");
+            Helpers.RestartGame();
         }
 
         return HookResult.Continue;
@@ -651,6 +651,13 @@ public class RetakesPlugin : BasePlugin
         _gameManager.QueueManager.DebugQueues(true);
         _gameManager.QueueManager.PlayerTriedToJoinTeam(player, (CsTeam)@event.Oldteam, (CsTeam)@event.Team);
         _gameManager.QueueManager.DebugQueues(false);
+
+        // If we don't have any active players, setup the active players and restart the game.
+        if (_gameManager.QueueManager.ActivePlayers.Count == 0)
+        {
+            _gameManager.QueueManager.SetupActivePlayers();
+            Helpers.RestartGame();
+        }
 
         return HookResult.Continue;
     }
