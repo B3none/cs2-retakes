@@ -52,7 +52,7 @@ public class QueueManager
             if (toTeam == CsTeam.Spectator)
             {
                 Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Switching to spectator.");
-                ActivePlayers.Remove(player);
+                RemovePlayerFromQueues(player);
                 return;
             }
             
@@ -179,7 +179,7 @@ public class QueueManager
         }
     }
 
-    public void PlayerDisconnected(CCSPlayerController player)
+    public void RemovePlayerFromQueues(CCSPlayerController player)
     {
         ActivePlayers.Remove(player);
         QueuePlayers.Remove(player);
@@ -205,6 +205,24 @@ public class QueueManager
         else
         {
             Console.WriteLine($"{RetakesPlugin.LogPrefix}QueuePlayers ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", QueuePlayers.Where(Helpers.IsValidPlayer).Select(player => player.PlayerName))}");
+        }
+
+        if (!_roundTerrorists.Any())
+        {
+            Console.WriteLine($"{RetakesPlugin.LogPrefix}_roundTerrorists ({(isBefore ? "BEFORE" : "AFTER")}): No players in the queue.");
+        }
+        else
+        {
+            Console.WriteLine($"{RetakesPlugin.LogPrefix}_roundTerrorists ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", _roundTerrorists.Where(Helpers.IsValidPlayer).Select(player => player.PlayerName))}");
+        }
+
+        if (!_roundCounterTerrorists.Any())
+        {
+            Console.WriteLine($"{RetakesPlugin.LogPrefix}_roundCounterTerrorists ({(isBefore ? "BEFORE" : "AFTER")}): No players in the queue.");
+        }
+        else
+        {
+            Console.WriteLine($"{RetakesPlugin.LogPrefix}_roundCounterTerrorists ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", _roundCounterTerrorists.Where(Helpers.IsValidPlayer).Select(player => player.PlayerName))}");
         }
     }
 

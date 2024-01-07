@@ -55,7 +55,7 @@ public class RetakesPlugin : BasePlugin
     [ConsoleCommand("css_addspawn", "Adds a spawn point for retakes to the map.")]
     [CommandHelper(minArgs: 2, usage: "[T/CT] [A/B] [Y/N (can be planter / default N)]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
     [RequiresPermissions("@css/root")]
-    public void AddSpawnCommand(CCSPlayerController? player, CommandInfo commandInfo)
+    public void OnCommandAddSpawn(CCSPlayerController? player, CommandInfo commandInfo)
     {
         if (!Helpers.DoesPlayerHavePawn(player))
         {
@@ -109,6 +109,15 @@ public class RetakesPlugin : BasePlugin
         var didAddSpawn = _mapConfig.AddSpawn(spawn);
         
         commandInfo.ReplyToCommand($"{LogPrefix}{(didAddSpawn ? "Spawn added" : "Error adding spawn")}");
+    }
+
+    [ConsoleCommand("css_debugqueues", "Prints the state of the queues to the console.")]
+    [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
+    [RequiresPermissions("@css/root")]
+    public void OnCommandDebugState(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        Console.WriteLine($"{LogPrefix}");
+        _gameManager.QueueManager.DebugQueues(true);
     }
 
     [ConsoleCommand("css_showqangle", "This command shows the players current QAngle")]
@@ -725,7 +734,7 @@ public class RetakesPlugin : BasePlugin
         }
         
         _gameManager.QueueManager.DebugQueues(true);
-        _gameManager.QueueManager.PlayerDisconnected(player);
+        _gameManager.QueueManager.RemovePlayerFromQueues(player);
         _gameManager.QueueManager.DebugQueues(false);
 
         return HookResult.Continue;
