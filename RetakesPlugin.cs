@@ -112,7 +112,7 @@ public class RetakesPlugin : BasePlugin
     }
 
     [ConsoleCommand("css_showqangle", "This command shows the players current QAngle")]
-    // [RequiresPermissions("@css/root")]
+    [RequiresPermissions("@css/root")]
     public void OnCommandShowQangle(CCSPlayerController? player, CommandInfo commandInfo)
     {
         if (!Helpers.IsValidPlayer(player))
@@ -132,7 +132,7 @@ public class RetakesPlugin : BasePlugin
 
     [ConsoleCommand("css_showspawns", "This command shows the spawns")]
     [CommandHelper(minArgs: 1, usage: "[A/B]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
-    // [RequiresPermissions("@css/root")]
+    [RequiresPermissions("@css/root")]
     public void OnCommandShowSpawns(CCSPlayerController? player, CommandInfo commandInfo)
     {
         if (!Helpers.IsValidPlayer(player))
