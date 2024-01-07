@@ -14,6 +14,7 @@ Retakes plugin written in C# for CounterStrikeSharp
 - [x] Retakes config file
 - [x] Add translations
 - [x] Improve bombsite announcement
+- [x] Queue priority for VIPs
 - [ ] Add a command to view the spawns for the current map
 - [ ] Implement better spawn management system
 
