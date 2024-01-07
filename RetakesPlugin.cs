@@ -116,7 +116,12 @@ public class RetakesPlugin : BasePlugin
     [RequiresPermissions("@css/root")]
     public void OnCommandDebugState(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        Console.WriteLine($"{LogPrefix}");
+        if (_gameManager == null)
+        {
+            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
+            return;
+        }
+        
         _gameManager.QueueManager.DebugQueues(true);
     }
 
