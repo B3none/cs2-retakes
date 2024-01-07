@@ -165,13 +165,16 @@ public class QueueManager
                 .Take(playersToAdd)
                 .ToList();
             
-            QueuePlayers.RemoveAll(player => playersToAddList.Contains(player));
+            QueuePlayers.RemoveAll(playersToAddList.Contains);
             ActivePlayers.AddRange(playersToAddList);
             
             // loop players to add, and set their team to CT
             foreach (var player in playersToAddList)
             {
-                player.SwitchTeam(CsTeam.CounterTerrorist);
+                if ((CsTeam)player.TeamNum != CsTeam.CounterTerrorist)
+                {
+                    player.SwitchTeam(CsTeam.CounterTerrorist);
+                }
             }
         }
     }
@@ -180,6 +183,8 @@ public class QueueManager
     {
         ActivePlayers.Remove(player);
         QueuePlayers.Remove(player);
+        _roundTerrorists.Remove(player);
+        _roundCounterTerrorists.Remove(player);
     }
     
     public void DebugQueues(bool isBefore)
@@ -216,16 +221,5 @@ public class QueueManager
     {
         _roundTerrorists = Utilities.GetPlayers().Where(player => Helpers.IsValidPlayer(player) && (CsTeam)player.TeamNum == CsTeam.Terrorist).ToList();
         _roundCounterTerrorists = Utilities.GetPlayers().Where(player => Helpers.IsValidPlayer(player) && (CsTeam)player.TeamNum == CsTeam.CounterTerrorist).ToList();
-    }
-    
-    public void SetupActivePlayers()
-    {
-        if (ActivePlayers.Count != 0)
-        {
-            return;
-        }
-        
-        ActivePlayers = QueuePlayers;
-        QueuePlayers = new List<CCSPlayerController>();
     }
 }

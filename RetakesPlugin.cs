@@ -17,7 +17,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(131)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.1.7";
+    private const string Version = "1.1.8";
     
     public override string ModuleName => "Retakes Plugin";
     public override string ModuleVersion => Version;
@@ -304,12 +304,8 @@ public class RetakesPlugin : BasePlugin
             return HookResult.Continue;
         }
         
-        if (!_gameManager.QueueManager.ActivePlayers.Any())
-        {
-            Console.WriteLine($"{LogPrefix}No active players, skipping.");
-            _gameManager.QueueManager.SetupActivePlayers();
-            return HookResult.Continue;
-        }
+        // Reset round teams to allow team changes.
+        _gameManager.QueueManager.ClearRoundTeams();
         
         // Update Queue status
         Console.WriteLine($"{LogPrefix}Updating queues...");
@@ -317,9 +313,6 @@ public class RetakesPlugin : BasePlugin
         _gameManager.QueueManager.Update();
         _gameManager.QueueManager.DebugQueues(false);
         Console.WriteLine($"{LogPrefix}Updated queues.");
-        
-        // Reset round teams to allow team changes.
-        _gameManager.QueueManager.ClearRoundTeams();
         
         // Handle team swaps during round pre-start.
         switch (_lastRoundWinner)
@@ -676,7 +669,7 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnPlayerTeam(EventPlayerTeam @event, GameEventInfo info)
     {
-        Console.WriteLine($"{LogPrefix}OnRoundEnd event fired.");
+        Console.WriteLine($"{LogPrefix}OnPlayerTeam event fired.");
         
         if (_gameManager == null)
         {
@@ -691,16 +684,23 @@ public class RetakesPlugin : BasePlugin
             return HookResult.Continue;
         }
         
-        Console.WriteLine($"{LogPrefix}[{player.PlayerName}] OnPlayerTeam event fired. ({(@event.Isbot ? "BOT" : "NOT BOT")}) {(CsTeam)@event.Oldteam} -> {(CsTeam)@event.Team}");
+        Console.WriteLine($"{LogPrefix}[{player.PlayerName}] {(CsTeam)@event.Oldteam} -> {(CsTeam)@event.Team}");
         
         _gameManager.QueueManager.DebugQueues(true);
         _gameManager.QueueManager.PlayerTriedToJoinTeam(player, (CsTeam)@event.Oldteam, (CsTeam)@event.Team);
         _gameManager.QueueManager.DebugQueues(false);
-
+        
+        Console.WriteLine($"{LogPrefix}[{player.PlayerName}] checking to ensure we have active players");
         // If we don't have any active players, setup the active players and restart the game.
         if (_gameManager.QueueManager.ActivePlayers.Count == 0)
         {
-            _gameManager.QueueManager.SetupActivePlayers();
+            Console.WriteLine($"{LogPrefix}[{player.PlayerName}] clearing round teams to allow team changes");
+            _gameManager.QueueManager.ClearRoundTeams();
+         
+            Console.WriteLine($"{LogPrefix}[{player.PlayerName}] no active players found, calling QueueManager.Update()");
+            _gameManager.QueueManager.DebugQueues(true);
+            _gameManager.QueueManager.Update();
+            _gameManager.QueueManager.DebugQueues(false);
             Helpers.RestartGame();
         }
 
