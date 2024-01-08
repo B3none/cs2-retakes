@@ -6,7 +6,6 @@ using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Utils;
-using Microsoft.Extensions.Localization;
 using RetakesPlugin.Modules;
 using RetakesPlugin.Modules.Enums;
 using RetakesPlugin.Modules.Allocators;
@@ -795,7 +794,7 @@ public class RetakesPlugin : BasePlugin
         
         var isRetakesConfigLoaded = RetakesConfig.IsLoaded(_retakesConfig);
         
-        // TODO: Once we have per client translations this will need to be inside the loop
+        // TODO: Once we implement per client translations this will need to be inside the loop
         var announcementMessage = _translator["bombsite.announcement", bombsiteLetter, numTerrorist, numCounterTerrorist];
         
         foreach (var player in Utilities.GetPlayers())
