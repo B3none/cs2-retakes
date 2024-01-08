@@ -7,14 +7,16 @@ namespace RetakesPlugin.Modules.Managers;
 
 public class QueueManager
 {
+    private readonly Translator _translator;
     private readonly int _maxRetakesPlayers;
     private readonly float _terroristRatio;
 
     public List<CCSPlayerController> QueuePlayers = new();
     public List<CCSPlayerController> ActivePlayers = new();
 
-    public QueueManager(int? retakesMaxPlayers, float? retakesTerroristRatio)
+    public QueueManager(Translator translator, int? retakesMaxPlayers, float? retakesTerroristRatio)
     {
+        _translator = translator;
         _maxRetakesPlayers = retakesMaxPlayers ?? 9;
         _terroristRatio = retakesTerroristRatio ?? 0.45f;
     }
@@ -88,6 +90,7 @@ public class QueueManager
             }
             
             Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Not found, adding to QueuePlayers.");
+            player.PrintToChat($"{RetakesPlugin.MessagePrefix}{_translator["queue.joined"]}");
             QueuePlayers.Add(player);
         }
         else
@@ -175,6 +178,16 @@ public class QueueManager
                 {
                     player.SwitchTeam(CsTeam.CounterTerrorist);
                 }
+            }
+        }
+
+        if (ActivePlayers.Count == _maxRetakesPlayers && QueuePlayers.Count > 0)
+        {
+            var waitingMessage = _translator["queue.waiting", ActivePlayers.Count];
+            
+            foreach (var player in QueuePlayers)
+            {
+                player.PrintToChat($"{RetakesPlugin.MessagePrefix}{waitingMessage}");
             }
         }
     }

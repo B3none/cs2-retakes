@@ -6,6 +6,7 @@ using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Utils;
+using RetakesPlugin.Modules;
 using RetakesPlugin.Modules.Enums;
 using RetakesPlugin.Modules.Allocators;
 using RetakesPlugin.Modules.Configs;
@@ -17,7 +18,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(131)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.1.9";
+    private const string Version = "1.2.0";
     
     public override string ModuleName => "Retakes Plugin";
     public override string ModuleVersion => Version;
@@ -28,6 +29,9 @@ public class RetakesPlugin : BasePlugin
     public static readonly string LogPrefix = $"[Retakes {Version}] ";
     public static readonly string MessagePrefix = $"[{ChatColors.Green}Retakes{ChatColors.White}] ";
     
+    // Helpers
+    private Translator _translator;
+    
     // Configs
     private MapConfig? _mapConfig;
     private RetakesConfig? _retakesConfig;
@@ -36,10 +40,19 @@ public class RetakesPlugin : BasePlugin
     private Bombsite _currentBombsite = Bombsite.A;
     private GameManager? _gameManager;
     private CCSPlayerController? _planter;
+    private bool _isBombPlanted = false;
     private CsTeam _lastRoundWinner;
+    
+    public RetakesPlugin()
+    {
+        _translator = new Translator(Localizer);
+    }
 
     public override void Load(bool hotReload)
     {
+        // Reset this on load
+        _translator = new Translator(Localizer);
+        
         Console.WriteLine($"{LogPrefix}Plugin loaded!");
         
         RegisterListener<Listeners.OnMapStart>(OnMapStart);
@@ -269,11 +282,14 @@ public class RetakesPlugin : BasePlugin
         }
         
         _gameManager = new GameManager(
+            _translator,
             new QueueManager(
+                _translator,
                 _retakesConfig?.RetakesConfigData?.MaxPlayers,
                 _retakesConfig?.RetakesConfigData?.TerroristRatio
             ),
-            _retakesConfig?.RetakesConfigData?.RoundsToScramble
+            _retakesConfig?.RetakesConfigData?.RoundsToScramble,
+            _retakesConfig?.RetakesConfigData?.IsScrambleEnabled
         );
     }
 
@@ -333,7 +349,7 @@ public class RetakesPlugin : BasePlugin
         {
             case CsTeam.CounterTerrorist:
                 Console.WriteLine($"{LogPrefix}Calling CounterTerroristRoundWin()");
-                _gameManager.CounterTerroristRoundWin();
+                _gameManager.CounterTerroristRoundWin(_planter, _isBombPlanted);
                 Console.WriteLine($"{LogPrefix}CounterTerroristRoundWin call complete");
                 break;
             
@@ -621,6 +637,14 @@ public class RetakesPlugin : BasePlugin
         
         return HookResult.Continue;
     }
+    
+    [GameEventHandler]
+    public HookResult OnBombPlanted(EventBombPlanted @event, GameEventInfo info)
+    {
+        _isBombPlanted = true;
+        
+        return HookResult.Continue;
+    }
 
     [GameEventHandler]
     public HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
@@ -757,7 +781,7 @@ public class RetakesPlugin : BasePlugin
         return gameRules;
     }
     
-    // Helpers (with localization so they must be in here until I can figure out how to use it elsewhere)
+    // Helpers (with localization so they must be in here until I can figure out how to use it nicely elsewhere)
     private void AnnounceBombsite(Bombsite bombsite)
     {
         Console.WriteLine($"{LogPrefix}Announcing bombsite output to all players.");
@@ -773,30 +797,32 @@ public class RetakesPlugin : BasePlugin
             "swat_fem"
         };
 
+        // Get translation message
+        var bombsiteLetter = bombsite == Bombsite.A ? "A" : "B";
+        var numTerrorist = Helpers.GetCurrentNumPlayers(CsTeam.Terrorist);
+        var numCounterTerrorist = Helpers.GetCurrentNumPlayers(CsTeam.CounterTerrorist);
+        
         var isRetakesConfigLoaded = RetakesConfig.IsLoaded(_retakesConfig);
+        
+        // TODO: Once we implement per client translations this will need to be inside the loop
+        var announcementMessage = _translator["bombsite.announcement", bombsiteLetter, numTerrorist, numCounterTerrorist];
         
         foreach (var player in Utilities.GetPlayers())
         {
-            // Print this 3 times to ensure that the player sees it.
-            for (var i = 0; i < 3; i++)
-            {
-                player.PrintToChat(
-                $"{MessagePrefix}{Localizer["bombsite.announcement", bombsite == Bombsite.A ? "A" : "B"]}"
-                );
-            }
+            // Don't use Server.PrintToChat as it'll add another loop through the players.
+            player.PrintToChat($"{MessagePrefix}{announcementMessage}");
             
             if (!isRetakesConfigLoaded || _retakesConfig!.RetakesConfigData!.EnableBombsiteAnnouncementVoices)
             {
                 // Do this here so every player hears a random announcer each round.
                 var bombsiteAnnouncer = bombsiteAnnouncers[Helpers.Random.Next(bombsiteAnnouncers.Length)];
                 
-                player.ExecuteClientCommand(
-                    $"play sounds/vo/agents/{bombsiteAnnouncer}/loc_{bombsite.ToString().ToLower()}_01");
+                player.ExecuteClientCommand($"play sounds/vo/agents/{bombsiteAnnouncer}/loc_{bombsite.ToString().ToLower()}_01");
             }
             
             if (!isRetakesConfigLoaded || _retakesConfig!.RetakesConfigData!.EnableBombsiteAnnouncementCenter)
             {
-                player.PrintToCenterHtml(Localizer["bombsite.announcement", bombsite == Bombsite.A ? "A" : "B"]);
+                player.PrintToCenterHtml(announcementMessage);
             }
         }
         
