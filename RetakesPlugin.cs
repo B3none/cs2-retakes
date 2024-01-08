@@ -40,6 +40,7 @@ public class RetakesPlugin : BasePlugin
     private Bombsite _currentBombsite = Bombsite.A;
     private GameManager? _gameManager;
     private CCSPlayerController? _planter;
+    private bool _isBombPlanted = false;
     private CsTeam _lastRoundWinner;
     
     public RetakesPlugin()
@@ -287,7 +288,8 @@ public class RetakesPlugin : BasePlugin
                 _retakesConfig?.RetakesConfigData?.MaxPlayers,
                 _retakesConfig?.RetakesConfigData?.TerroristRatio
             ),
-            _retakesConfig?.RetakesConfigData?.RoundsToScramble
+            _retakesConfig?.RetakesConfigData?.RoundsToScramble,
+            _retakesConfig?.RetakesConfigData?.IsScrambleEnabled
         );
     }
 
@@ -347,7 +349,7 @@ public class RetakesPlugin : BasePlugin
         {
             case CsTeam.CounterTerrorist:
                 Console.WriteLine($"{LogPrefix}Calling CounterTerroristRoundWin()");
-                _gameManager.CounterTerroristRoundWin();
+                _gameManager.CounterTerroristRoundWin(_planter, _isBombPlanted);
                 Console.WriteLine($"{LogPrefix}CounterTerroristRoundWin call complete");
                 break;
             
@@ -632,6 +634,14 @@ public class RetakesPlugin : BasePlugin
         }
         
         Helpers.GiveAndSwitchToBomb(player);
+        
+        return HookResult.Continue;
+    }
+    
+    [GameEventHandler]
+    public HookResult OnBombPlanted(EventBombPlanted @event, GameEventInfo info)
+    {
+        _isBombPlanted = true;
         
         return HookResult.Continue;
     }

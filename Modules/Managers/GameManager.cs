@@ -11,16 +11,18 @@ public class GameManager
     private Dictionary<int, int> _playerRoundScores = new();
     public readonly QueueManager QueueManager;
     private readonly int _consecutiveRoundWinsToScramble;
+    private readonly bool _isScrambleEnabled;
 
     public const int ScoreForKill = 50;
     public const int ScoreForAssist = 25;
     public const int ScoreForDefuse = 50;
 
-    public GameManager(Translator translator, QueueManager queueManager, int? roundsToScramble)
+    public GameManager(Translator translator, QueueManager queueManager, int? roundsToScramble, bool? isScrambleEnabled)
     {
         _translator = translator;
         QueueManager = queueManager;
         _consecutiveRoundWinsToScramble = roundsToScramble ?? 5;
+        _isScrambleEnabled = isScrambleEnabled ?? true;
     }
     
     private void ScrambleTeams()
@@ -55,26 +57,40 @@ public class GameManager
     }
     
     private int _consecutiveRoundsWon;
-    
+
     public void TerroristRoundWin()
     {
         _consecutiveRoundsWon++;
-
-        // TODO: Translate this message.
-        Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}Terrorists have won {ChatColors.Green}{_consecutiveRoundWinsToScramble}{ChatColors.White} rounds in a row - If they win {ChatColors.Green}{_consecutiveRoundWinsToScramble - _consecutiveRoundsWon} more{ChatColors.White}, {ChatColors.Purple}teams will be scrambled{ChatColors.White}.");
         
         if (_consecutiveRoundsWon == _consecutiveRoundWinsToScramble)
         {
-            // TODO: Translate this message.
-            Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}Terrorists have won {_consecutiveRoundWinsToScramble} rounds in a row! Teams will be scrambled.");
+            Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["teams.scramble", _consecutiveRoundWinsToScramble]}");
          
             _consecutiveRoundsWon = 0;
             ScrambleTeams();
         }
+        else if (_consecutiveRoundsWon >= 3)
+        {
+            if (_isScrambleEnabled)
+            {
+                Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["teams.almost_scramble", _consecutiveRoundWinsToScramble, _consecutiveRoundWinsToScramble - _consecutiveRoundsWon]}");
+            }
+            
+            Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["teams.win_streak", _consecutiveRoundsWon]}");
+        }
     }
     
-    public void CounterTerroristRoundWin()
+    public void CounterTerroristRoundWin(CCSPlayerController? planter, bool wasBombPlanted)
     {
+        if (planter != null && !wasBombPlanted)
+        {
+            Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["bombsite.failed_to_plant", planter.PlayerName]}");
+        }
+        
+        if (_consecutiveRoundsWon >= 3)
+        {
+            Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["teams.win_streak_over", _consecutiveRoundsWon]}");
+        }
         _consecutiveRoundsWon = 0;
         
         var targetNumTerrorists = QueueManager.GetTargetNumTerrorists();
