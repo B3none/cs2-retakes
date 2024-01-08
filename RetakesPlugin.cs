@@ -19,7 +19,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(131)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.2.0";
+    private const string Version = "1.2.1";
     
     public override string ModuleName => "Retakes Plugin";
     public override string ModuleVersion => Version;
@@ -833,24 +833,24 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnRoundFreezeEnd(EventRoundFreezeEnd @event, GameEventInfo info)
     {
-        Console.WriteLine($"{MessagePrefix}OnFreezeTimeEnd event fired.");
-        var pBombCarrierController = Helpers.GetBombCarrier();
+        Console.WriteLine($"{LogPrefix}OnFreezeTimeEnd event fired.");
+        var bombCarrier = Helpers.GetBombCarrier();
 
-        if (pBombCarrierController == null)
+        if (bombCarrier == null)
         {
-            Console.WriteLine($"{MessagePrefix}Bomb carrier not found.");
+            Console.WriteLine($"{LogPrefix}Bomb carrier not found.");
             return HookResult.Continue;
         }
 
-        if (!pBombCarrierController.PlayerPawn.Value!.InBombZone)
+        if (!bombCarrier.PlayerPawn.Value!.InBombZone)
         {
-            Console.WriteLine($"{MessagePrefix}Bomb carrier not in bomb zone.");
+            Console.WriteLine($"{LogPrefix}Bomb carrier not in bomb zone.");
             return HookResult.Continue;
         }
 
-        Console.WriteLine($"{MessagePrefix}Planting c4...");
-        CreatePlantedC4(pBombCarrierController);
-        Console.WriteLine($"{MessagePrefix}Planting c4 DONE");
+        Console.WriteLine($"{LogPrefix}Planting c4...");
+        CreatePlantedC4(bombCarrier);
+        Console.WriteLine($"{LogPrefix}Planting c4 DONE");
 
         return HookResult.Continue;
     }
@@ -858,16 +858,12 @@ public class RetakesPlugin : BasePlugin
     // Autoplant helpers (credit zwolof)
     private bool CreatePlantedC4(CCSPlayerController bombCarrier)
     {
-        Console.WriteLine($"{MessagePrefix}removing bomb");
+        Console.WriteLine($"{LogPrefix}removing bomb");
         bombCarrier.RemoveItemByDesignerName("weapon_c4", true);
-        
-        Console.WriteLine($"{MessagePrefix}1");
-        var gameRules = Helpers.GetGameRules();
-        Console.WriteLine($"{MessagePrefix}2");
 
-        if (gameRules == null || !Helpers.IsValidPlayer(bombCarrier))
+        if (!Helpers.IsValidPlayer(bombCarrier))
         {
-            Console.WriteLine($"{MessagePrefix}return false 1");
+            Console.WriteLine($"{LogPrefix}bomb carrier is not valid player");
             return false;
         }
         
@@ -875,7 +871,7 @@ public class RetakesPlugin : BasePlugin
 
         if (plantedC4 == null)
         {
-            Console.WriteLine($"{MessagePrefix}return false 2");
+            Console.WriteLine($"{LogPrefix}planted c4 is null");
             return false;
         }
 
@@ -883,13 +879,13 @@ public class RetakesPlugin : BasePlugin
 
         if (playerOrigin == null)
         {
-            Console.WriteLine($"{MessagePrefix}return false 3");
+            Console.WriteLine($"{LogPrefix}player origin is null");
             return false;
         }
         
         playerOrigin.Z -= bombCarrier.PlayerPawn.Value.Collision.Mins.Z;
         
-        Console.WriteLine($"{MessagePrefix}setting planted c4 props");
+        Console.WriteLine($"{LogPrefix}setting planted c4 props");
         plantedC4.BombTicking = true;
         plantedC4.CannotBeDefused = false;
         plantedC4.BeingDefused = false;
@@ -897,28 +893,29 @@ public class RetakesPlugin : BasePlugin
         
         if (_planter != null)
         {
-            Console.WriteLine($"{MessagePrefix}Setting CPlantedC4 m_hOwnerEntity");
-            Schema.SetSchemaValue(plantedC4.Handle, "CBaseEntity", "m_hOwnerEntity", _planter.Index);
+            Console.WriteLine($"{LogPrefix}Setting CPlantedC4 m_hOwnerEntity to: {_planter.PlayerPawn.Index}");
+            Schema.SetSchemaValue(plantedC4.Handle, "CBaseEntity", "m_hOwnerEntity", _planter.PlayerPawn.Index);
+            
+            Console.WriteLine($"{LogPrefix}Getting CPlantedC4 m_hOwnerEntity value after: {plantedC4.OwnerEntity.Index}");
         }
 
-        Console.WriteLine($"{MessagePrefix}calling dispatch spawn");
+        Console.WriteLine($"{LogPrefix}calling dispatch spawn");
         plantedC4.DispatchSpawn();
         
-        Console.WriteLine($"{MessagePrefix}complete! waiting for next frame");
+        Console.WriteLine($"{LogPrefix}complete! waiting for next frame");
         
         Server.NextFrame(() =>
         {
-            Console.WriteLine($"{MessagePrefix}teleporting prop");
+            Console.WriteLine($"{LogPrefix}teleporting prop");
             plantedC4.Teleport(playerOrigin, new QAngle(IntPtr.Zero, IntPtr.Zero, IntPtr.Zero), new Vector(0, 0, 0));
 
-            Console.WriteLine(
-                $"{MessagePrefix}getting bombtargets");
+            Console.WriteLine($"{LogPrefix}getting bombtargets");
             var bombTargets =
                 Utilities.FindAllEntitiesByDesignerName<CBombTarget>("func_bomb_target").ToList();
 
             if (bombTargets.Any())
             {
-                Console.WriteLine($"{MessagePrefix}got bomb targets, setting bombplantedhere");
+                Console.WriteLine($"{LogPrefix}got bomb targets, setting bombplantedhere");
 
                 bombTargets.Where(bombTarget => bombTarget.IsBombSiteB == (_currentBombsite == Bombsite.B))
                     .ToList()
@@ -929,15 +926,20 @@ public class RetakesPlugin : BasePlugin
                     });
             }
 
-            Console.WriteLine($"{MessagePrefix}sending bomb planted event");
-            Console.WriteLine($"{MessagePrefix} c4blow before: {plantedC4.C4Blow}");
+            Console.WriteLine($"{LogPrefix}sending bomb planted event");
+            Console.WriteLine($"{LogPrefix} c4blow before: {plantedC4.C4Blow}");
             SendBombPlantedEvent(bombCarrier, plantedC4);
-            Console.WriteLine($"{MessagePrefix} c4blow after: {plantedC4.C4Blow}");
+            Console.WriteLine($"{LogPrefix} c4blow after: {plantedC4.C4Blow}");
             
-            Console.WriteLine($"{MessagePrefix}forcing c4 blow to crazy number");
+            Console.WriteLine($"{LogPrefix}forcing c4 blow to crazy number");
             plantedC4.C4Blow = Server.CurrentTime * 2;
+            
+            AddTimer(0.1f, () =>
+            {
+                Console.WriteLine($"{LogPrefix} last think tick: {plantedC4.LastThinkTick}");
+            });
 
-            Console.WriteLine($"{MessagePrefix}setting ct playerPawn properties");
+            Console.WriteLine($"{LogPrefix}setting ct playerPawn properties");
             foreach (var player in Utilities.GetPlayers().Where(player => player.TeamNum == (int)CsTeam.CounterTerrorist))
             {
                 if (player.PlayerPawn.Value == null)
@@ -945,7 +947,7 @@ public class RetakesPlugin : BasePlugin
                     continue;
                 }
 
-                Console.WriteLine($"{MessagePrefix} setting for {player.PlayerName}");
+                Console.WriteLine($"{LogPrefix} setting for {player.PlayerName}");
                 player.PlayerPawn.Value.RetakesHasDefuseKit = true;
                 player.PlayerPawn.Value.IsDefusing = false;
                 player.PlayerPawn.Value.LastGivenDefuserTime = 0.0f;
@@ -963,24 +965,24 @@ public class RetakesPlugin : BasePlugin
             return;
         }
 
-        Console.WriteLine($"{MessagePrefix}Creating event");
+        Console.WriteLine($"{LogPrefix}Creating event");
         var bombPlantedEvent = NativeAPI.CreateEvent("bomb_planted", true);
-        Console.WriteLine($"{MessagePrefix}Setting player controller handle");
+        Console.WriteLine($"{LogPrefix}Setting player controller handle");
         NativeAPI.SetEventPlayerController(bombPlantedEvent, "userid", bombCarrier.Handle);
         
-        Console.WriteLine($"{MessagePrefix}Setting userid");
+        Console.WriteLine($"{LogPrefix}Setting userid");
         NativeAPI.SetEventInt(bombPlantedEvent, "userid", (int)bombCarrier.PlayerPawn.Value.Index);
         
-        Console.WriteLine($"{MessagePrefix}Setting posx to {bombCarrier.PlayerPawn.Value.AbsOrigin!.X}");
+        Console.WriteLine($"{LogPrefix}Setting posx to {bombCarrier.PlayerPawn.Value.AbsOrigin!.X}");
         NativeAPI.SetEventFloat(bombPlantedEvent, "posx", bombCarrier.PlayerPawn.Value.AbsOrigin!.X);
         
-        Console.WriteLine($"{MessagePrefix}Setting posy to {bombCarrier.PlayerPawn.Value.AbsOrigin!.Y}");
+        Console.WriteLine($"{LogPrefix}Setting posy to {bombCarrier.PlayerPawn.Value.AbsOrigin!.Y}");
         NativeAPI.SetEventFloat(bombPlantedEvent, "posy", bombCarrier.PlayerPawn.Value.AbsOrigin!.Y);
         
-        Console.WriteLine($"{MessagePrefix}Setting site");
+        Console.WriteLine($"{LogPrefix}Setting site");
         NativeAPI.SetEventInt(bombPlantedEvent, "site", plantedC4.BombSite);
         
-        Console.WriteLine($"{MessagePrefix}Setting priority");
+        Console.WriteLine($"{LogPrefix}Setting priority");
         NativeAPI.SetEventInt(bombPlantedEvent, "priority", 5);
 
         NativeAPI.FireEvent(bombPlantedEvent, false);
