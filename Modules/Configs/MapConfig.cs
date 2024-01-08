@@ -4,14 +4,14 @@ namespace RetakesPlugin.Modules.Configs;
 
 public class MapConfig
 {
-    public readonly string MapName;
+    private readonly string _mapName;
     private readonly string _mapConfigDirectory;
     private readonly string _mapConfigPath;
     private MapConfigData? _mapConfigData;
     
     public MapConfig(string moduleDirectory, string mapName)
     {
-        MapName = mapName;
+        _mapName = mapName;
         _mapConfigDirectory = Path.Combine(moduleDirectory, "map_config");
         _mapConfigPath = Path.Combine(_mapConfigDirectory, $"{mapName}.json");
         _mapConfigData = null;
@@ -41,7 +41,7 @@ public class MapConfig
         }
         catch (FileNotFoundException)
         {
-            Console.WriteLine($"{RetakesPlugin.LogPrefix}No config for map {MapName}");
+            Console.WriteLine($"{RetakesPlugin.LogPrefix}No config for map {_mapName}");
             _mapConfigData = new MapConfigData();
             Save();
         }
@@ -132,7 +132,7 @@ public class MapConfig
 
     public static bool IsLoaded(MapConfig? mapConfig, string currentMap)
     {
-        if (mapConfig == null || mapConfig.MapName != currentMap)
+        if (mapConfig == null || mapConfig._mapName != currentMap)
         {
             return false;
         }

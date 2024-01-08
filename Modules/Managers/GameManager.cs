@@ -1,11 +1,13 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
+using Microsoft.Extensions.Localization;
 
 namespace RetakesPlugin.Modules.Managers;
 
 public class GameManager
 {
+    private readonly Translator _translator;
     private Dictionary<int, int> _playerRoundScores = new();
     public readonly QueueManager QueueManager;
     private readonly int _consecutiveRoundWinsToScramble;
@@ -14,8 +16,9 @@ public class GameManager
     public const int ScoreForAssist = 25;
     public const int ScoreForDefuse = 50;
 
-    public GameManager(QueueManager queueManager, int? roundsToScramble)
+    public GameManager(Translator translator, QueueManager queueManager, int? roundsToScramble)
     {
+        _translator = translator;
         QueueManager = queueManager;
         _consecutiveRoundWinsToScramble = roundsToScramble ?? 5;
     }
@@ -56,6 +59,9 @@ public class GameManager
     public void TerroristRoundWin()
     {
         _consecutiveRoundsWon++;
+
+        // TODO: Translate this message.
+        Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}Terrorists have won {ChatColors.Green}{_consecutiveRoundWinsToScramble}{ChatColors.White} rounds in a row - If they win {ChatColors.Green}{_consecutiveRoundWinsToScramble - _consecutiveRoundsWon} more{ChatColors.White}, {ChatColors.Purple}teams will be scrambled{ChatColors.White}.");
         
         if (_consecutiveRoundsWon == _consecutiveRoundWinsToScramble)
         {

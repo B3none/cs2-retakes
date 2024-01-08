@@ -197,22 +197,4 @@ public static class Helpers
 
         Utilities.SetStateChanged(laser,"CBeam", "m_vecEndPos");
     }
-
-    public static void SetBeamColour(CEnvBeam? laser, Color colour)
-    {
-        if (laser != null)
-        {
-            laser.Render = colour;
-        }
-    }
-
-    public static Color GetSpawnColour(Spawn spawn)
-    {
-        if (spawn.Team == CsTeam.CounterTerrorist)
-        {
-            return Color.Blue;
-        }
-
-        return spawn.CanBePlanter ? Color.Yellow : Color.Red;
-    }
 }

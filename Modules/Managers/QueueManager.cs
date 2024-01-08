@@ -7,14 +7,16 @@ namespace RetakesPlugin.Modules.Managers;
 
 public class QueueManager
 {
+    private readonly Translator _translator;
     private readonly int _maxRetakesPlayers;
     private readonly float _terroristRatio;
 
     public List<CCSPlayerController> QueuePlayers = new();
     public List<CCSPlayerController> ActivePlayers = new();
 
-    public QueueManager(int? retakesMaxPlayers, float? retakesTerroristRatio)
+    public QueueManager(Translator translator, int? retakesMaxPlayers, float? retakesTerroristRatio)
     {
+        _translator = translator;
         _maxRetakesPlayers = retakesMaxPlayers ?? 9;
         _terroristRatio = retakesTerroristRatio ?? 0.45f;
     }
