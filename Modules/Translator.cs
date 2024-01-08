@@ -3,7 +3,7 @@ using Microsoft.Extensions.Localization;
 
 namespace RetakesPlugin.Modules;
 
-public class Translator : IStringLocalizer
+public class Translator
 {
     private IStringLocalizer _stringLocalizerImplementation;
 
@@ -17,13 +17,13 @@ public class Translator : IStringLocalizer
         return _stringLocalizerImplementation.GetAllStrings(includeParentCultures);
     }
 
-    public LocalizedString this[string name] => _stringLocalizerImplementation[name];
+    public string this[string name] => Translate(name);
 
-    public LocalizedString this[string name, params object[] arguments] => _stringLocalizerImplementation[name, arguments];
-    
-    public string Translate(string key, params object[] arguments)
+    public string this[string name, params object[] arguments] => Translate(name, arguments);
+
+    private string Translate(string key, params object[] arguments)
     {
-        var localizedString = this[key, arguments];
+        var localizedString = _stringLocalizerImplementation[key, arguments];
         
         if (localizedString == null || localizedString.ResourceNotFound)
         {
@@ -43,13 +43,13 @@ public class Translator : IStringLocalizer
             .Replace("[WHITE]", ChatColors.White.ToString())
             .Replace("[NORMAL]", ChatColors.White.ToString())
             .Replace("[GREY]", ChatColors.Grey.ToString())
-            .Replace("[LIGHTRED]", ChatColors.LightRed.ToString())
-            .Replace("[LIGHTBLUE]", ChatColors.LightBlue.ToString())
-            .Replace("[LIGHTPURPLE]", ChatColors.LightPurple.ToString())
-            .Replace("[LIGHTYELLOW]", ChatColors.LightYellow.ToString())
-            .Replace("[DARKRED]", ChatColors.Darkred.ToString())
-            .Replace("[DARKBLUE]", ChatColors.DarkBlue.ToString())
-            .Replace("[BLUEGREY]", ChatColors.BlueGrey.ToString())
+            .Replace("[LIGHT_RED]", ChatColors.LightRed.ToString())
+            .Replace("[LIGHT_BLUE]", ChatColors.LightBlue.ToString())
+            .Replace("[LIGHT_PURPLE]", ChatColors.LightPurple.ToString())
+            .Replace("[LIGHT_YELLOW]", ChatColors.LightYellow.ToString())
+            .Replace("[DARK_RED]", ChatColors.Darkred.ToString())
+            .Replace("[DARK_BLUE]", ChatColors.DarkBlue.ToString())
+            .Replace("[BLUE_GREY]", ChatColors.BlueGrey.ToString())
             .Replace("[OLIVE]", ChatColors.Olive.ToString())
             .Replace("[LIME]", ChatColors.Lime.ToString())
             .Replace("[GOLD]", ChatColors.Gold.ToString())
