@@ -90,6 +90,7 @@ public class QueueManager
             }
             
             Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Not found, adding to QueuePlayers.");
+            player.PrintToChat($"{RetakesPlugin.MessagePrefix}{_translator["queue.joined"]}");
             QueuePlayers.Add(player);
         }
         else
@@ -177,6 +178,16 @@ public class QueueManager
                 {
                     player.SwitchTeam(CsTeam.CounterTerrorist);
                 }
+            }
+        }
+
+        if (ActivePlayers.Count == _maxRetakesPlayers && QueuePlayers.Count > 0)
+        {
+            var waitingMessage = _translator["queue.waiting", ActivePlayers.Count];
+            
+            foreach (var player in QueuePlayers)
+            {
+                player.PrintToChat($"{RetakesPlugin.MessagePrefix}{waitingMessage}");
             }
         }
     }
