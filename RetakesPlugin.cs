@@ -125,6 +125,29 @@ public class RetakesPlugin : BasePlugin
         commandInfo.ReplyToCommand($"{LogPrefix}{(didAddSpawn ? "Spawn added" : "Error adding spawn")}");
     }
 
+    [ConsoleCommand("css_defuser")]
+    public void OnCommandDefuser(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        Console.WriteLine($"{LogPrefix}Entity command called.");
+        
+        if (player == null || !player.IsValid)
+        {
+            return;
+        }
+        
+        // Get planted c4
+        var plantedC4 = Utilities.FindAllEntitiesByDesignerName<CPlantedC4>("planted_c4").FirstOrDefault();
+        
+        if (plantedC4 == null || _planter == null)
+        {
+            Console.WriteLine($"{LogPrefix}Planted C4 not found or planter not found.");
+            return;
+        }
+
+        Console.WriteLine($"{LogPrefix} Setting defuser.");
+        Schema.SetSchemaValue(plantedC4.Handle, "CPlantedC4", "m_hBombDefuser", player.PlayerPawn.Index);
+    }
+
     [ConsoleCommand("css_entity")]
     public void OnCommandEntity(CCSPlayerController? player, CommandInfo commandInfo)
     {
@@ -222,7 +245,7 @@ public class RetakesPlugin : BasePlugin
             return;
         }
         
-        player.SwitchTeam((CsTeam)player.TeamNum == CsTeam.CounterTerrorist ? CsTeam.CounterTerrorist : CsTeam.Terrorist);
+        player.SwitchTeam((CsTeam)player.TeamNum == CsTeam.CounterTerrorist ? CsTeam.Terrorist : CsTeam.CounterTerrorist);
     }
 
     [ConsoleCommand("css_debugqueues", "Prints the state of the queues to the console.")]
@@ -1016,14 +1039,19 @@ public class RetakesPlugin : BasePlugin
         }
 
         var playerOrigin = bombCarrier.PlayerPawn.Value!.AbsOrigin;
+        var playerRotation = bombCarrier.PlayerPawn.Value!.AbsRotation;
 
-        if (playerOrigin == null)
+        if (playerOrigin == null || playerRotation == null)
         {
-            Console.WriteLine($"{LogPrefix}player origin is null");
+            Console.WriteLine($"{LogPrefix}player origin or player rotation is null");
             return false;
         }
         
         playerOrigin.Z -= bombCarrier.PlayerPawn.Value.Collision.Mins.Z;
+        plantedC4.MoveType = MoveType_t.MOVETYPE_NONE;
+        plantedC4.Collision.SolidType = SolidType_t.SOLID_NONE;
+        plantedC4.Friction = 0.9f;
+        plantedC4.DefuseLength = 0.0f;
         
         Console.WriteLine($"{LogPrefix}setting planted c4 props");
         plantedC4.BombTicking = true;
@@ -1042,13 +1070,26 @@ public class RetakesPlugin : BasePlugin
         Console.WriteLine($"{LogPrefix}calling dispatch spawn");
         plantedC4.DispatchSpawn();
         
+        Console.WriteLine($"{LogPrefix}teleporting prop");
+        var bombOrigin = new Vector
+        {
+            X = playerOrigin.X,
+            Y = playerOrigin.Y,
+            Z = playerOrigin.Z + 100
+        };
+        var bombQAngle = new QAngle
+        {
+            X = playerRotation.X,
+            Y = playerRotation.Y,
+            Z = playerRotation.Z
+        };
+
+        plantedC4.Teleport(bombOrigin, bombQAngle, new Vector(0, 0, 0));
+        
         Console.WriteLine($"{LogPrefix}complete! waiting for next frame");
         
         Server.NextFrame(() =>
         {
-            Console.WriteLine($"{LogPrefix}teleporting prop");
-            plantedC4.Teleport(playerOrigin, new QAngle(IntPtr.Zero, IntPtr.Zero, IntPtr.Zero), new Vector(0, 0, 0));
-
             Console.WriteLine($"{LogPrefix}getting bombtargets");
             var bombTargets =
                 Utilities.FindAllEntitiesByDesignerName<CBombTarget>("func_bomb_target").ToList();
