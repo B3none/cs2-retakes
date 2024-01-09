@@ -6,6 +6,7 @@ using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules.Configs;
+using RetakesPlugin.Modules.Enums;
 
 namespace RetakesPlugin.Modules;
 
@@ -263,5 +264,122 @@ public static class Helpers
     public static void AcceptInput(IntPtr handle, string inputName, IntPtr activator, IntPtr caller, string value)
     {
         VirtualFunctions.AcceptInput(handle, inputName, activator, caller, value, 0);
+    }
+
+    public static CPlantedC4? GetPlantedC4()
+    {
+        return Utilities.FindAllEntitiesByDesignerName<CPlantedC4>("planted_c4").FirstOrDefault();
+    }
+
+    public static bool IsInRange(float range, Vector v1, Vector v2)
+    {
+        var dx = v1.X - v2.X;
+        var dy = v1.Y - v2.Y;
+
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Distance: {Math.Sqrt(Math.Pow(dx, 2) + Math.Pow(dy, 2))}");
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Range: {range} units");
+        return Math.Sqrt(Math.Pow(dx, 2) + Math.Pow(dy, 2)) <= range;
+    }
+
+    public static void SendBombBeginDefuseEvent(CCSPlayerController player)
+    {
+        if (player.PlayerPawn.Value == null)
+        {
+            return;
+        }
+
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Creating event");
+        var bombPlantedEvent = NativeAPI.CreateEvent("bomb_begindefuse", true);
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Setting player controller handle");
+        NativeAPI.SetEventPlayerController(bombPlantedEvent, "userid", player.Handle);
+        
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Setting userid");
+        NativeAPI.SetEventInt(bombPlantedEvent, "userid", (int)player.PlayerPawn.Value.Index);
+        
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Setting site");
+        NativeAPI.SetEventInt(bombPlantedEvent, "haskit", player.PawnHasDefuser ? 1 : 0);
+        
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Setting priority");
+        NativeAPI.SetEventInt(bombPlantedEvent, "priority", 5);
+
+        NativeAPI.FireEvent(bombPlantedEvent, false);
+    }
+
+    public static void SendBombAbortDefuseEvent(CCSPlayerController player)
+    {
+        if (player.PlayerPawn.Value == null)
+        {
+            return;
+        }
+
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Creating event");
+        var bombPlantedEvent = NativeAPI.CreateEvent("bomb_abortdefuse", true);
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Setting player controller handle");
+        NativeAPI.SetEventPlayerController(bombPlantedEvent, "userid", player.Handle);
+        
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Setting userid");
+        NativeAPI.SetEventInt(bombPlantedEvent, "userid", (int)player.PlayerPawn.Value.Index);
+        
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Setting site");
+        NativeAPI.SetEventInt(bombPlantedEvent, "site", player.PawnHasDefuser ? 1 : 0);
+        
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Setting priority");
+        NativeAPI.SetEventInt(bombPlantedEvent, "priority", 5);
+
+        NativeAPI.FireEvent(bombPlantedEvent, false);
+    }
+
+    public static void SendBombBeginPlantEvent(CCSPlayerController bombCarrier, Bombsite bombsite)
+    {
+        if (bombCarrier.PlayerPawn.Value == null)
+        {
+            return;
+        }
+
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Creating event");
+        var bombPlantedEvent = NativeAPI.CreateEvent("bomb_beginplant", true);
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Setting player controller handle");
+        NativeAPI.SetEventPlayerController(bombPlantedEvent, "userid", bombCarrier.Handle);
+        
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Setting userid");
+        NativeAPI.SetEventInt(bombPlantedEvent, "userid", (int)bombCarrier.PlayerPawn.Value.Index);
+        
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Setting site");
+        NativeAPI.SetEventInt(bombPlantedEvent, "site", (int)bombsite);
+        
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Setting priority");
+        NativeAPI.SetEventInt(bombPlantedEvent, "priority", 5);
+
+        NativeAPI.FireEvent(bombPlantedEvent, false);
+    }
+
+    public static void SendBombPlantedEvent(CCSPlayerController bombCarrier, CPlantedC4 plantedC4)
+    {
+        if (bombCarrier.PlayerPawn.Value == null)
+        {
+            return;
+        }
+
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Creating event");
+        var bombPlantedEvent = NativeAPI.CreateEvent("bomb_planted", true);
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Setting player controller handle");
+        NativeAPI.SetEventPlayerController(bombPlantedEvent, "userid", bombCarrier.Handle);
+        
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Setting userid");
+        NativeAPI.SetEventInt(bombPlantedEvent, "userid", (int)bombCarrier.PlayerPawn.Value.Index);
+        
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Setting posx to {bombCarrier.PlayerPawn.Value.AbsOrigin!.X}");
+        NativeAPI.SetEventFloat(bombPlantedEvent, "posx", bombCarrier.PlayerPawn.Value.AbsOrigin!.X);
+        
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Setting posy to {bombCarrier.PlayerPawn.Value.AbsOrigin!.Y}");
+        NativeAPI.SetEventFloat(bombPlantedEvent, "posy", bombCarrier.PlayerPawn.Value.AbsOrigin!.Y);
+        
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Setting site");
+        NativeAPI.SetEventInt(bombPlantedEvent, "site", plantedC4.BombSite);
+        
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}Setting priority");
+        NativeAPI.SetEventInt(bombPlantedEvent, "priority", 5);
+
+        NativeAPI.FireEvent(bombPlantedEvent, false);
     }
 }

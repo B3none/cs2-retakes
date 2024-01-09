@@ -57,6 +57,7 @@ public class RetakesPlugin : BasePlugin
         Console.WriteLine($"{LogPrefix}Plugin loaded!");
         
         RegisterListener<Listeners.OnMapStart>(OnMapStart);
+        RegisterListener<Listeners.OnTick>(OnTick);
 
         if (hotReload)
         {
@@ -64,7 +65,44 @@ public class RetakesPlugin : BasePlugin
             Server.ExecuteCommand($"map {Server.MapName}");
         }
     }
-    
+
+    private CPlantedC4? _plantedC4;
+    private const float BombDefuseRange = 50.0f;
+    private void OnTick()
+    {
+        _plantedC4 = Helpers.GetPlantedC4();
+
+        if (_plantedC4 == null)
+        {
+            return;
+        }
+        
+        foreach (var player in Utilities.GetPlayers())
+        {
+            var playerPawn = player.PlayerPawn.Value;
+
+            if (playerPawn == null || playerPawn.MovementServices == null)
+            {
+                continue;
+            }
+            
+            var isHoldingUse = player.Buttons.HasFlag(PlayerButtons.Use);
+
+            if (isHoldingUse && !playerPawn.IsDefusing && Helpers.IsInRange(BombDefuseRange, playerPawn.AbsOrigin!, _plantedC4.AbsOrigin!))
+            {
+                Server.PrintToChatAll($"{MessagePrefix}{player.PlayerName} is in range of the bomb, and is holding use.");
+                Helpers.SendBombBeginDefuseEvent(player);
+                playerPawn.IsDefusing = true;
+            }
+
+            if (!isHoldingUse && playerPawn.IsDefusing)
+            {
+                Helpers.SendBombAbortDefuseEvent(player);
+                playerPawn.IsDefusing = false;
+            }
+        }
+    }
+
     // Commands
     [ConsoleCommand("css_addspawn", "Adds a spawn point for retakes to the map.")]
     [CommandHelper(minArgs: 2, usage: "[T/CT] [A/B] [Y/N (can be planter / default N)]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
@@ -134,13 +172,11 @@ public class RetakesPlugin : BasePlugin
         {
             return;
         }
-        
-        // Get planted c4
-        var plantedC4 = Utilities.FindAllEntitiesByDesignerName<CPlantedC4>("planted_c4").FirstOrDefault();
-        
-        if (plantedC4 == null || _planter == null)
+
+        _plantedC4 = Helpers.GetPlantedC4();
+
+        if (_plantedC4 == null)
         {
-            Console.WriteLine($"{LogPrefix}Planted C4 not found or planter not found.");
             return;
         }
 
@@ -156,7 +192,7 @@ public class RetakesPlugin : BasePlugin
         });
         
         Console.WriteLine($"{LogPrefix} Setting defuser.");
-        Schema.SetSchemaValue(plantedC4.Handle, "CPlantedC4", "m_hBombDefuser", player.PlayerPawn.Index);
+        Schema.SetSchemaValue(_plantedC4.Handle, "CPlantedC4", "m_hBombDefuser", player.PlayerPawn.Index);
     }
 
     [ConsoleCommand("css_entity")]
@@ -791,6 +827,7 @@ public class RetakesPlugin : BasePlugin
         
         plantedC4.C4Blow = Server.CurrentTime + 40.0f;
         plantedC4.InterpolationFrame = 1;
+        plantedC4.BombSite = (int)_currentBombsite;
         
         // set game rules
         Console.WriteLine($"{MessagePrefix}setting game rules");
@@ -1040,6 +1077,8 @@ public class RetakesPlugin : BasePlugin
             return false;
         }
         
+        Helpers.SendBombBeginPlantEvent(bombCarrier, _currentBombsite);
+        
         var plantedC4 = Utilities.CreateEntityByName<CPlantedC4>("planted_c4");
 
         if (plantedC4 == null)
@@ -1085,7 +1124,7 @@ public class RetakesPlugin : BasePlugin
         {
             X = playerOrigin.X,
             Y = playerOrigin.Y,
-            Z = playerOrigin.Z + 100
+            Z = playerOrigin.Z,
         };
         var bombQAngle = new QAngle
         {
@@ -1122,7 +1161,7 @@ public class RetakesPlugin : BasePlugin
 
             Console.WriteLine($"{LogPrefix}sending bomb planted event");
             Console.WriteLine($"{LogPrefix} c4blow before: {plantedC4.C4Blow}");
-            SendBombPlantedEvent(bombCarrier, plantedC4);
+            Helpers.SendBombPlantedEvent(bombCarrier, plantedC4);
             Console.WriteLine($"{LogPrefix} c4blow after: {plantedC4.C4Blow}");
             
             AddTimer(0.1f, () =>
@@ -1147,35 +1186,5 @@ public class RetakesPlugin : BasePlugin
         });
 
         return true;
-    }
-
-    private void SendBombPlantedEvent(CCSPlayerController bombCarrier, CPlantedC4 plantedC4)
-    {
-        if (bombCarrier.PlayerPawn.Value == null)
-        {
-            return;
-        }
-
-        Console.WriteLine($"{LogPrefix}Creating event");
-        var bombPlantedEvent = NativeAPI.CreateEvent("bomb_planted", true);
-        Console.WriteLine($"{LogPrefix}Setting player controller handle");
-        NativeAPI.SetEventPlayerController(bombPlantedEvent, "userid", bombCarrier.Handle);
-        
-        Console.WriteLine($"{LogPrefix}Setting userid");
-        NativeAPI.SetEventInt(bombPlantedEvent, "userid", (int)bombCarrier.PlayerPawn.Value.Index);
-        
-        Console.WriteLine($"{LogPrefix}Setting posx to {bombCarrier.PlayerPawn.Value.AbsOrigin!.X}");
-        NativeAPI.SetEventFloat(bombPlantedEvent, "posx", bombCarrier.PlayerPawn.Value.AbsOrigin!.X);
-        
-        Console.WriteLine($"{LogPrefix}Setting posy to {bombCarrier.PlayerPawn.Value.AbsOrigin!.Y}");
-        NativeAPI.SetEventFloat(bombPlantedEvent, "posy", bombCarrier.PlayerPawn.Value.AbsOrigin!.Y);
-        
-        Console.WriteLine($"{LogPrefix}Setting site");
-        NativeAPI.SetEventInt(bombPlantedEvent, "site", plantedC4.BombSite);
-        
-        Console.WriteLine($"{LogPrefix}Setting priority");
-        NativeAPI.SetEventInt(bombPlantedEvent, "priority", 5);
-
-        NativeAPI.FireEvent(bombPlantedEvent, false);
     }
 }
