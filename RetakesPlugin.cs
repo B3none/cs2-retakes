@@ -146,7 +146,7 @@ public class RetakesPlugin : BasePlugin
 
         AddTimer(3.0f, () =>
         {
-            var playerPawn = player.PlayerPawn.Value!; 
+            var playerPawn = player.PlayerPawn.Value!;
             playerPawn.IsDefusing = true;
             playerPawn.ProgressBarStartTime = Server.CurrentTime;
             playerPawn.ProgressBarDuration = 1;
