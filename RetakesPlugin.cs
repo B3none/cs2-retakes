@@ -718,6 +718,9 @@ public class RetakesPlugin : BasePlugin
                     Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Removing bomb");
                     // Remove the bomb from the player.
                     player.RemoveItemByDesignerName("weapon_c4", true);
+                    
+                    // Switching to weapon
+                    NativeAPI.IssueClientCommand((int)player.UserId!, "slot2; slot1");
 
                     if (player == _planter)
                     {
