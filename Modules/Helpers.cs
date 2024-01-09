@@ -1,7 +1,9 @@
 ﻿using System.Drawing;
+using System.Reflection;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
+using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules.Configs;
 
@@ -222,5 +224,44 @@ public static class Helpers
         }
 
         return null;
+    }
+    
+    public static void DebugObject(string prefix, object myObject, List<string> nestedObjects)
+    {
+        var myType = myObject.GetType();
+        var props = new List<PropertyInfo>(myType.GetProperties());
+
+        foreach (var prop in props)
+        {
+            try
+            {
+                object? propValue;
+                
+                if (nestedObjects.Contains(prop.Name))
+                {
+                    propValue = prop.GetValue(myObject, null);
+                    
+                    if (propValue != null)
+                    {
+                        DebugObject($"{prefix}.{prop.Name}", propValue, nestedObjects);
+                    }
+                    
+                    continue;
+                }
+                
+                propValue = prop.GetValue(myObject, null);
+
+                Console.WriteLine($"{prefix}.{prop.Name} = {propValue ?? "null"}");
+            }
+            catch (Exception)
+            {
+                Console.WriteLine($"{prefix}.{prop.Name} = exception");
+            }
+        }
+    }
+    
+    public static void AcceptInput(IntPtr handle, string inputName, IntPtr activator, IntPtr caller, string value)
+    {
+        VirtualFunctions.AcceptInput(handle, inputName, activator, caller, value, 0);
     }
 }

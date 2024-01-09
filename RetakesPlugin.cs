@@ -125,6 +125,106 @@ public class RetakesPlugin : BasePlugin
         commandInfo.ReplyToCommand($"{LogPrefix}{(didAddSpawn ? "Spawn added" : "Error adding spawn")}");
     }
 
+    [ConsoleCommand("css_entity")]
+    public void OnCommandEntity(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        Console.WriteLine($"{MessagePrefix}Entity command called.");
+        
+        if (player == null || !player.IsValid)
+        {
+            return;
+        }
+        
+        // Get planted c4
+        var plantedC4 = Utilities.FindAllEntitiesByDesignerName<CPlantedC4>("planted_c4").FirstOrDefault();
+        
+        if (plantedC4 == null || _planter == null)
+        {
+            Console.WriteLine($"{MessagePrefix}Planted C4 not found or planter not found.");
+            return;
+        }
+
+        var found = false;
+        foreach (var entity in Utilities.GetAllEntities())
+        {
+            if (entity.Index == plantedC4.ControlPanel.Index)
+            {
+                Console.WriteLine($"{MessagePrefix}Entity: {entity.DesignerName}");
+                found = true;
+            }
+        }
+
+        if (!found)
+        {
+            Console.WriteLine($"{MessagePrefix}Entity not found.");
+        }
+    }
+
+    private CEntityIOOutput? _phys;
+    [ConsoleCommand("css_store")]
+    public void OnCommandStore(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        Console.WriteLine($"{MessagePrefix}Entity command called.");
+        
+        if (player == null || !player.IsValid)
+        {
+            return;
+        }
+        
+        // Get planted c4
+        var plantedC4 = Utilities.FindAllEntitiesByDesignerName<CPlantedC4>("planted_c4").FirstOrDefault();
+        
+        if (plantedC4 == null || _planter == null)
+        {
+            Console.WriteLine($"{MessagePrefix}Planted C4 not found or planter not found.");
+            return;
+        }
+
+        _phys = plantedC4.OnBombBeginDefuse;
+    }
+
+    [ConsoleCommand("css_set")]
+    public void OnCommandSet(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        Console.WriteLine($"{MessagePrefix}Entity command called.");
+        
+        if (player == null || !player.IsValid)
+        {
+            return;
+        }
+        
+        // Get planted c4
+        var plantedC4 = Utilities.FindAllEntitiesByDesignerName<CPlantedC4>("planted_c4").FirstOrDefault();
+        
+        if (plantedC4 == null || _planter == null)
+        {
+            Console.WriteLine($"{MessagePrefix}Planted C4 not found or planter not found.");
+            return;
+        }
+
+        if (_phys == null)
+        {
+            Console.WriteLine($"{MessagePrefix}Phys is null.");
+            return;
+        }
+        
+        // Schema.SetSchemaValue(plantedC4.Handle, "CBaseEntity", "m_OnBombBeginDefuse", _phys.Handle);
+        // Helpers.AcceptInput(
+        //     plantedC4.Handle
+        // );
+    }
+
+    [ConsoleCommand("css_swap")]
+    public void OnCommandSwap(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        if (player == null || !player.IsValid)
+        {
+            return;
+        }
+        
+        player.SwitchTeam((CsTeam)player.TeamNum == CsTeam.CounterTerrorist ? CsTeam.CounterTerrorist : CsTeam.Terrorist);
+    }
+
     [ConsoleCommand("css_debugqueues", "Prints the state of the queues to the console.")]
     [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
     [RequiresPermissions("@css/root")]
@@ -613,36 +713,76 @@ public class RetakesPlugin : BasePlugin
         return HookResult.Continue;
     }
 
-    [GameEventHandler]
-    public HookResult OnBombDropped(EventBombDropped @event, GameEventInfo info)
-    {
-        var player = @event.Userid;
-        
-        if (!Helpers.IsValidPlayer(player))
-        {
-            return HookResult.Continue;
-        }
-        
-        // Remove the bomb entity and give the player that dropped it the bomb
-        var bombEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("weapon_c4").ToList();
-
-        if (bombEntities.Count > 0)
-        {
-            foreach (var bomb in bombEntities)
-            {
-                bomb.Remove();
-            }
-        }
-        
-        Helpers.GiveAndSwitchToBomb(player);
-        
-        return HookResult.Continue;
-    }
+    // [GameEventHandler]
+    // public HookResult OnBombDropped(EventBombDropped @event, GameEventInfo info)
+    // {
+    //     var player = @event.Userid;
+    //     
+    //     if (!Helpers.IsValidPlayer(player))
+    //     {
+    //         return HookResult.Continue;
+    //     }
+    //     
+    //     // Remove the bomb entity and give the player that dropped it the bomb
+    //     var bombEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("weapon_c4").ToList();
+    //
+    //     if (bombEntities.Count > 0)
+    //     {
+    //         foreach (var bomb in bombEntities)
+    //         {
+    //             bomb.Remove();
+    //         }
+    //     }
+    //     
+    //     Helpers.GiveAndSwitchToBomb(player);
+    //     
+    //     return HookResult.Continue;
+    // }
     
     [GameEventHandler]
     public HookResult OnBombPlanted(EventBombPlanted @event, GameEventInfo info)
     {
         _isBombPlanted = true;
+        
+        Console.WriteLine($"{MessagePrefix}OnBombPlanted event fired");
+        
+        // Get planted c4
+        var plantedC4 = Utilities.FindAllEntitiesByDesignerName<CPlantedC4>("planted_c4").FirstOrDefault();
+        
+        if (plantedC4 == null || _planter == null)
+        {
+            Console.WriteLine($"{MessagePrefix}Planted C4 not found or planter not found.");
+            return HookResult.Continue;
+        }
+        
+        plantedC4.C4Blow = Server.CurrentTime + 40.0f;
+        
+        // zwolof call
+        plantedC4.InterpolationFrame = 1;
+        
+        // set game rules
+        Console.WriteLine($"{MessagePrefix}setting game rules");
+        var gameRules = GetGameRules();
+        gameRules.BombDropped = false;
+        gameRules.BombPlanted = true;
+        gameRules.BombDefused = false;
+        gameRules.RetakeRules.BlockersPresent = false;
+        gameRules.RetakeRules.RoundInProgress = true;
+        gameRules.RetakeRules.BombSite = plantedC4.BombSite;
+        
+        // Debug planted c4
+        List<string> c4NestedProps = new() { "" };
+        Console.WriteLine("");
+        Console.WriteLine("Planted C4 Props...");
+        Helpers.DebugObject("planted_c4", plantedC4, c4NestedProps);
+        
+        List<string> gameRulesNestedProps = new() { "RetakeRules" };
+        Console.WriteLine("");
+        Console.WriteLine("Game Rules Props...");
+        Helpers.DebugObject("_gameRules", gameRules, gameRulesNestedProps);
+        
+        Console.WriteLine($"{LogPrefix} pawn entity index: {_planter.PlayerPawn.Index}");
+        Console.WriteLine($"{LogPrefix} plantedC4 m_hOwnerEntity index: {plantedC4.OwnerEntity.Index}");
         
         return HookResult.Continue;
     }
@@ -930,9 +1070,6 @@ public class RetakesPlugin : BasePlugin
             Console.WriteLine($"{LogPrefix} c4blow before: {plantedC4.C4Blow}");
             SendBombPlantedEvent(bombCarrier, plantedC4);
             Console.WriteLine($"{LogPrefix} c4blow after: {plantedC4.C4Blow}");
-            
-            Console.WriteLine($"{LogPrefix}forcing c4 blow to crazy number");
-            plantedC4.C4Blow = Server.CurrentTime * 2;
             
             AddTimer(0.1f, () =>
             {
