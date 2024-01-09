@@ -88,7 +88,7 @@ public static class Helpers
             return;
         }
         
-        foreach(var weapon in player.PlayerPawn.Value.WeaponServices.MyWeapons)
+        foreach (var weapon in player.PlayerPawn.Value.WeaponServices.MyWeapons)
         {
             if (weapon is not { IsValid: true, Value.IsValid: true })
             {
