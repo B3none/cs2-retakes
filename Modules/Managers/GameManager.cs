@@ -73,10 +73,12 @@ public class GameManager
         {
             if (_isScrambleEnabled)
             {
-                Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["teams.almost_scramble", _consecutiveRoundWinsToScramble, _consecutiveRoundWinsToScramble - _consecutiveRoundsWon]}");
+                Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["teams.almost_scramble", _consecutiveRoundsWon, _consecutiveRoundWinsToScramble - _consecutiveRoundsWon]}");
             }
-            
-            Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["teams.win_streak", _consecutiveRoundsWon]}");
+            else
+            {
+                Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["teams.win_streak", _consecutiveRoundsWon]}");
+            }
         }
     }
     
