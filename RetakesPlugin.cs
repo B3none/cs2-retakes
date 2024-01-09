@@ -67,7 +67,7 @@ public class RetakesPlugin : BasePlugin
     }
 
     private CPlantedC4? _plantedC4;
-    private const float BombDefuseRange = 50.0f;
+    private const float BombDefuseRange = 62.0f;
     private void OnTick()
     {
         _plantedC4 = Helpers.GetPlantedC4();
@@ -81,7 +81,7 @@ public class RetakesPlugin : BasePlugin
         {
             var playerPawn = player.PlayerPawn.Value;
 
-            if (playerPawn == null || playerPawn.MovementServices == null)
+            if (playerPawn == null || playerPawn.MovementServices == null || (CsTeam)player.TeamNum != CsTeam.CounterTerrorist)
             {
                 continue;
             }
