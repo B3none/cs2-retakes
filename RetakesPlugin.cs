@@ -144,8 +144,19 @@ public class RetakesPlugin : BasePlugin
             return;
         }
 
-        Console.WriteLine($"{LogPrefix} Setting defuser.");
-        Schema.SetSchemaValue(plantedC4.Handle, "CPlantedC4", "m_hBombDefuser", player.PlayerPawn.Index);
+        AddTimer(3.0f, () =>
+        {
+            var playerPawn = player.PlayerPawn.Value!; 
+            playerPawn.IsDefusing = true;
+            playerPawn.ProgressBarStartTime = Server.CurrentTime;
+            playerPawn.ProgressBarDuration = 1;
+            
+            Console.WriteLine($"{LogPrefix}{player.PlayerName}.ProgressBarStartTime: {playerPawn.ProgressBarStartTime}");
+            Console.WriteLine($"{LogPrefix}{player.PlayerName}.ProgressBarDuration: {playerPawn.ProgressBarDuration}");
+        });
+        
+        // Console.WriteLine($"{LogPrefix} Setting defuser.");
+        // Schema.SetSchemaValue(plantedC4.Handle, "CPlantedC4", "m_hBombDefuser", player.PlayerPawn.Index);
     }
 
     [ConsoleCommand("css_entity")]
