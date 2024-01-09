@@ -779,13 +779,12 @@ public class RetakesPlugin : BasePlugin
         }
         
         plantedC4.C4Blow = Server.CurrentTime + 40.0f;
-        
-        // zwolof call
         plantedC4.InterpolationFrame = 1;
         
         // set game rules
         Console.WriteLine($"{MessagePrefix}setting game rules");
         var gameRules = GetGameRules();
+        gameRules.RoundWinStatus = 0;
         gameRules.BombDropped = false;
         gameRules.BombPlanted = true;
         gameRules.BombDefused = false;
@@ -1104,6 +1103,9 @@ public class RetakesPlugin : BasePlugin
                     {
                         Console.WriteLine($"{MessagePrefix}actually setting BombPlantedHere for {bombTarget.DesignerName}");
                         bombTarget.BombPlantedHere = true;
+                        
+                        Console.WriteLine($"{MessagePrefix} calling helpers.acceptinput for {bombTarget.DesignerName} (is bombsite b: {bombTarget.IsBombSiteB})");
+                        Helpers.AcceptInput(bombTarget.Handle, "BombPlanted", plantedC4.Handle, plantedC4.Handle, "");
                     });
             }
 
