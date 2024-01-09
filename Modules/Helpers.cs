@@ -380,4 +380,43 @@ public static class Helpers
 
         NativeAPI.FireEvent(bombPlantedEvent, false);
     }
+
+    public static bool IsOnGround(CCSPlayerController player)
+    {
+        return (player.PlayerPawn.Value!.Flags & (int)PlayerFlags.FL_ONGROUND) != 0;
+    }
+
+    public static bool IsLookingAtBomb(CCSPlayerPawn playerPawn, CPlantedC4 plantedC4)
+    {
+        return true;
+        
+        // TODO: Fix these calculations
+        // if (playerPawn.AbsOrigin == null || playerPawn.AbsRotation == null)
+        // {
+        //     return false;
+        // }
+        //
+        // var playerPos = playerPawn.AbsOrigin;
+        // var playerRot = playerPawn.AbsRotation;
+        //
+        // var bombPos = plantedC4.AbsOrigin!;
+        //
+        // var playerForward = new Vector();
+        // playerForward.X = (float)(Math.Cos(playerRot.Y * Math.PI / 180) * Math.Cos(playerRot.X * Math.PI / 180));
+        // playerForward.Y = (float)(Math.Sin(playerRot.Y * Math.PI / 180) * Math.Cos(playerRot.X * Math.PI / 180));
+        // playerForward.Z = (float)Math.Sin(playerRot.X * Math.PI / 180);
+        //
+        // var playerToBomb = bombPos - playerPos;
+        //
+        // var dotProduct = playerForward.X * playerToBomb.X + playerForward.Y * playerToBomb.Y + playerForward.Z * playerToBomb.Z;
+        //
+        // var playerToBombLength = Math.Sqrt(Math.Pow(playerToBomb.X, 2) + Math.Pow(playerToBomb.Y, 2) + Math.Pow(playerToBomb.Z, 2));
+        //
+        // var playerForwardLength = Math.Sqrt(Math.Pow(playerForward.X, 2) + Math.Pow(playerForward.Y, 2) + Math.Pow(playerForward.Z, 2));
+        //
+        // var angle = Math.Acos(dotProduct / (playerToBombLength * playerForwardLength)) * 180 / Math.PI;
+        //
+        // Console.WriteLine($"{RetakesPlugin.LogPrefix}Is looking at bomb: {angle < 10}");
+        // return angle < 10;
+    }
 }

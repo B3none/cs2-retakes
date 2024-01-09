@@ -87,8 +87,14 @@ public class RetakesPlugin : BasePlugin
             }
             
             var isHoldingUse = player.Buttons.HasFlag(PlayerButtons.Use);
-
-            if (isHoldingUse && !playerPawn.IsDefusing && Helpers.IsInRange(BombDefuseRange, playerPawn.AbsOrigin!, _plantedC4.AbsOrigin!))
+            
+            if (
+                isHoldingUse
+                && !playerPawn.IsDefusing
+                && Helpers.IsInRange(BombDefuseRange, playerPawn.AbsOrigin!, _plantedC4.AbsOrigin!)
+                && Helpers.IsOnGround(player)
+                && Helpers.IsLookingAtBomb(playerPawn, _plantedC4)
+            ) 
             {
                 Server.PrintToChatAll($"{MessagePrefix}{player.PlayerName} is in range of the bomb, and is holding use.");
                 Helpers.SendBombBeginDefuseEvent(player);
@@ -293,6 +299,17 @@ public class RetakesPlugin : BasePlugin
         }
         
         player.SwitchTeam((CsTeam)player.TeamNum == CsTeam.CounterTerrorist ? CsTeam.Terrorist : CsTeam.CounterTerrorist);
+    }
+
+    [ConsoleCommand("css_lab")]
+    public void OnCommandLab(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        if (player == null || !player.IsValid || _plantedC4 == null)
+        {
+            return;
+        }
+
+        Helpers.IsLookingAtBomb(player.PlayerPawn.Value!, _plantedC4);
     }
 
     [ConsoleCommand("css_debugqueues", "Prints the state of the queues to the console.")]
