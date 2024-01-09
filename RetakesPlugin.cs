@@ -155,8 +155,8 @@ public class RetakesPlugin : BasePlugin
             Console.WriteLine($"{LogPrefix}{player.PlayerName}.ProgressBarDuration: {playerPawn.ProgressBarDuration}");
         });
         
-        // Console.WriteLine($"{LogPrefix} Setting defuser.");
-        // Schema.SetSchemaValue(plantedC4.Handle, "CPlantedC4", "m_hBombDefuser", player.PlayerPawn.Index);
+        Console.WriteLine($"{LogPrefix} Setting defuser.");
+        Schema.SetSchemaValue(plantedC4.Handle, "CPlantedC4", "m_hBombDefuser", player.PlayerPawn.Index);
     }
 
     [ConsoleCommand("css_entity")]
