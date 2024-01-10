@@ -20,10 +20,8 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
-
-      # Add a step to publish the built DLL as an artifact
-    - name: Publish artifact
-      uses: actions/upload-artifact@v2
+    - name: Publish DLL artifact
+      uses: actions/upload-artifact@v4
       with:
-        name: RetakesPlugin-${{ github.sha }}.dll  # Name of the artifact (with the commit hash)
-        path: ./bin/Debug/net7.0/RetakesPlugin.dll  # Replace with the actual path to your built DLL
+        name: RetakesPlugin-${{ github.sha }}.dll
+        path: ./bin/Debug/net7.0/RetakesPlugin.dll
