@@ -25,5 +25,5 @@ jobs:
     - name: Publish artifact
       uses: actions/upload-artifact@v2
       with:
-        name: RetakesPlugin-${{ github.sha }}  # Name of the artifact (with the commit hash)
-        path: /home/runner/work/cs2-retakes/cs2-retakes/bin/Debug/net7.0/RetakesPlugin.dll  # Replace with the actual path to your built DLL
+        name: RetakesPlugin-${{ github.sha }}.dll  # Name of the artifact (with the commit hash)
+        path: ./bin/Debug/net7.0/RetakesPlugin.dll  # Replace with the actual path to your built DLL
