@@ -23,5 +23,5 @@ jobs:
     - name: Publish DLL artifact
       uses: actions/upload-artifact@v4
       with:
-        name: RetakesPlugin-${{ github.sha }}.dll
+        name: RetakesPlugin-${{ github.sha }}
         path: ./bin/Debug/net7.0/RetakesPlugin.dll
