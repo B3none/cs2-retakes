@@ -117,17 +117,7 @@ public class QueueManager
             return;
         }
         
-        CheckRoundDone();
-    }
-    
-    private static void CheckRoundDone()
-    {
-        var tHumanCount = Helpers.GetCurrentNumPlayers(CsTeam.Terrorist);
-        var ctHumanCount= Helpers.GetCurrentNumPlayers(CsTeam.CounterTerrorist);
-        
-        if (tHumanCount == 0 || ctHumanCount == 0) {
-            Helpers.GetGameRules()?.TerminateRound(0.1f, RoundEndReason.TerroristsWin);
-        }
+        Helpers.CheckRoundDone();
     }
 
     private void RemoveDisconnectedPlayers()
@@ -223,7 +213,7 @@ public class QueueManager
         _roundTerrorists.Remove(player);
         _roundCounterTerrorists.Remove(player);
         
-        CheckRoundDone();
+        Helpers.CheckRoundDone();
     }
     
     public void DebugQueues(bool isBefore)

@@ -1,9 +1,7 @@
-﻿using System.Drawing;
-using CounterStrikeSharp.API;
+﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
-using RetakesPlugin.Modules.Configs;
 
 namespace RetakesPlugin.Modules;
 
@@ -176,6 +174,7 @@ public static class Helpers
 
     public static void RestartGame()
     {
+        CheckRoundDone();
         Server.ExecuteCommand("mp_restartgame 1");
     }
     
@@ -196,5 +195,15 @@ public static class Helpers
         laser.EndPos.Z = end.Z;
 
         Utilities.SetStateChanged(laser,"CBeam", "m_vecEndPos");
+    }
+    
+    public static void CheckRoundDone()
+    {
+        var tHumanCount = Helpers.GetCurrentNumPlayers(CsTeam.Terrorist);
+        var ctHumanCount= Helpers.GetCurrentNumPlayers(CsTeam.CounterTerrorist);
+        
+        if (tHumanCount == 0 || ctHumanCount == 0) {
+            Helpers.GetGameRules()?.TerminateRound(0.1f, RoundEndReason.TerroristsWin);
+        }
     }
 }

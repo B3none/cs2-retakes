@@ -735,6 +735,7 @@ public class RetakesPlugin : BasePlugin
             _gameManager.QueueManager.DebugQueues(true);
             _gameManager.QueueManager.Update();
             _gameManager.QueueManager.DebugQueues(false);
+            
             Helpers.RestartGame();
         }
 
