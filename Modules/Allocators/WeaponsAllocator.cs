@@ -17,6 +17,7 @@ public abstract class WeaponsAllocator
         
         if ((CsTeam)player.TeamNum == CsTeam.CounterTerrorist)
         {
+            // player.GiveNamedItem(CsItem.M4A4);
             player.GiveNamedItem(CsItem.M4A1S);
             // player.GiveNamedItem(CsItem.USPS);
             player.GiveNamedItem(CsItem.Deagle);
