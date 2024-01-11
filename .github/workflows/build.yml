@@ -32,23 +32,26 @@ jobs:
         with:
           name: RetakesPlugin-${{ github.sha }}
           path: output
-          
+  
   release:
     needs: build
     runs-on: ubuntu-latest
     if: github.event_name == 'release'
     
     steps:
-      - name: Extract Release Version
-        id: extract-release-version
-        run: echo "RELEASE_VERSION=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+      - name: Get Release Info
+        id: get-release-info
+        run: |
+          RELEASE_INFO=$(curl -sH 'Accept: application/vnd.github.v3+json' https://api.github.com/repos/${{ github.repository }}/releases)
+          export UPLOAD_URL=$(echo $RELEASE_INFO | jq -r ".[] | select(.tag_name == \"${{ env.RELEASE_VERSION }}\").upload_url")
+          echo "UPLOAD_URL=$UPLOAD_URL" >> $GITHUB_ENV
       - name: Upload Release Asset
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }} 
+          upload_url: ${{ env.UPLOAD_URL }}
           asset_path: ${{ github.workspace }}/RetakesPlugin.zip
           asset_name: "cs2-retakes-${{ env.RELEASE_VERSION }}.zip"
           asset_content_type: application/zip
