@@ -68,10 +68,17 @@ public static class Helpers
         return shuffledList;
     }
     
-    public static CCSGameRules? GetGameRules()
+    public static CCSGameRules GetGameRules()
     {
         var gameRulesEntities = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules");
-        return gameRulesEntities.First().GameRules;
+        var gameRules = gameRulesEntities.First().GameRules;
+        
+        if (gameRules == null)
+        {
+            throw new Exception($"{RetakesPlugin.LogPrefix}Game rules not found!");
+        }
+        
+        return gameRules;
     }
     
     public static void RemoveAllWeaponsAndEntities(CCSPlayerController player)

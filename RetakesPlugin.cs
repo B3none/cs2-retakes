@@ -327,7 +327,7 @@ public class RetakesPlugin : BasePlugin
     public HookResult OnRoundPreStart(EventRoundPrestart @event, GameEventInfo info)
     {
         // If we are in warmup, skip.
-        if (GetGameRules().WarmupPeriod)
+        if (Helpers.GetGameRules().WarmupPeriod)
         {
             Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
             return HookResult.Continue;
@@ -377,7 +377,7 @@ public class RetakesPlugin : BasePlugin
     public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
     {
         // If we are in warmup, skip.
-        if (GetGameRules().WarmupPeriod)
+        if (Helpers.GetGameRules().WarmupPeriod)
         {
             Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
             return HookResult.Continue;
@@ -483,7 +483,7 @@ public class RetakesPlugin : BasePlugin
         }
         
         // If we are in warmup, skip.
-        if (GetGameRules().WarmupPeriod)
+        if (Helpers.GetGameRules().WarmupPeriod)
         {
             Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
             return HookResult.Continue;
@@ -763,18 +763,6 @@ public class RetakesPlugin : BasePlugin
         return HookResult.Continue;
     }
     #endregion
-    
-    public static CCSGameRules GetGameRules()
-    {
-        var gameRules = Helpers.GetGameRules();
-        
-        if (gameRules == null)
-        {
-            throw new Exception($"{LogPrefix}Game rules not found!");
-        }
-        
-        return gameRules;
-    }
     
     // Helpers (with localization so they must be in here until I can figure out how to use it nicely elsewhere)
     private void AnnounceBombsite(Bombsite bombsite)
