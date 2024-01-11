@@ -47,6 +47,12 @@ jobs:
       - name: whats going on
         run: ls -l 
         
+      - name: Zip RetakesPlugin directory
+        run: zip -r RetakesPlugin-${{ github.sha }}.zip ./RetakesPlugin
+        
+      - name: whats going on 2.0
+        run: ls -l
+      
       - name: Get Release Info
         id: get-release-info
         run: |
