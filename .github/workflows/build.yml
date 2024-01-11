@@ -42,7 +42,7 @@ jobs:
       - name: Download Build Artifact
         uses: actions/download-artifact@v4
         with:
-          name: RetakesPlugin-${{ github.sha }}.zip
+          name: RetakesPlugin-${{ github.sha }}
       - name: Get Release Info
         id: get-release-info
         run: |
