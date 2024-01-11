@@ -181,7 +181,11 @@ public static class Helpers
 
     public static void RestartGame()
     {
-        CheckRoundDone();
+        if (!GetGameRules().WarmupPeriod)
+        {
+            CheckRoundDone();
+        }
+
         Server.ExecuteCommand("mp_restartgame 1");
     }
     
