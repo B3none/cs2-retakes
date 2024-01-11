@@ -34,6 +34,7 @@ public class RetakesPlugin : BasePlugin
     
     #region Helpers
     private Translator _translator;
+    private GameManager? _gameManager;
     #endregion
     
     #region Configs
@@ -41,9 +42,8 @@ public class RetakesPlugin : BasePlugin
     private RetakesConfig? _retakesConfig;
     #endregion
     
-    #region Configs
+    #region State
     private Bombsite _currentBombsite = Bombsite.A;
-    private GameManager? _gameManager;
     private CCSPlayerController? _planter;
     private bool _isBombPlanted;
     private CsTeam _lastRoundWinner;
