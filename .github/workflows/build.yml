@@ -2,9 +2,9 @@ name: Build the plugin
 
 on:
   push:
-    branches: [ "master", "actions-build-zip" ]
+    branches: [ "master" ]
   pull_request:
-    branches: [ "master", "actions-build-zip" ]
+    branches: [ "master" ]
   release:
     types:
       - created
