@@ -805,7 +805,15 @@ public class RetakesPlugin : BasePlugin
             
             if (!isRetakesConfigLoaded || _retakesConfig!.RetakesConfigData!.EnableBombsiteAnnouncementCenter)
             {
-                player.PrintToCenterHtml(announcementMessage);
+                AddTimer(1.0f, () =>
+                {
+                    if (!Helpers.IsValidPlayer(player))
+                    {
+                        return;
+                    }
+                    
+                    player.PrintToCenterHtml(announcementMessage);
+                });
             }
         }
         
