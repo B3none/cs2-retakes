@@ -22,13 +22,13 @@ jobs:
         run: dotnet build --no-restore
       - name: Create Zip
         run: |
-          mkdir RetakesPlugin
-          mv ./bin/Debug/net7.0/RetakesPlugin.dll RetakesPlugin/
-          mv ./map_configs RetakesPlugin/
-          mv ./lang RetakesPlugin/
+          mkdir output/RetakesPlugin
+          mv ./bin/Debug/net7.0/RetakesPlugin.dll output/RetakesPlugin/
+          mv ./map_configs output/RetakesPlugin/
+          mv ./lang output/RetakesPlugin/
       - name: Publish Artifact
         uses: actions/upload-artifact@v4
         with:
           name: RetakesPlugin-${{ github.sha }}
-          path: RetakesPlugin/
+          path: output
           
