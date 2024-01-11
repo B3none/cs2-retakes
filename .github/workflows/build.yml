@@ -27,6 +27,8 @@ jobs:
           mv ./bin/Debug/net7.0/RetakesPlugin.dll output/RetakesPlugin/
           mv ./map_configs output/RetakesPlugin/
           mv ./lang output/RetakesPlugin/
+      - name: Build RetakesPlugin.zip
+        run: zip -r RetakesPlugin.zip output
       - name: Publish Artifact
         uses: actions/upload-artifact@v4
         with:
