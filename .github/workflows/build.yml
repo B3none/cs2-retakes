@@ -20,10 +20,16 @@ jobs:
         run: dotnet restore
       - name: Build
         run: dotnet build --no-restore
-      - name: Zip Files
-        run: zip -r RetakesPlugin.zip ./bin/Debug/net7.0/RetakesPlugin.dll ./map_configs ./lang
+      - name: Create Zip
+        run: |
+          mkdir RetakesPluginZip
+          mv ./bin/Debug/net7.0/RetakesPlugin.dll RetakesPluginZip/
+          mv ./map_configs RetakesPluginZip/
+          mv ./lang RetakesPluginZip/
+          zip -r RetakesPlugin.zip RetakesPluginZip/
       - name: Publish Artifact
         uses: actions/upload-artifact@v4
         with:
           name: RetakesPlugin-${{ github.sha }}
           path: RetakesPlugin.zip
+          
