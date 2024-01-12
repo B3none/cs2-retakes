@@ -772,8 +772,6 @@ public class RetakesPlugin : BasePlugin
     // Helpers (with localization so they must be in here until I can figure out how to use it nicely elsewhere)
     private void AnnounceBombsite(Bombsite bombsite, bool onlyCenter = false)
     {
-        Console.WriteLine($"{LogPrefix}Announcing bombsite output to all players.");
-        
         string[] bombsiteAnnouncers =
         {
             "balkan_epic",
@@ -823,7 +821,5 @@ public class RetakesPlugin : BasePlugin
                 player.PrintToCenter(announcementMessage);
             }
         }
-        
-        Console.WriteLine($"{LogPrefix}Printing bombsite output to all players COMPLETE.");
     }
 }
