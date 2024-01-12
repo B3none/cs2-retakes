@@ -1,6 +1,11 @@
 # CS2 Retakes
 Retakes plugin written in C# for CounterStrikeSharp
 
+## Share the love
+If you appreciate the project then please take the time to star the repository 🙏
+
+![Star us](https://github.com/b3none/gdprconsent/raw/development/.github/README_ASSETS/star_us.png)
+
 ## Features / Roadmap
 - [x] Bombsite selection
 - [x] Per map configurations
@@ -45,11 +50,6 @@ When the plugin is first loaded it will create a `retakes_config.json` file in t
 | EnableFallbackAllocation         | Whether to enable the fallback weapon allocation. You should set this value to false if you're using a standalone weapon allocator. | true       | false      | true       |
 | EnableBombsiteAnnouncementVoices | Whether to play the bombsite announcement voices. The volume for these values is client sided `snd_toolvolume`.                     | true       | false      | true       |
 | EnableBombsiteAnnouncementCenter | Whether to display the bombsite in the center announcement box.                                                                     | true       | false      | true       |
-
-## Share the love
-If you appreciate the project then please take the time to star the repository.
-
-![Star us](https://github.com/b3none/gdprconsent/raw/development/.github/README_ASSETS/star_us.png)
 
 ## Credits
 This was inspired by the [CS:GO Retakes project](https://github.com/splewis/csgo-retakes) written by [splewis](https://github.com/splewis).
