@@ -210,11 +210,16 @@ public static class Helpers
     
     public static void CheckRoundDone()
     {
-        var tHumanCount = Helpers.GetCurrentNumPlayers(CsTeam.Terrorist);
-        var ctHumanCount= Helpers.GetCurrentNumPlayers(CsTeam.CounterTerrorist);
+        var tHumanCount = GetCurrentNumPlayers(CsTeam.Terrorist);
+        var ctHumanCount= GetCurrentNumPlayers(CsTeam.CounterTerrorist);
         
-        if (tHumanCount == 0 || ctHumanCount == 0) {
-            Helpers.GetGameRules()?.TerminateRound(0.1f, RoundEndReason.TerroristsWin);
+        if (tHumanCount == 0 || ctHumanCount == 0) 
+        {
+            // TODO: once this stops crashing on windows use it there too
+            if (Environment.OSVersion.Platform == PlatformID.Unix)
+            {
+                GetGameRules().TerminateRound(0.1f, RoundEndReason.TerroristsWin);
+            }
         }
     }
 }
