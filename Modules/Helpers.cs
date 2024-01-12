@@ -220,6 +220,10 @@ public static class Helpers
             {
                 GetGameRules().TerminateRound(0.1f, RoundEndReason.TerroristsWin);
             }
+            else
+            {
+                Console.WriteLine($"{RetakesPlugin.LogPrefix}Windows server detected (Can't use TerminateRound)");
+            }
         }
     }
 }
