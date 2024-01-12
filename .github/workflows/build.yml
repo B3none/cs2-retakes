@@ -51,13 +51,11 @@ jobs:
           rm -rf ./RetakesPlugin/map_config
           zip -r RetakesPlugin-${{ github.sha }}-no-map-configs.zip
       - name: Get Release Info
-        id: get-release-info
         run: |
           RELEASE_INFO=$(curl -sH 'Accept: application/vnd.github.v3+json' https://api.github.com/repos/${{ github.repository }}/releases)
           export UPLOAD_URL=$(echo $RELEASE_INFO | jq -r ".[] | select(.tag_name == \"${{ github.event.release.tag_name }}\").upload_url")
           echo "UPLOAD_URL=$UPLOAD_URL" >> $GITHUB_ENV
       - name: Upload Release Asset
-        id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -67,7 +65,6 @@ jobs:
           asset_name: "cs2-retakes-${{ github.event.release.tag_name }}.zip"
           asset_content_type: application/zip
       - name: Upload Release Asset (without map configs)
-        id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
