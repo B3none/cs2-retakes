@@ -640,12 +640,9 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler(HookMode.Pre)]
     public HookResult OnBombPlanted(EventBombPlanted @event, GameEventInfo info)
     {
-        // Don't broadcast the bomb event.
-        info.DontBroadcast = true;
-        
         _isBombPlanted = true;
         
-        AnnounceBombsite(_currentBombsite, true);
+        AddTimer(4.1f, () => AnnounceBombsite(_currentBombsite, true));
         
         return HookResult.Continue;
     }
