@@ -637,10 +637,15 @@ public class RetakesPlugin : BasePlugin
         return HookResult.Continue;
     }
     
-    [GameEventHandler]
+    [GameEventHandler(HookMode.Pre)]
     public HookResult OnBombPlanted(EventBombPlanted @event, GameEventInfo info)
     {
+        // Don't broadcast the bomb event.
+        info.DontBroadcast = true;
+        
         _isBombPlanted = true;
+        
+        AnnounceBombsite(_currentBombsite, true);
         
         return HookResult.Continue;
     }
@@ -765,7 +770,7 @@ public class RetakesPlugin : BasePlugin
     #endregion
     
     // Helpers (with localization so they must be in here until I can figure out how to use it nicely elsewhere)
-    private void AnnounceBombsite(Bombsite bombsite)
+    private void AnnounceBombsite(Bombsite bombsite, bool onlyCenter = false)
     {
         Console.WriteLine($"{LogPrefix}Announcing bombsite output to all players.");
         
@@ -792,28 +797,30 @@ public class RetakesPlugin : BasePlugin
         
         foreach (var player in Utilities.GetPlayers())
         {
-            // Don't use Server.PrintToChat as it'll add another loop through the players.
-            player.PrintToChat($"{MessagePrefix}{announcementMessage}");
-            
-            if (!isRetakesConfigLoaded || _retakesConfig!.RetakesConfigData!.EnableBombsiteAnnouncementVoices)
+            if (!onlyCenter)
             {
-                // Do this here so every player hears a random announcer each round.
-                var bombsiteAnnouncer = bombsiteAnnouncers[Helpers.Random.Next(bombsiteAnnouncers.Length)];
-                
-                player.ExecuteClientCommand($"play sounds/vo/agents/{bombsiteAnnouncer}/loc_{bombsite.ToString().ToLower()}_01");
-            }
-            
-            if (!isRetakesConfigLoaded || _retakesConfig!.RetakesConfigData!.EnableBombsiteAnnouncementCenter)
-            {
-                AddTimer(1.0f, () =>
+                // Don't use Server.PrintToChat as it'll add another loop through the players.
+                player.PrintToChat($"{MessagePrefix}{announcementMessage}");
+
+                if (!isRetakesConfigLoaded || _retakesConfig!.RetakesConfigData!.EnableBombsiteAnnouncementVoices)
                 {
-                    if (!Helpers.IsValidPlayer(player))
-                    {
-                        return;
-                    }
-                    
-                    player.PrintToCenterHtml(announcementMessage);
-                });
+                    // Do this here so every player hears a random announcer each round.
+                    var bombsiteAnnouncer = bombsiteAnnouncers[Helpers.Random.Next(bombsiteAnnouncers.Length)];
+
+                    player.ExecuteClientCommand(
+                        $"play sounds/vo/agents/{bombsiteAnnouncer}/loc_{bombsite.ToString().ToLower()}_01");
+                }
+                continue;
+            }
+
+            if (isRetakesConfigLoaded && !_retakesConfig!.RetakesConfigData!.EnableBombsiteAnnouncementCenter)
+            {
+                continue;
+            }
+
+            if ((CsTeam)player.TeamNum == CsTeam.CounterTerrorist)
+            {
+                player.PrintToCenter(announcementMessage);
             }
         }
         
