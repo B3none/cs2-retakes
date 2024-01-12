@@ -21,7 +21,7 @@ jobs:
           dotnet-version: 7.0.x
       - name: Build
         run: dotnet build
-      - name: Create output directories
+      - name: Create output directory
         run: |
           mkdir -p output/RetakesPlugin
           mv ./bin/Debug/net7.0/RetakesPlugin.dll output/RetakesPlugin/
