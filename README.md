@@ -1,5 +1,5 @@
 # CS2 Retakes
-Retakes plugin written in C# for CounterStrikeSharp
+CS2 implementation of retakes written in C# for CounterStrikeSharp. Based on the version for CS:GO by Splewis.
 
 ## Share the love
 If you appreciate the project then please take the time to star the repository 🙏
