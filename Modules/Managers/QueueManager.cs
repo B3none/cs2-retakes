@@ -23,7 +23,8 @@ public class QueueManager
 
     public int GetTargetNumTerrorists()
     {
-        var ratio = _terroristRatio * ActivePlayers.Count;
+        // TODO: Add a config option for this logic
+        var ratio = (ActivePlayers.Count > 9 ? 0.5 : _terroristRatio) * ActivePlayers.Count;
         var numTerrorists = (int)Math.Round(ratio);
 
         // Ensure at least one terrorist if the calculated number is zero
