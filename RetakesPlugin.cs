@@ -836,7 +836,6 @@ public class RetakesPlugin : BasePlugin
         _isBombPlanted = true;
         
         Console.WriteLine($"{MessagePrefix}OnBombPlanted event fired");
-        HandleBombPlantedOld();
         
         AddTimer(4.1f, () => AnnounceBombsite(_currentBombsite, true));
         
@@ -1035,201 +1034,19 @@ public class RetakesPlugin : BasePlugin
         }
         
         CreatePlantedC4(bombCarrier);
-        // CreatePlantedC4Old(bombCarrier);
 
         return HookResult.Continue;
     }
-        
-    // Autoplant helpers (credit zwolof)
+    
     private void CreatePlantedC4(CCSPlayerController bombCarrier)
     {
         Console.WriteLine($"{LogPrefix}CreatePlantedC4 called...");
         
-        var plantedBomb = BombFunctions.ShootSatchelCharge(bombCarrier.PlayerPawn.Value);
+        bombCarrier.RemoveItemByDesignerName("weapon_c4", true);
+        bombCarrier.ExecuteClientCommand("lastinv");
+        
+        BombFunctions.ShootSatchelCharge(bombCarrier.PlayerPawn.Value);
         
         Console.WriteLine($"{LogPrefix}CreatePlantedC4 complete.");
-    }
-
-    private bool CreatePlantedC4Old(CCSPlayerController bombCarrier)
-    {
-        Console.WriteLine($"{LogPrefix}removing bomb");
-        bombCarrier.RemoveItemByDesignerName("weapon_c4", true);
-
-        if (!Helpers.IsValidPlayer(bombCarrier))
-        {
-            Console.WriteLine($"{LogPrefix}bomb carrier is not valid player");
-            return false;
-        }
-        
-        Helpers.SendBombBeginPlantEvent(bombCarrier, _currentBombsite);
-        
-        var plantedC4 = Utilities.CreateEntityByName<CPlantedC4>("planted_c4");
-
-        if (plantedC4 == null)
-        {
-            Console.WriteLine($"{LogPrefix}planted c4 is null");
-            return false;
-        }
-
-        var playerOrigin = bombCarrier.PlayerPawn.Value!.AbsOrigin;
-        var playerRotation = bombCarrier.PlayerPawn.Value!.AbsRotation;
-
-        if (playerOrigin == null || playerRotation == null)
-        {
-            Console.WriteLine($"{LogPrefix}player origin or player rotation is null");
-            return false;
-        }
-        
-        playerOrigin.Z -= bombCarrier.PlayerPawn.Value.Collision.Mins.Z;
-        plantedC4.MoveType = MoveType_t.MOVETYPE_NONE;
-        plantedC4.Collision.SolidType = SolidType_t.SOLID_NONE;
-        plantedC4.Friction = 0.9f;
-        plantedC4.DefuseLength = 0.0f;
-        
-        Console.WriteLine($"{LogPrefix}setting planted c4 props");
-        plantedC4.BombTicking = true;
-        plantedC4.CannotBeDefused = false;
-        plantedC4.BeingDefused = false;
-        plantedC4.SourceSoundscapeHash = 2005810340;
-        
-        if (_planter != null)
-        {
-            Console.WriteLine($"{LogPrefix}Setting CPlantedC4 m_hOwnerEntity to: {_planter.PlayerPawn.Index}");
-            Schema.SetSchemaValue(plantedC4.Handle, "CBaseEntity", "m_hOwnerEntity", _planter.PlayerPawn.Index);
-            
-            Console.WriteLine($"{LogPrefix}Getting CPlantedC4 m_hOwnerEntity value after: {plantedC4.OwnerEntity.Index}");
-        }
-
-        Console.WriteLine($"{LogPrefix}calling dispatch spawn");
-        plantedC4.DispatchSpawn();
-        
-        Console.WriteLine($"{LogPrefix}teleporting prop");
-        var bombOrigin = new Vector
-        {
-            X = playerOrigin.X,
-            Y = playerOrigin.Y,
-            Z = playerOrigin.Z,
-        };
-        var bombQAngle = new QAngle
-        {
-            X = playerRotation.X,
-            Y = playerRotation.Y,
-            Z = playerRotation.Z
-        };
-
-        plantedC4.Teleport(bombOrigin, bombQAngle, new Vector(0, 0, 0));
-        
-        Console.WriteLine($"{LogPrefix}complete! waiting for next frame");
-        
-        Server.NextFrame(() =>
-        {
-            Console.WriteLine($"{LogPrefix}getting bombtargets");
-            var bombTargets =
-                Utilities.FindAllEntitiesByDesignerName<CBombTarget>("func_bomb_target").ToList();
-
-            if (bombTargets.Any())
-            {
-                Console.WriteLine($"{LogPrefix}got bomb targets, setting bombplantedhere");
-
-                bombTargets.Where(bombTarget => bombTarget.IsBombSiteB == (_currentBombsite == Bombsite.B))
-                    .ToList()
-                    .ForEach(bombTarget =>
-                    {
-                        Console.WriteLine($"{MessagePrefix}actually setting BombPlantedHere for {bombTarget.DesignerName}");
-                        bombTarget.BombPlantedHere = true;
-
-                        Console.WriteLine($"{LogPrefix}{bombTarget.MountTarget}");
-                        
-                        Console.WriteLine($"{MessagePrefix} calling helpers.acceptinput for {bombTarget.DesignerName} (is bombsite b: {bombTarget.IsBombSiteB})");
-                        Helpers.AcceptInput(bombTarget.Handle, "BombPlanted", plantedC4.Handle, plantedC4.Handle, "");
-                    });
-            }
-
-            Console.WriteLine($"{LogPrefix}sending bomb planted event");
-            Console.WriteLine($"{LogPrefix} c4blow before: {plantedC4.C4Blow}");
-            Helpers.SendBombPlantedEvent(bombCarrier, plantedC4);
-            Console.WriteLine($"{LogPrefix} c4blow after: {plantedC4.C4Blow}");
-            
-            AddTimer(0.1f, () =>
-            {
-                Console.WriteLine($"{LogPrefix} last think tick: {plantedC4.LastThinkTick}");
-            });
-
-            Console.WriteLine($"{LogPrefix}setting ct playerPawn properties");
-            foreach (var player in Utilities.GetPlayers().Where(player => player.TeamNum == (int)CsTeam.CounterTerrorist))
-            {
-                if (player.PlayerPawn.Value == null)
-                {
-                    continue;
-                }
-
-                Console.WriteLine($"{LogPrefix} setting for {player.PlayerName}");
-                player.PlayerPawn.Value.RetakesHasDefuseKit = true;
-                player.PlayerPawn.Value.IsDefusing = false;
-                player.PlayerPawn.Value.LastGivenDefuserTime = 0.0f;
-                player.PlayerPawn.Value.InNoDefuseArea = false;
-            }
-        });
-
-        return true;
-    }
-
-    private void HandleBombPlantedOld()
-    {
-        // Get planted c4
-        var plantedC4 = Utilities.FindAllEntitiesByDesignerName<CPlantedC4>("planted_c4").FirstOrDefault();
-        
-        if (plantedC4 == null || _planter == null)
-        {
-            Console.WriteLine($"{MessagePrefix}Planted C4 not found or planter not found.");
-            return;
-        }
-        
-        plantedC4.C4Blow = Server.CurrentTime + 40.0f;
-        plantedC4.InterpolationFrame = 1;
-        plantedC4.BombSite = (int)_currentBombsite;
-        
-        // set game rules
-        Console.WriteLine($"{MessagePrefix}setting game rules");
-        var gameRules = Helpers.GetGameRules();
-        gameRules.RoundWinStatus = 0;
-        gameRules.BombDropped = false;
-        gameRules.BombPlanted = true;
-        gameRules.BombDefused = false;
-        gameRules.RetakeRules.BlockersPresent = false;
-        gameRules.RetakeRules.RoundInProgress = true;
-        gameRules.RetakeRules.BombSite = plantedC4.BombSite;
-        
-        // Debug planted c4
-        List<string> c4NestedProps = new() { "" };
-        Console.WriteLine("");
-        Console.WriteLine("Planted C4 Props...");
-        Helpers.DebugObject("planted_c4", plantedC4, c4NestedProps);
-        
-        List<string> gameRulesNestedProps = new() { "RetakeRules" };
-        Console.WriteLine("");
-        Console.WriteLine("Game Rules Props...");
-        Helpers.DebugObject("_gameRules", gameRules, gameRulesNestedProps);
-        
-        Console.WriteLine($"{LogPrefix}pawn entity index: {_planter.PlayerPawn.Index}");
-        Console.WriteLine($"{LogPrefix}plantedC4 m_hOwnerEntity index: {plantedC4.OwnerEntity.Index}");
-        
-        // Console.WriteLine($"{LogPrefix}Adding hook to init VF");
-        // BombVirtualFunctions.Init.Hook((dynamicHook) =>
-        // {
-        //     Console.WriteLine("Init hook called! (SIG IS CORRECT)");
-        //     return HookResult.Continue;
-        // }, HookMode.Post);
-        //
-        // Console.WriteLine($"{LogPrefix}Calling init VF");
-        //
-        // if (_planter.PlayerPawn.Value == null)
-        // {
-        //     throw new Exception("Player pawn is null.");
-        // }
-        //
-        // // Call init on the planted c4
-        // BombFunctions.Init(_planter.PlayerPawn.Value, plantedC4.AbsOrigin ?? new Vector(), plantedC4.AbsOrigin ?? new Vector(), false);
-        // Console.WriteLine($"{LogPrefix}init VF complete");
     }
 }
