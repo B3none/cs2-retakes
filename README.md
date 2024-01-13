@@ -1,5 +1,10 @@
 # CS2 Retakes
-Retakes plugin written in C# for CounterStrikeSharp
+CS2 implementation of retakes written in C# for CounterStrikeSharp. Based on the version for CS:GO by Splewis.
+
+## Share the love
+If you appreciate the project then please take the time to star the repository 🙏
+
+![Star us](https://github.com/b3none/gdprconsent/raw/development/.github/README_ASSETS/star_us.png)
 
 ## Features / Roadmap
 - [x] Bombsite selection
@@ -32,10 +37,19 @@ This package comes with a weapon allocation system, however I recommend using **
 - Yoni's Allocator: https://github.com/yonilerner/cs2-retakes-allocator
 - Ravid's Allocator: https://github.com/Ravid-A/cs2-retakes-weapon-allocator
 
-## Share the love
-If you appreciate the project then please take the time to star the repository.
+## Plugin Configuration
+When the plugin is first loaded it will create a `retakes_config.json` file in the plugin directory. This file contains all of the configuration options for the plugin:
 
-![Star us](https://github.com/b3none/gdprconsent/raw/development/.github/README_ASSETS/star_us.png)
+| Config                           | Description                                                                                                                         | Default    | Min        | Max        |
+|----------------------------------|-------------------------------------------------------------------------------------------------------------------------------------|------------|------------|------------|
+| Version                          | The retakes config version. This is used to automatically migrate the retakes config file for you. **ignore this value**.           | **IGNORE** | **IGNORE** | **IGNORE** |
+| MaxPlayers                       | The maximum number of players allowed in the game at any time.                                                                      | 9          |            |            |
+| TerroristRatio                   | The percentage of the total players that should be Terrorists.                                                                      | 0.45       | 0          | 1          |
+| RoundsToScramble                 | The number of rounds won in a row before the teams are scrambled.                                                                   | 5          | -1         | 99999      |
+| IsScrambleEnabled                | Whether to scramble the teams once the RoundsToScramble value is met.                                                               | true       | false      | true       |
+| EnableFallbackAllocation         | Whether to enable the fallback weapon allocation. You should set this value to false if you're using a standalone weapon allocator. | true       | false      | true       |
+| EnableBombsiteAnnouncementVoices | Whether to play the bombsite announcement voices. The volume for these values is client sided `snd_toolvolume`.                     | true       | false      | true       |
+| EnableBombsiteAnnouncementCenter | Whether to display the bombsite in the center announcement box.                                                                     | true       | false      | true       |
 
 ## Credits
 This was inspired by the [CS:GO Retakes project](https://github.com/splewis/csgo-retakes) written by [splewis](https://github.com/splewis).

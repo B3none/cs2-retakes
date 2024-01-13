@@ -11,8 +11,8 @@ public class QueueManager
     private readonly int _maxRetakesPlayers;
     private readonly float _terroristRatio;
 
-    public List<CCSPlayerController> QueuePlayers = new();
-    public List<CCSPlayerController> ActivePlayers = new();
+    public HashSet<CCSPlayerController> QueuePlayers = new();
+    public HashSet<CCSPlayerController> ActivePlayers = new();
 
     public QueueManager(Translator translator, int? retakesMaxPlayers, float? retakesTerroristRatio)
     {
@@ -23,7 +23,8 @@ public class QueueManager
 
     public int GetTargetNumTerrorists()
     {
-        var ratio = _terroristRatio * ActivePlayers.Count;
+        // TODO: Add a config option for this logic
+        var ratio = (ActivePlayers.Count > 9 ? 0.5 : _terroristRatio) * ActivePlayers.Count;
         var numTerrorists = (int)Math.Round(ratio);
 
         // Ensure at least one terrorist if the calculated number is zero
@@ -35,10 +36,16 @@ public class QueueManager
         return ActivePlayers.Count - GetTargetNumTerrorists();
     }
 
-    public void PlayerTriedToJoinTeam(CCSPlayerController player, CsTeam fromTeam, CsTeam toTeam)
+    public void PlayerJoinedTeam(CCSPlayerController player, CsTeam fromTeam, CsTeam toTeam)
     {
         Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] PlayerTriedToJoinTeam called.");
-        
+
+        if (fromTeam == toTeam && toTeam == CsTeam.None)
+        {
+            // This is called when a player presses auto select.
+            Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] None -> None.");
+            return;
+        }
         if (fromTeam == CsTeam.None && toTeam == CsTeam.Spectator)
         {
             // This is called when a player first joins.
@@ -59,7 +66,7 @@ public class QueueManager
             }
             
             if (
-                _roundTerrorists.Count > 0 
+                _roundTerrorists.Count > 0
                 && _roundCounterTerrorists.Count > 0
                 && (
                     (toTeam == CsTeam.CounterTerrorist && !_roundCounterTerrorists.Contains(player))
@@ -82,7 +89,7 @@ public class QueueManager
         Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Checking QueuePlayers.");
         if (!QueuePlayers.Contains(player))
         {
-            if (RetakesPlugin.GetGameRules().WarmupPeriod && ActivePlayers.Count < _maxRetakesPlayers)
+            if (Helpers.GetGameRules().WarmupPeriod && ActivePlayers.Count < _maxRetakesPlayers)
             {
                 Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Not found, adding to ActivePlayers (because in warmup).");
                 ActivePlayers.Add(player);
@@ -98,13 +105,19 @@ public class QueueManager
             Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Found in QueuePlayers, do nothing.");
         }
 
-        Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Should switch to spectator? {(toTeam != CsTeam.Spectator ? "yes" : "no")}");
         if (toTeam != CsTeam.Spectator)
         {
             Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Changing to spectator.");
-            player.CommitSuicide(false, true);
+            if (player.PawnIsAlive)
+            {
+                player.CommitSuicide(false, true);
+            }
+
             player.ChangeTeam(CsTeam.Spectator);
+            return;
         }
+        
+        Helpers.CheckRoundDone();
     }
 
     private void RemoveDisconnectedPlayers()
@@ -114,7 +127,7 @@ public class QueueManager
         if (disconnectedActivePlayers.Count > 0)
         {
             Console.WriteLine($"{RetakesPlugin.LogPrefix}Removing {disconnectedActivePlayers.Count} disconnected players from ActivePlayers.");
-            ActivePlayers.RemoveAll(player => disconnectedActivePlayers.Contains(player));
+            ActivePlayers.RemoveWhere(player => disconnectedActivePlayers.Contains(player));
         }
         
         var disconnectedQueuePlayers = QueuePlayers.Where(player => !Helpers.IsValidPlayer(player) || !Helpers.IsPlayerConnected(player)).ToList();
@@ -122,7 +135,7 @@ public class QueueManager
         if (disconnectedQueuePlayers.Count > 0)
         {
             Console.WriteLine($"{RetakesPlugin.LogPrefix}Removing {disconnectedQueuePlayers.Count} disconnected players from QueuePlayers.");
-            QueuePlayers.RemoveAll(player => disconnectedQueuePlayers.Contains(player));
+            QueuePlayers.RemoveWhere(player => disconnectedQueuePlayers.Contains(player));
         }
     }
 
@@ -168,12 +181,13 @@ public class QueueManager
                 .Take(playersToAdd)
                 .ToList();
             
-            QueuePlayers.RemoveAll(playersToAddList.Contains);
-            ActivePlayers.AddRange(playersToAddList);
+            QueuePlayers.RemoveWhere(playersToAddList.Contains);
             
             // loop players to add, and set their team to CT
             foreach (var player in playersToAddList)
             {
+                ActivePlayers.Add(player);
+                
                 if ((CsTeam)player.TeamNum != CsTeam.CounterTerrorist)
                 {
                     player.SwitchTeam(CsTeam.CounterTerrorist);
@@ -198,6 +212,8 @@ public class QueueManager
         QueuePlayers.Remove(player);
         _roundTerrorists.Remove(player);
         _roundCounterTerrorists.Remove(player);
+        
+        Helpers.CheckRoundDone();
     }
     
     public void DebugQueues(bool isBefore)

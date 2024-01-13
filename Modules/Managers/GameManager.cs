@@ -1,7 +1,6 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
-using Microsoft.Extensions.Localization;
 
 namespace RetakesPlugin.Modules.Managers;
 
@@ -73,10 +72,12 @@ public class GameManager
         {
             if (_isScrambleEnabled)
             {
-                Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["teams.almost_scramble", _consecutiveRoundWinsToScramble, _consecutiveRoundWinsToScramble - _consecutiveRoundsWon]}");
+                Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["teams.almost_scramble", _consecutiveRoundsWon, _consecutiveRoundWinsToScramble - _consecutiveRoundsWon]}");
             }
-            
-            Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["teams.win_streak", _consecutiveRoundsWon]}");
+            else
+            {
+                Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["teams.win_streak", _consecutiveRoundsWon]}");
+            }
         }
     }
     
@@ -142,13 +143,6 @@ public class GameManager
                 var playersLeft = Helpers.Shuffle(sortedCounterTerroristPlayers.Except(newTerrorists).ToList());
                 newTerrorists.AddRange(playersLeft.Take(numTerroristsNeeded - newTerrorists.Count));
             }
-
-            if (newTerrorists.Count < numTerroristsNeeded)
-            {
-                var sortedTerrorists = GetSortedActivePlayers(CsTeam.Terrorist);
-                var playersLeft = Helpers.Shuffle(sortedTerrorists.Except(newTerrorists).ToList());
-                newTerrorists.AddRange(playersLeft.Take(numTerroristsNeeded - newTerrorists.Count));
-            }
         }
         
         var currentNumCounterTerroristAfterBalance = Helpers.GetCurrentNumPlayers(CsTeam.CounterTerrorist);
@@ -157,9 +151,9 @@ public class GameManager
         if (numCounterTerroristsNeeded > 0)
         {
             var terroristsWithZeroScore = QueueManager.ActivePlayers
-                .Where(player => 
-                    (CsTeam)player.TeamNum == CsTeam.Terrorist
-                    && Helpers.IsValidPlayer(player) 
+                .Where(player =>  
+                    Helpers.IsValidPlayer(player)
+                    && (CsTeam)player.TeamNum == CsTeam.Terrorist
                     && _playerRoundScores.GetValueOrDefault((int)player.UserId!, 0) == 0
                 )
                 .Except(newTerrorists)
@@ -175,7 +169,7 @@ public class GameManager
                     QueueManager.ActivePlayers
                         .Except(newCounterTerrorists)
                         .Except(newTerrorists)
-                        .Where(player => (CsTeam)player.TeamNum == CsTeam.Terrorist && Helpers.IsValidPlayer(player))
+                        .Where(player => Helpers.IsValidPlayer(player) && (CsTeam)player.TeamNum == CsTeam.Terrorist)
                         .OrderBy(player => _playerRoundScores.GetValueOrDefault((int)player.UserId!, 0))
                         .Take(numTerroristsNeeded - newCounterTerrorists.Count)
                         .ToList()

@@ -1,4 +1,4 @@
-﻿using System.Drawing;
+using System.Drawing;
 using System.Reflection;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
@@ -73,10 +73,17 @@ public static class Helpers
         return shuffledList;
     }
     
-    public static CCSGameRules? GetGameRules()
+    public static CCSGameRules GetGameRules()
     {
         var gameRulesEntities = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules");
-        return gameRulesEntities.First().GameRules;
+        var gameRules = gameRulesEntities.First().GameRules;
+        
+        if (gameRules == null)
+        {
+            throw new Exception($"{RetakesPlugin.LogPrefix}Game rules not found!");
+        }
+        
+        return gameRules;
     }
     
     public static void RemoveAllWeaponsAndEntities(CCSPlayerController player)
@@ -91,7 +98,7 @@ public static class Helpers
             return;
         }
         
-        foreach(var weapon in player.PlayerPawn.Value.WeaponServices.MyWeapons)
+        foreach (var weapon in player.PlayerPawn.Value.WeaponServices.MyWeapons)
         {
             if (weapon is not { IsValid: true, Value.IsValid: true })
             {
@@ -179,6 +186,11 @@ public static class Helpers
 
     public static void RestartGame()
     {
+        if (!GetGameRules().WarmupPeriod)
+        {
+            CheckRoundDone();
+        }
+
         Server.ExecuteCommand("mp_restartgame 1");
     }
     
@@ -199,6 +211,25 @@ public static class Helpers
         laser.EndPos.Z = end.Z;
 
         Utilities.SetStateChanged(laser,"CBeam", "m_vecEndPos");
+    }
+    
+    public static void CheckRoundDone()
+    {
+        var tHumanCount = GetCurrentNumPlayers(CsTeam.Terrorist);
+        var ctHumanCount= GetCurrentNumPlayers(CsTeam.CounterTerrorist);
+        
+        if (tHumanCount == 0 || ctHumanCount == 0) 
+        {
+            // TODO: once this stops crashing on windows use it there too
+            if (Environment.OSVersion.Platform == PlatformID.Unix)
+            {
+                GetGameRules().TerminateRound(0.1f, RoundEndReason.TerroristsWin);
+            }
+            else
+            {
+                Console.WriteLine($"{RetakesPlugin.LogPrefix}Windows server detected (Can't use TerminateRound)");
+            }
+        }
     }
     
     public static CCSPlayerController? GetBombCarrier()

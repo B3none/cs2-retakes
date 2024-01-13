@@ -19,30 +19,36 @@ namespace RetakesPlugin;
 [MinimumApiVersion(131)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.2.1";
+    private const string Version = "1.2.8";
     
+    #region Plugin info
     public override string ModuleName => "Retakes Plugin";
     public override string ModuleVersion => Version;
     public override string ModuleAuthor => "B3none";
     public override string ModuleDescription => "Community retakes for CS2.";
+    #endregion
 
-    // Constants
+    #region Constants
     public static readonly string LogPrefix = $"[Retakes {Version}] ";
     public static readonly string MessagePrefix = $"[{ChatColors.Green}Retakes{ChatColors.White}] ";
+    #endregion
     
-    // Helpers
+    #region Helpers
     private Translator _translator;
+    private GameManager? _gameManager;
+    #endregion
     
-    // Configs
+    #region Configs
     private MapConfig? _mapConfig;
     private RetakesConfig? _retakesConfig;
+    #endregion
     
-    // State
+    #region State
     private Bombsite _currentBombsite = Bombsite.A;
-    private GameManager? _gameManager;
     private CCSPlayerController? _planter;
-    private bool _isBombPlanted = false;
+    private bool _isBombPlanted;
     private CsTeam _lastRoundWinner;
+    #endregion
     
     public RetakesPlugin()
     {
@@ -110,6 +116,8 @@ public class RetakesPlugin : BasePlugin
     }
 
     // Commands
+    
+    #region Commands
     [ConsoleCommand("css_addspawn", "Adds a spawn point for retakes to the map.")]
     [CommandHelper(minArgs: 2, usage: "[T/CT] [A/B] [Y/N (can be planter / default N)]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
     [RequiresPermissions("@css/root")]
@@ -447,8 +455,9 @@ public class RetakesPlugin : BasePlugin
 
         player.PlayerPawn.Value?.Teleport(new Vector(positionX, positionY, positionZ), new QAngle(0f,0f,0f), new Vector(0f, 0f, 0f));
     }
-
-    // Listeners
+    #endregion
+    
+    #region Listeners
     private void OnMapStart(string mapName)
     {
         Console.WriteLine($"{LogPrefix}OnMapStart listener triggered!");
@@ -507,10 +516,8 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnRoundPreStart(EventRoundPrestart @event, GameEventInfo info)
     {
-        Console.WriteLine($"{LogPrefix}Round Pre Start event fired!");
-        
         // If we are in warmup, skip.
-        if (GetGameRules().WarmupPeriod)
+        if (Helpers.GetGameRules().WarmupPeriod)
         {
             Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
             return HookResult.Continue;
@@ -559,10 +566,8 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
     {
-        Console.WriteLine($"{LogPrefix}Round Start event fired!");
-
         // If we are in warmup, skip.
-        if (GetGameRules().WarmupPeriod)
+        if (Helpers.GetGameRules().WarmupPeriod)
         {
             Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
             return HookResult.Continue;
@@ -661,8 +666,6 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnRoundPostStart(EventRoundPoststart @event, GameEventInfo info)
     {
-        Console.WriteLine($"{LogPrefix}OnRoundPostStart event fired.");
-        
         if (_gameManager == null)
         {
             Console.WriteLine($"{LogPrefix}Game manager not loaded.");
@@ -670,7 +673,7 @@ public class RetakesPlugin : BasePlugin
         }
         
         // If we are in warmup, skip.
-        if (GetGameRules().WarmupPeriod)
+        if (Helpers.GetGameRules().WarmupPeriod)
         {
             Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
             return HookResult.Continue;
@@ -737,8 +740,6 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnPlayerSpawn(EventPlayerSpawn @event, GameEventInfo info)
     {
-        Console.WriteLine($"{LogPrefix}OnPlayerSpawn event fired.");
-        
         if (_gameManager == null)
         {
             Console.WriteLine($"{LogPrefix}Game manager not loaded.");
@@ -829,7 +830,7 @@ public class RetakesPlugin : BasePlugin
     //     return HookResult.Continue;
     // }
     
-    [GameEventHandler]
+    [GameEventHandler(HookMode.Pre)]
     public HookResult OnBombPlanted(EventBombPlanted @event, GameEventInfo info)
     {
         _isBombPlanted = true;
@@ -874,14 +875,14 @@ public class RetakesPlugin : BasePlugin
         Console.WriteLine($"{LogPrefix} pawn entity index: {_planter.PlayerPawn.Index}");
         Console.WriteLine($"{LogPrefix} plantedC4 m_hOwnerEntity index: {plantedC4.OwnerEntity.Index}");
         
+        AddTimer(4.1f, () => AnnounceBombsite(_currentBombsite, true));
+        
         return HookResult.Continue;
     }
 
     [GameEventHandler]
     public HookResult OnPlayerDeath(EventPlayerDeath @event, GameEventInfo info)
     {
-        Console.WriteLine($"{LogPrefix}OnPlayerDeath event fired.");
-
         if (_gameManager == null)
         {
             Console.WriteLine($"{LogPrefix}Game manager not loaded.");
@@ -907,8 +908,6 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnBombDefused(EventBombDefused @event, GameEventInfo info)
     {
-        Console.WriteLine($"{LogPrefix}OnBombDefused event fired.");
-        
         if (_gameManager == null)
         {
             Console.WriteLine($"{LogPrefix}Game manager not loaded.");
@@ -928,17 +927,18 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnRoundEnd(EventRoundEnd @event, GameEventInfo info)
     {
-        Console.WriteLine($"{LogPrefix}OnRoundEnd event fired.");
-
         _lastRoundWinner = (CsTeam)@event.Winner;
 
         return HookResult.Continue;
     }
     
-    [GameEventHandler]
+    [GameEventHandler(HookMode.Pre)]
     public HookResult OnPlayerTeam(EventPlayerTeam @event, GameEventInfo info)
     {
         Console.WriteLine($"{LogPrefix}OnPlayerTeam event fired.");
+        
+        // Ensure all team join events are silent.
+        @event.Silent = true;
         
         if (_gameManager == null)
         {
@@ -956,7 +956,7 @@ public class RetakesPlugin : BasePlugin
         Console.WriteLine($"{LogPrefix}[{player.PlayerName}] {(CsTeam)@event.Oldteam} -> {(CsTeam)@event.Team}");
         
         _gameManager.QueueManager.DebugQueues(true);
-        _gameManager.QueueManager.PlayerTriedToJoinTeam(player, (CsTeam)@event.Oldteam, (CsTeam)@event.Team);
+        _gameManager.QueueManager.PlayerJoinedTeam(player, (CsTeam)@event.Oldteam, (CsTeam)@event.Team);
         _gameManager.QueueManager.DebugQueues(false);
         
         Console.WriteLine($"{LogPrefix}[{player.PlayerName}] checking to ensure we have active players");
@@ -970,6 +970,7 @@ public class RetakesPlugin : BasePlugin
             _gameManager.QueueManager.DebugQueues(true);
             _gameManager.QueueManager.Update();
             _gameManager.QueueManager.DebugQueues(false);
+            
             Helpers.RestartGame();
         }
 
@@ -979,7 +980,6 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
     {
-        Console.WriteLine($"{LogPrefix}OnPlayerDisconnect event fired.");
         var player = @event.Userid;
         
         if (!Helpers.IsValidPlayer(player))
@@ -993,30 +993,15 @@ public class RetakesPlugin : BasePlugin
             return HookResult.Continue;
         }
         
-        _gameManager.QueueManager.DebugQueues(true);
         _gameManager.QueueManager.RemovePlayerFromQueues(player);
-        _gameManager.QueueManager.DebugQueues(false);
-
+        
         return HookResult.Continue;
     }
-    
-    public static CCSGameRules GetGameRules()
-    {
-        var gameRules = Helpers.GetGameRules();
-        
-        if (gameRules == null)
-        {
-            throw new Exception($"{LogPrefix}Game rules not found!");
-        }
-        
-        return gameRules;
-    }
+    #endregion
     
     // Helpers (with localization so they must be in here until I can figure out how to use it nicely elsewhere)
-    private void AnnounceBombsite(Bombsite bombsite)
+    private void AnnounceBombsite(Bombsite bombsite, bool onlyCenter = false)
     {
-        Console.WriteLine($"{LogPrefix}Announcing bombsite output to all players.");
-        
         string[] bombsiteAnnouncers =
         {
             "balkan_epic",
@@ -1040,24 +1025,32 @@ public class RetakesPlugin : BasePlugin
         
         foreach (var player in Utilities.GetPlayers())
         {
-            // Don't use Server.PrintToChat as it'll add another loop through the players.
-            player.PrintToChat($"{MessagePrefix}{announcementMessage}");
-            
-            if (!isRetakesConfigLoaded || _retakesConfig!.RetakesConfigData!.EnableBombsiteAnnouncementVoices)
+            if (!onlyCenter)
             {
-                // Do this here so every player hears a random announcer each round.
-                var bombsiteAnnouncer = bombsiteAnnouncers[Helpers.Random.Next(bombsiteAnnouncers.Length)];
-                
-                player.ExecuteClientCommand($"play sounds/vo/agents/{bombsiteAnnouncer}/loc_{bombsite.ToString().ToLower()}_01");
+                // Don't use Server.PrintToChat as it'll add another loop through the players.
+                player.PrintToChat($"{MessagePrefix}{announcementMessage}");
+
+                if (!isRetakesConfigLoaded || _retakesConfig!.RetakesConfigData!.EnableBombsiteAnnouncementVoices)
+                {
+                    // Do this here so every player hears a random announcer each round.
+                    var bombsiteAnnouncer = bombsiteAnnouncers[Helpers.Random.Next(bombsiteAnnouncers.Length)];
+
+                    player.ExecuteClientCommand(
+                        $"play sounds/vo/agents/{bombsiteAnnouncer}/loc_{bombsite.ToString().ToLower()}_01");
+                }
+                continue;
             }
-            
-            if (!isRetakesConfigLoaded || _retakesConfig!.RetakesConfigData!.EnableBombsiteAnnouncementCenter)
+
+            if (isRetakesConfigLoaded && !_retakesConfig!.RetakesConfigData!.EnableBombsiteAnnouncementCenter)
             {
-                player.PrintToCenterHtml(announcementMessage);
+                continue;
+            }
+
+            if ((CsTeam)player.TeamNum == CsTeam.CounterTerrorist)
+            {
+                player.PrintToCenter(announcementMessage);
             }
         }
-        
-        Console.WriteLine($"{LogPrefix}Printing bombsite output to all players COMPLETE.");
     }
 
     [GameEventHandler]
