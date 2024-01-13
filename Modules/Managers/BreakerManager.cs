@@ -31,6 +31,7 @@ public class BreakerManager
     
     private static void DestroyBreakables()
     {
+        // TODO: This is slow as balls, merge them into one loop of the entities.
         var breakableEntities = 
             Utilities.FindAllEntitiesByDesignerName<CBreakable>("func_breakable")
                 .Concat(Utilities.FindAllEntitiesByDesignerName<CBreakable>("func_breakable_surf"))
@@ -42,6 +43,7 @@ public class BreakerManager
             breakableEntity.AcceptInput("Break");
         }
         
+        // TODO: This is slow as balls, merge them into one loop of the entities.
         var breakableProps = Utilities.FindAllEntitiesByDesignerName<CBreakableProp>("prop.breakable.01")
             .Concat(Utilities.FindAllEntitiesByDesignerName<CBreakableProp>("prop.breakable.02"));
         
@@ -52,6 +54,7 @@ public class BreakerManager
 
         if (Server.MapName == "de_vertigo" || Server.MapName == "de_cache" || Server.MapName == "de_nuke")
         {
+            // TODO: This is slow as balls, merge them into one loop of the entities.
             var dynamicProps = Utilities.FindAllEntitiesByDesignerName<CDynamicProp>("prop_dynamic");
             
             foreach (var dynamicProp in dynamicProps)
@@ -63,6 +66,7 @@ public class BreakerManager
         switch (Server.MapName)
         {
             case "de_nuke":
+                // TODO: This is slow as balls, merge them into one loop of the entities.
                 var buttonEntities = Utilities.FindAllEntitiesByDesignerName<CBaseButton>("func_button");
                 
                 foreach (var buttonEntity in buttonEntities)
