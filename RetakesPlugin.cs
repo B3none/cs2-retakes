@@ -852,7 +852,7 @@ public class RetakesPlugin : BasePlugin
         
         // set game rules
         Console.WriteLine($"{MessagePrefix}setting game rules");
-        var gameRules = GetGameRules();
+        var gameRules = Helpers.GetGameRules();
         gameRules.RoundWinStatus = 0;
         gameRules.BombDropped = false;
         gameRules.BombPlanted = true;
