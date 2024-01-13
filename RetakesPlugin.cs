@@ -63,7 +63,7 @@ public class RetakesPlugin : BasePlugin
         Console.WriteLine($"{LogPrefix}Plugin loaded!");
         
         RegisterListener<Listeners.OnMapStart>(OnMapStart);
-        RegisterListener<Listeners.OnTick>(OnTick);
+        // RegisterListener<Listeners.OnTick>(OnTick);
 
         if (hotReload)
         {
