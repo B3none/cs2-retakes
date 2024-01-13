@@ -35,6 +35,7 @@ public class RetakesPlugin : BasePlugin
     #region Helpers
     private Translator _translator;
     private GameManager? _gameManager;
+    private BreakerManager? _breakerManager;
     #endregion
     
     #region Configs
@@ -298,6 +299,12 @@ public class RetakesPlugin : BasePlugin
             _retakesConfig?.RetakesConfigData?.RoundsToScramble,
             _retakesConfig?.RetakesConfigData?.IsScrambleEnabled
         );
+        
+        // TODO: Implement config variables for this.
+        _breakerManager = new BreakerManager(
+            true, // _retakesConfig?.RetakesConfigData?.IsBreakerEnabled,
+            true // _retakesConfig?.RetakesConfigData?.ShouldOpenDoors
+        );
     }
 
     [GameEventHandler]
@@ -390,6 +397,7 @@ public class RetakesPlugin : BasePlugin
         }
         
         // Reset round state.
+        _breakerManager?.Handle();
         _currentBombsite = Helpers.Random.Next(0, 2) == 0 ? Bombsite.A : Bombsite.B;
         _planter = null;
         _gameManager.ResetPlayerScores();
