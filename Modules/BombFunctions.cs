@@ -1,25 +1,16 @@
 ﻿using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
-using CounterStrikeSharp.API.Modules.Utils;
 
 namespace RetakesPlugin.Modules;
 
 public static class BombVirtualFunctions
 {
-    public static MemoryFunctionVoid<IntPtr, IntPtr, IntPtr, bool> Init =
-        new(@"\x70\x20\x3c\x66\x69\x6c\x65\x69");
-    
     public static MemoryFunctionVoid<IntPtr, IntPtr, IntPtr> ShootSatchelCharge = new(
         @"\x48\x89\x5C\x24\x08\x48\x89\x6C\x24\x10\x56\x57\x41\x56\x48\x83\xEC\x20\x4C\x8B\xF1\x33\xDB");
 }
 
 public static class BombFunctions
 {
-    public static void Init(CCSPlayerPawn playerPawn, Vector vecStart, Vector vecAngles, bool trainingPlacedByPlayer)
-    {
-        BombVirtualFunctions.Init.Invoke(playerPawn.Handle, vecStart.Handle, vecAngles.Handle, trainingPlacedByPlayer);
-    }
-    
     public static CPlantedC4 ShootSatchelCharge(CCSPlayerPawn? playerPawn)
     {
         if (playerPawn == null || !playerPawn.IsValid)
