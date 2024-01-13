@@ -79,6 +79,7 @@ public class BreakerManager
 
     private static void OpenDoors()
     {
+        // TODO: It'll probably be more efficient to do it during the entity loop above.
         var doorEntities = Utilities.FindAllEntitiesByDesignerName<CPropDoorRotating>("prop_door_rotating");
 
         foreach (var doorEntity in doorEntities)
