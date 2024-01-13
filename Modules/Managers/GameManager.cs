@@ -151,9 +151,9 @@ public class GameManager
         if (numCounterTerroristsNeeded > 0)
         {
             var terroristsWithZeroScore = QueueManager.ActivePlayers
-                .Where(player => 
-                    (CsTeam)player.TeamNum == CsTeam.Terrorist
-                    && Helpers.IsValidPlayer(player) 
+                .Where(player =>  
+                    Helpers.IsValidPlayer(player)
+                    && (CsTeam)player.TeamNum == CsTeam.Terrorist
                     && _playerRoundScores.GetValueOrDefault((int)player.UserId!, 0) == 0
                 )
                 .Except(newTerrorists)
@@ -169,7 +169,7 @@ public class GameManager
                     QueueManager.ActivePlayers
                         .Except(newCounterTerrorists)
                         .Except(newTerrorists)
-                        .Where(player => (CsTeam)player.TeamNum == CsTeam.Terrorist && Helpers.IsValidPlayer(player))
+                        .Where(player => Helpers.IsValidPlayer(player) && (CsTeam)player.TeamNum == CsTeam.Terrorist)
                         .OrderBy(player => _playerRoundScores.GetValueOrDefault((int)player.UserId!, 0))
                         .Take(numTerroristsNeeded - newCounterTerrorists.Count)
                         .ToList()
