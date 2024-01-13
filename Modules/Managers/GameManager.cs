@@ -143,13 +143,6 @@ public class GameManager
                 var playersLeft = Helpers.Shuffle(sortedCounterTerroristPlayers.Except(newTerrorists).ToList());
                 newTerrorists.AddRange(playersLeft.Take(numTerroristsNeeded - newTerrorists.Count));
             }
-
-            if (newTerrorists.Count < numTerroristsNeeded)
-            {
-                var sortedTerrorists = GetSortedActivePlayers(CsTeam.Terrorist);
-                var playersLeft = Helpers.Shuffle(sortedTerrorists.Except(newTerrorists).ToList());
-                newTerrorists.AddRange(playersLeft.Take(numTerroristsNeeded - newTerrorists.Count));
-            }
         }
         
         var currentNumCounterTerroristAfterBalance = Helpers.GetCurrentNumPlayers(CsTeam.CounterTerrorist);
