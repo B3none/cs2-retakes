@@ -190,7 +190,7 @@ public static class Helpers
         Server.ExecuteCommand("mp_restartgame 1");
     }
     
-    public static void MoveBeam(CEnvBeam? laser, Vector start, Vector end)
+    public static void MoveBeam(CBeam? laser, Vector start, Vector end)
     {
         if (laser == null)
         {
@@ -206,7 +206,7 @@ public static class Helpers
         laser.EndPos.Y = end.Y;
         laser.EndPos.Z = end.Z;
 
-        Utilities.SetStateChanged(laser,"CBeam", "m_vecEndPos");
+        Utilities.SetStateChanged(laser, "CBeam", "m_vecEndPos");
     }
     
     public static void CheckRoundDone()
