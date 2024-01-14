@@ -301,9 +301,7 @@ public static class Helpers
         plantedC4.AbsOrigin.Z = playerPawn.AbsOrigin.Z;
         plantedC4.HasExploded = false;
 
-//        plantedC4.OwnerEntity.Raw = playerPawn.EntityHandle.Raw;
-
-        plantedC4.BombSite = 0;
+        plantedC4.BombSite = (int)bombsite;
         plantedC4.BombTicking = true;
         plantedC4.CannotBeDefused = false;
 
