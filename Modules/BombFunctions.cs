@@ -51,15 +51,23 @@ public static class BombFunctions
                 playerPawn.AbsRotation.Handle,
                 0
             );
-            
-            return;
+
+            var plantedC4 = Helpers.GetPlantedC4();
+
+            if (plantedC4 != null)
+            {
+                Schema.SetSchemaValue(plantedC4.Handle, "CBaseEntity", "m_hOwnerEntity", playerPawn.Handle);
+                plantedC4.BombTicking = true;
+            }
         }
-        
-        BombVirtualFunctions.ShootSatchelChargeWindows.Invoke(
-            playerPawn.Handle,
-            playerPawn.AbsOrigin.Handle,
-            playerPawn.AbsRotation.Handle
-        );
+        else
+        {
+            BombVirtualFunctions.ShootSatchelChargeWindows.Invoke(
+                playerPawn.Handle,
+                playerPawn.AbsOrigin.Handle,
+                playerPawn.AbsRotation.Handle
+            );
+        }
         
         // Need to fire bomb planted manually
         Helpers.SendBombPlantedEvent(
