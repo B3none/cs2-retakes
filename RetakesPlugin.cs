@@ -7,7 +7,6 @@ using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Cvars;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
-using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules;
 using RetakesPlugin.Modules.Enums;
@@ -43,7 +42,6 @@ public class RetakesPlugin : BasePlugin
     #region Configs
     private MapConfig? _mapConfig;
     private RetakesConfig? _retakesConfig;
-    private float _freezeTime = 15.0f;
     #endregion
     
     #region State
@@ -60,13 +58,11 @@ public class RetakesPlugin : BasePlugin
 
     public override void Load(bool hotReload)
     {
-        // Reset this on load
         _translator = new Translator(Localizer);
         
         Console.WriteLine($"{LogPrefix}Plugin loaded!");
         
         RegisterListener<Listeners.OnMapStart>(OnMapStart);
-        // RegisterListener<Listeners.OnTick>(OnTick);
 
         if (hotReload)
         {
@@ -280,15 +276,6 @@ public class RetakesPlugin : BasePlugin
         // Execute the retakes configuration.
         Helpers.ExecuteRetakesConfiguration();
         
-        var freezeTime = ConVar.Find("mp_freezetime");
-        
-        if (freezeTime == null)
-        {
-            throw new Exception($"{LogPrefix}Failed to find mp_freezetime convar.");
-        }
-        
-        _freezeTime = freezeTime.GetPrimitiveValue<float>();
-        
         // If we don't have a map config loaded, load it.
         if (!MapConfig.IsLoaded(_mapConfig, Server.MapName))
         {
@@ -482,7 +469,6 @@ public class RetakesPlugin : BasePlugin
         }
         Console.WriteLine($"{LogPrefix}Moving players to spawns COMPLETE.");
 
-        HandleAutoPlant();
         AnnounceBombsite(_currentBombsite);
         
         return HookResult.Continue;
@@ -538,27 +524,16 @@ public class RetakesPlugin : BasePlugin
                 {
                     Console.WriteLine($"{LogPrefix}Fallback allocation disabled, skipping.");
                 }
-
-                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Handling bomb allocation:");
-                if ((CsTeam)player.TeamNum == CsTeam.Terrorist)
-                {
-                    Console.WriteLine($"{LogPrefix}[{player.PlayerName}] is terrorist");
-                    Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Removing bomb");
-                    // Remove the bomb from the player.
-                    player.RemoveItemByDesignerName("weapon_c4", true);
-                    
-                    // Switching to weapon
-                    NativeAPI.IssueClientCommand((int)player.UserId!, "slot2; slot1");
-
-                    if (player == _planter)
-                    {
-                        Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Player IS planter, giving bomb (player.givenameditem)");
-                        Helpers.GiveAndSwitchToBomb(player);
-                    }
-                }
             });
         }
 
+        return HookResult.Continue;
+    }
+    
+    [GameEventHandler]
+    public HookResult OnRoundFreezeEnd(EventRoundFreezeEnd @event, GameEventInfo info)
+    {
+        HandleAutoPlant();
         return HookResult.Continue;
     }
     
@@ -842,23 +817,12 @@ public class RetakesPlugin : BasePlugin
 
     private void HandleAutoPlant()
     {
+        // Ensure the round time for defuse is always set to 1.92
+        Server.ExecuteCommand("mp_roundtime_defuse 1.92");
+        
         if (_planter != null && Helpers.IsValidPlayer(_planter))
         {
-            // Remove the bomb.
-            _planter.RemoveItemByDesignerName("weapon_c4", true);
-            _planter.ExecuteClientCommand("lastinv");
-            
-            AddTimer(_freezeTime, () =>
-            {
-                if (!Helpers.IsValidPlayer(_planter))
-                {
-                    // The planter was invalid after freezetime
-                    Helpers.TerminateRound(RoundEndReason.RoundDraw);
-                    return;
-                }
-                
-                BombFunctions.ShootSatchelCharge(_planter.PlayerPawn.Value);
-            });
+            BombFunctions.ShootSatchelCharge(_planter.PlayerPawn.Value);
         }
         else
         {

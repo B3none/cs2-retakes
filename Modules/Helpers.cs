@@ -118,9 +118,6 @@ public static class Helpers
     public static void ExecuteRetakesConfiguration()
     {
         Server.ExecuteCommand("execifexists cs2-retakes/retakes.cfg");
-        
-        // Ensure the round time for defuse is always set to 1.92
-        Server.ExecuteCommand("mp_roundtime_defuse 1.92");
     }
     
     public static int GetCurrentNumPlayers(CsTeam csTeam)
