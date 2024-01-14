@@ -11,7 +11,7 @@ public static class BombVirtualFunctions
         @"\x48\x89\x5C\x24\x08\x48\x89\x6C\x24\x10\x56\x57\x41\x56\x48\x83\xEC\x20\x4C\x8B\xF1\x33\xDB"
     );
     
-    public static MemoryFunctionVoid<IntPtr, IntPtr, int> PlantBombLinux = new(
+    public static MemoryFunctionVoid<IntPtr, IntPtr, int> SpawnBombLinux = new(
         @"\x55\x48\x8D\x05\x20\x1C\x97\x00"
     );
 }
@@ -46,7 +46,7 @@ public static class BombFunctions
         
         if (Environment.OSVersion.Platform == PlatformID.Unix)
         {
-            BombVirtualFunctions.PlantBombLinux.Invoke(
+            BombVirtualFunctions.SpawnBombLinux.Invoke(
                 playerPawn.AbsOrigin.Handle,
                 playerPawn.AbsRotation.Handle,
                 0
