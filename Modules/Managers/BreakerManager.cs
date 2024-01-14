@@ -1,6 +1,7 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities;
+using CounterStrikeSharp.API.Modules.Utils;
 
 namespace RetakesPlugin.Modules.Managers;
 
@@ -17,32 +18,32 @@ public class BreakerManager
 
     public void Handle()
     {
-        var entityActions = new List<(string designerName, string action, Type entityType)>();
+        var entityActions = new List<(string designerName, string action)>();
 
         if (_shouldBreakBreakables)
         {
-            entityActions.AddRange(new List<(string designerName, string action, Type entityType)>
+            entityActions.AddRange(new List<(string designerName, string action)>
             {
-                ("func_breakable", "Break", typeof(CBreakable)),
-                ("func_breakable_surf", "Break", typeof(CBreakable)),
-                ("prop.breakable.01", "Break", typeof(CBreakableProp)),
-                ("prop.breakable.02", "Break", typeof(CBreakableProp))
+                ("func_breakable", "Break"),
+                ("func_breakable_surf", "Break"),
+                ("prop.breakable.01", "Break"),
+                ("prop.breakable.02", "Break")
             });
             
             if (Server.MapName == "de_vertigo" || Server.MapName == "de_nuke")
             {
-                entityActions.Add(("prop_dynamic", "Break", typeof(CDynamicProp)));
+                entityActions.Add(("prop_dynamic", "Break"));
             }
 
             if (Server.MapName == "de_nuke")
             {
-                entityActions.Add(("func_button", "Kill", typeof(CBaseButton)));
+                entityActions.Add(("func_button", "Kill"));
             }
         }
 
         if (_shouldOpenDoors)
         {
-            entityActions.Add(("prop_door_rotating", "open", typeof(CPropDoorRotating)));
+            entityActions.Add(("prop_door_rotating", "open"));
         }
 
         if (entityActions.Count == 0)
@@ -53,17 +54,34 @@ public class BreakerManager
         var pEntity = new CEntityIdentity(EntitySystem.FirstActiveEntity);
         for (; pEntity != null && pEntity.Handle != IntPtr.Zero; pEntity = pEntity.Next)
         {
-            foreach (var (designerName, action, type) in entityActions)
+            foreach (var (designerName, action) in entityActions)
             {
                 if (pEntity.DesignerName == designerName)
                 {
-                    dynamic? entity = Activator.CreateInstance(type, pEntity.Handle);
-                    
-                    if (entity != null)
+                    switch (pEntity.DesignerName)
                     {
-                        entity.AcceptInput(action);
+                        case "func_breakable":
+                        case "func_breakable_surf":
+                            new CBreakable(pEntity.Handle).AcceptInput(action);
+                            break;
+                        
+                        case "prop.breakable.01":
+                        case "prop.breakable.02":
+                            new CBreakableProp(pEntity.Handle).AcceptInput(action);
+                            break;
+                        
+                        case "prop_dynamic":
+                            new CDynamicProp(pEntity.Handle).AcceptInput(action);
+                            break;
+                        
+                        case "func_button":
+                            new CBaseButton(pEntity.Handle).AcceptInput(action);
+                            break;
+                        
+                        case "prop_door_rotating":
+                            new CPropDoorRotating(pEntity.Handle).AcceptInput(action);
+                            break;
                     }
-                    
                     break;
                 }
             }
