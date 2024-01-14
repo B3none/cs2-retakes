@@ -5,6 +5,7 @@ using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules;
 using RetakesPlugin.Modules.Enums;
@@ -18,7 +19,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(131)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.2.9";
+    private const string Version = "1.3.1";
     
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -46,7 +47,6 @@ public class RetakesPlugin : BasePlugin
     #region State
     private Bombsite _currentBombsite = Bombsite.A;
     private CCSPlayerController? _planter;
-    private bool _isBombPlanted;
     private CsTeam _lastRoundWinner;
     #endregion
     
@@ -57,7 +57,6 @@ public class RetakesPlugin : BasePlugin
 
     public override void Load(bool hotReload)
     {
-        // Reset this on load
         _translator = new Translator(Localizer);
         
         Console.WriteLine($"{LogPrefix}Plugin loaded!");
@@ -361,7 +360,7 @@ public class RetakesPlugin : BasePlugin
         {
             case CsTeam.CounterTerrorist:
                 Console.WriteLine($"{LogPrefix}Calling CounterTerroristRoundWin()");
-                _gameManager.CounterTerroristRoundWin(_planter, _isBombPlanted);
+                _gameManager.CounterTerroristRoundWin();
                 Console.WriteLine($"{LogPrefix}CounterTerroristRoundWin call complete");
                 break;
             
@@ -475,7 +474,7 @@ public class RetakesPlugin : BasePlugin
             playerPawn.Teleport(spawn.Vector, spawn.QAngle, new Vector());
         }
         Console.WriteLine($"{LogPrefix}Moving players to spawns COMPLETE.");
-        
+
         AnnounceBombsite(_currentBombsite);
         
         return HookResult.Continue;
@@ -531,24 +530,16 @@ public class RetakesPlugin : BasePlugin
                 {
                     Console.WriteLine($"{LogPrefix}Fallback allocation disabled, skipping.");
                 }
-
-                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Handling bomb allocation:");
-                if ((CsTeam)player.TeamNum == CsTeam.Terrorist)
-                {
-                    Console.WriteLine($"{LogPrefix}[{player.PlayerName}] is terrorist");
-                    Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Removing bomb");
-                    // Remove the bomb from the player.
-                    player.RemoveItemByDesignerName("weapon_c4", true);
-
-                    if (player == _planter)
-                    {
-                        Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Player IS planter, giving bomb (player.givenameditem)");
-                        Helpers.GiveAndSwitchToBomb(player);
-                    }
-                }
             });
         }
 
+        return HookResult.Continue;
+    }
+    
+    [GameEventHandler]
+    public HookResult OnRoundFreezeEnd(EventRoundFreezeEnd @event, GameEventInfo info)
+    {
+        HandleAutoPlant();
         return HookResult.Continue;
     }
     
@@ -597,58 +588,10 @@ public class RetakesPlugin : BasePlugin
         return HookResult.Continue;
     }
     
-    [GameEventHandler]
-    public HookResult OnWeaponFire(EventWeaponFire @event, GameEventInfo info)
-    {
-        var player = @event.Userid;
-
-        if (!Helpers.IsValidPlayer(player))
-        {
-            return HookResult.Continue;
-        }
-
-        if (Helpers.HasBomb(player))
-        {
-            Console.WriteLine($"{LogPrefix}Player has bomb, swap to bomb userid({(int)player.UserId!}).");
-            
-            // TODO: Investigate this because sometimes it doesn't work.
-            // Change to their knife to prevent planting.
-            NativeAPI.IssueClientCommand((int)player.UserId!, "slot5");
-        }
-
-        return HookResult.Continue;
-    }
-
-    [GameEventHandler]
-    public HookResult OnBombDropped(EventBombDropped @event, GameEventInfo info)
-    {
-        var player = @event.Userid;
-        
-        if (!Helpers.IsValidPlayer(player))
-        {
-            return HookResult.Continue;
-        }
-        
-        // Remove the bomb entity and give the player that dropped it the bomb
-        var bombEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("weapon_c4").ToList();
-
-        if (bombEntities.Count > 0)
-        {
-            foreach (var bomb in bombEntities)
-            {
-                bomb.Remove();
-            }
-        }
-        
-        Helpers.GiveAndSwitchToBomb(player);
-        
-        return HookResult.Continue;
-    }
-    
     [GameEventHandler(HookMode.Pre)]
     public HookResult OnBombPlanted(EventBombPlanted @event, GameEventInfo info)
     {
-        _isBombPlanted = true;
+        Console.WriteLine($"{LogPrefix}OnBombPlanted event fired");
         
         AddTimer(4.1f, () => AnnounceBombsite(_currentBombsite, true));
         
@@ -825,6 +768,21 @@ public class RetakesPlugin : BasePlugin
             {
                 player.PrintToCenter(announcementMessage);
             }
+        }
+    }
+
+    private void HandleAutoPlant()
+    {
+        // Ensure the round time for defuse is always set to 1.92
+        Server.ExecuteCommand("mp_roundtime_defuse 1.92");
+        
+        if (_planter != null && Helpers.IsValidPlayer(_planter))
+        {
+            Helpers.PlantTickingBomb(_planter, _currentBombsite);
+        }
+        else
+        {
+            Helpers.TerminateRound(RoundEndReason.RoundDraw);
         }
     }
 }
