@@ -35,13 +35,19 @@ public class SpawnManager
 		_spawnsInitialized = true;
     }
 
-	public List<Spawn> GetSpawns(Bombsite bombsite, CsTeam team)
+	public List<Spawn> GetSpawns(Bombsite bombsite, CsTeam? team = null)
 	{
 		if (!_spawnsInitialized)
 		{
 			return new List<Spawn>();
 		}
-		return _spawns[bombsite][team];
+
+		if (team == null)
+		{
+			return _spawns[bombsite].SelectMany(entry => entry.Value).ToList();
+		}
+
+		return _spawns[bombsite][(CsTeam)team];
 	}
 
 	/**

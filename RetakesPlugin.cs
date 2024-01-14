@@ -49,6 +49,7 @@ public class RetakesPlugin : BasePlugin
     private Bombsite _currentBombsite = Bombsite.A;
     private CCSPlayerController? _planter;
     private CsTeam _lastRoundWinner;
+	private Bombsite? _showingSpawnsForBombsite = null;
     #endregion
     
     public RetakesPlugin()
@@ -199,7 +200,8 @@ public class RetakesPlugin : BasePlugin
         {
 			Helpers.ShowSpawn(spawn);
         }
-		
+
+		_showingSpawnsForBombsite = (bombsite == "A" ? Bombsite.A : Bombsite.B);
 		commandInfo.ReplyToCommand($"{LogPrefix}Showing {spawns.Count} spawns for bombsite {bombsite}.");
     }
 
@@ -208,7 +210,7 @@ public class RetakesPlugin : BasePlugin
     [RequiresPermissions("@css/root")]
     public void OnCommandRemoveSpawn(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (!Helpers.DoesPlayerHavePawn(player))
+        if (!Helpers.DoesPlayerHavePawn(player) || _showingSpawnsForBombsite == null || _spawnManager == null)
         {
             return;
         }
@@ -219,7 +221,8 @@ public class RetakesPlugin : BasePlugin
             return;
         }
 
-		var spawns = _mapConfig.GetSpawnsClone();
+		// TODO: Figure out why we need to cast this.
+		var spawns = _spawnManager.GetSpawns((Bombsite)_showingSpawnsForBombsite);
         
         if (spawns.Count == 0)
         {
@@ -234,6 +237,11 @@ public class RetakesPlugin : BasePlugin
         {
 			var distance = Helpers.GetDistanceBetweenVectors(spawn.Vector, player!.PlayerPawn.Value!.AbsOrigin!);
 
+			if(distance > 128.0)
+			{
+				continue;
+			}
+
 			if (distance < closestDistance)
 			{
 				closestDistance = distance;
@@ -243,7 +251,7 @@ public class RetakesPlugin : BasePlugin
 
 		if (closestSpawn == null)
 		{
-			commandInfo.ReplyToCommand($"{MessagePrefix}No spawns found.");
+			commandInfo.ReplyToCommand($"{MessagePrefix}No spawns found within 128 units.");
 			return;
 		}
 
@@ -436,6 +444,7 @@ public class RetakesPlugin : BasePlugin
         _breakerManager?.Handle();
         _currentBombsite = Helpers.Random.Next(0, 2) == 0 ? Bombsite.A : Bombsite.B;
         _gameManager.ResetPlayerScores();
+		_showingSpawnsForBombsite = null;
         
 		_planter = _spawnManager.HandleRoundSpawns(_currentBombsite, _gameManager.QueueManager.ActivePlayers);
 
