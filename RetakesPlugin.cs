@@ -5,6 +5,8 @@ using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
+using CounterStrikeSharp.API.Modules.Cvars;
+using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules;
@@ -19,7 +21,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(131)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.2.8";
+    private const string Version = "1.3.0";
     
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -41,6 +43,7 @@ public class RetakesPlugin : BasePlugin
     #region Configs
     private MapConfig? _mapConfig;
     private RetakesConfig? _retakesConfig;
+    private float _freezeTime = 15.0f;
     #endregion
     
     #region State
@@ -71,51 +74,6 @@ public class RetakesPlugin : BasePlugin
             Server.ExecuteCommand($"map {Server.MapName}");
         }
     }
-
-    private CPlantedC4? _plantedC4;
-    private const float BombDefuseRange = 62.0f;
-    private void OnTick()
-    {
-        _plantedC4 = Helpers.GetPlantedC4();
-
-        if (_plantedC4 == null)
-        {
-            return;
-        }
-        
-        foreach (var player in Utilities.GetPlayers())
-        {
-            var playerPawn = player.PlayerPawn.Value;
-
-            if (playerPawn == null || playerPawn.MovementServices == null || (CsTeam)player.TeamNum != CsTeam.CounterTerrorist)
-            {
-                continue;
-            }
-            
-            var isHoldingUse = player.Buttons.HasFlag(PlayerButtons.Use);
-            
-            if (
-                isHoldingUse
-                && !playerPawn.IsDefusing
-                && Helpers.IsInRange(BombDefuseRange, playerPawn.AbsOrigin!, _plantedC4.AbsOrigin!)
-                && Helpers.IsOnGround(player)
-                && Helpers.IsLookingAtBomb(playerPawn, _plantedC4)
-            ) 
-            {
-                Server.PrintToChatAll($"{MessagePrefix}{player.PlayerName} is in range of the bomb, and is holding use.");
-                Helpers.SendBombBeginDefuseEvent(player);
-                playerPawn.IsDefusing = true;
-            }
-
-            if (!isHoldingUse && playerPawn.IsDefusing)
-            {
-                Helpers.SendBombAbortDefuseEvent(player);
-                playerPawn.IsDefusing = false;
-            }
-        }
-    }
-
-    // Commands
     
     #region Commands
     [ConsoleCommand("css_addspawn", "Adds a spawn point for retakes to the map.")]
@@ -175,149 +133,6 @@ public class RetakesPlugin : BasePlugin
         var didAddSpawn = _mapConfig.AddSpawn(spawn);
         
         commandInfo.ReplyToCommand($"{LogPrefix}{(didAddSpawn ? "Spawn added" : "Error adding spawn")}");
-    }
-
-    [ConsoleCommand("css_defuser")]
-    public void OnCommandDefuser(CCSPlayerController? player, CommandInfo commandInfo)
-    {
-        Console.WriteLine($"{LogPrefix}Entity command called.");
-        
-        if (player == null || !player.IsValid)
-        {
-            return;
-        }
-
-        _plantedC4 = Helpers.GetPlantedC4();
-
-        if (_plantedC4 == null)
-        {
-            return;
-        }
-
-        AddTimer(3.0f, () =>
-        {
-            var playerPawn = player.PlayerPawn.Value!;
-            playerPawn.IsDefusing = true;
-            playerPawn.ProgressBarStartTime = Server.CurrentTime;
-            playerPawn.ProgressBarDuration = 1;
-            
-            Console.WriteLine($"{LogPrefix}{player.PlayerName}.ProgressBarStartTime: {playerPawn.ProgressBarStartTime}");
-            Console.WriteLine($"{LogPrefix}{player.PlayerName}.ProgressBarDuration: {playerPawn.ProgressBarDuration}");
-        });
-        
-        Console.WriteLine($"{LogPrefix} Setting defuser.");
-        Schema.SetSchemaValue(_plantedC4.Handle, "CPlantedC4", "m_hBombDefuser", player.PlayerPawn.Index);
-    }
-
-    [ConsoleCommand("css_entity")]
-    public void OnCommandEntity(CCSPlayerController? player, CommandInfo commandInfo)
-    {
-        Console.WriteLine($"{MessagePrefix}Entity command called.");
-        
-        if (player == null || !player.IsValid)
-        {
-            return;
-        }
-        
-        // Get planted c4
-        var plantedC4 = Utilities.FindAllEntitiesByDesignerName<CPlantedC4>("planted_c4").FirstOrDefault();
-        
-        if (plantedC4 == null || _planter == null)
-        {
-            Console.WriteLine($"{MessagePrefix}Planted C4 not found or planter not found.");
-            return;
-        }
-
-        var found = false;
-        foreach (var entity in Utilities.GetAllEntities())
-        {
-            if (entity.Index == plantedC4.ControlPanel.Index)
-            {
-                Console.WriteLine($"{MessagePrefix}Entity: {entity.DesignerName}");
-                found = true;
-            }
-        }
-
-        if (!found)
-        {
-            Console.WriteLine($"{MessagePrefix}Entity not found.");
-        }
-    }
-
-    private CEntityIOOutput? _phys;
-    [ConsoleCommand("css_store")]
-    public void OnCommandStore(CCSPlayerController? player, CommandInfo commandInfo)
-    {
-        Console.WriteLine($"{MessagePrefix}Entity command called.");
-        
-        if (player == null || !player.IsValid)
-        {
-            return;
-        }
-        
-        // Get planted c4
-        var plantedC4 = Utilities.FindAllEntitiesByDesignerName<CPlantedC4>("planted_c4").FirstOrDefault();
-        
-        if (plantedC4 == null || _planter == null)
-        {
-            Console.WriteLine($"{MessagePrefix}Planted C4 not found or planter not found.");
-            return;
-        }
-
-        _phys = plantedC4.OnBombBeginDefuse;
-    }
-
-    [ConsoleCommand("css_set")]
-    public void OnCommandSet(CCSPlayerController? player, CommandInfo commandInfo)
-    {
-        Console.WriteLine($"{MessagePrefix}Entity command called.");
-        
-        if (player == null || !player.IsValid)
-        {
-            return;
-        }
-        
-        // Get planted c4
-        var plantedC4 = Utilities.FindAllEntitiesByDesignerName<CPlantedC4>("planted_c4").FirstOrDefault();
-        
-        if (plantedC4 == null || _planter == null)
-        {
-            Console.WriteLine($"{MessagePrefix}Planted C4 not found or planter not found.");
-            return;
-        }
-
-        if (_phys == null)
-        {
-            Console.WriteLine($"{MessagePrefix}Phys is null.");
-            return;
-        }
-        
-        // Schema.SetSchemaValue(plantedC4.Handle, "CBaseEntity", "m_OnBombBeginDefuse", _phys.Handle);
-        // Helpers.AcceptInput(
-        //     plantedC4.Handle
-        // );
-    }
-
-    [ConsoleCommand("css_swap")]
-    public void OnCommandSwap(CCSPlayerController? player, CommandInfo commandInfo)
-    {
-        if (player == null || !player.IsValid)
-        {
-            return;
-        }
-        
-        player.SwitchTeam((CsTeam)player.TeamNum == CsTeam.CounterTerrorist ? CsTeam.Terrorist : CsTeam.CounterTerrorist);
-    }
-
-    [ConsoleCommand("css_lab")]
-    public void OnCommandLab(CCSPlayerController? player, CommandInfo commandInfo)
-    {
-        if (player == null || !player.IsValid || _plantedC4 == null)
-        {
-            return;
-        }
-
-        Helpers.IsLookingAtBomb(player.PlayerPawn.Value!, _plantedC4);
     }
 
     [ConsoleCommand("css_debugqueues", "Prints the state of the queues to the console.")]
@@ -464,6 +279,15 @@ public class RetakesPlugin : BasePlugin
         
         // Execute the retakes configuration.
         Helpers.ExecuteRetakesConfiguration();
+        
+        var freezeTime = ConVar.Find("mp_freezetime");
+        
+        if (freezeTime == null)
+        {
+            throw new Exception($"{LogPrefix}Failed to find mp_freezetime convar.");
+        }
+        
+        _freezeTime = freezeTime.GetPrimitiveValue<float>();
         
         // If we don't have a map config loaded, load it.
         if (!MapConfig.IsLoaded(_mapConfig, Server.MapName))
@@ -657,7 +481,8 @@ public class RetakesPlugin : BasePlugin
             playerPawn.Teleport(spawn.Vector, spawn.QAngle, new Vector());
         }
         Console.WriteLine($"{LogPrefix}Moving players to spawns COMPLETE.");
-        
+
+        HandleAutoPlant();
         AnnounceBombsite(_currentBombsite);
         
         return HookResult.Continue;
@@ -1015,38 +840,29 @@ public class RetakesPlugin : BasePlugin
         }
     }
 
-    [GameEventHandler]
-    public HookResult OnRoundFreezeEnd(EventRoundFreezeEnd @event, GameEventInfo info)
+    private void HandleAutoPlant()
     {
-        Console.WriteLine($"{LogPrefix}OnFreezeTimeEnd event fired.");
-        var bombCarrier = Helpers.GetBombCarrier();
-
-        if (bombCarrier == null)
+        if (_planter != null && Helpers.IsValidPlayer(_planter))
         {
-            Console.WriteLine($"{LogPrefix}Bomb carrier not found.");
-            return HookResult.Continue;
+            // Remove the bomb.
+            _planter.RemoveItemByDesignerName("weapon_c4", true);
+            _planter.ExecuteClientCommand("lastinv");
+            
+            AddTimer(_freezeTime, () =>
+            {
+                if (!Helpers.IsValidPlayer(_planter))
+                {
+                    // The planter was invalid after freezetime
+                    Helpers.TerminateRound(RoundEndReason.RoundDraw);
+                    return;
+                }
+                
+                BombFunctions.ShootSatchelCharge(_planter.PlayerPawn.Value);
+            });
         }
-
-        if (!bombCarrier.PlayerPawn.Value!.InBombZone)
+        else
         {
-            Console.WriteLine($"{LogPrefix}Bomb carrier not in bomb zone.");
-            return HookResult.Continue;
+            Helpers.TerminateRound(RoundEndReason.RoundDraw);
         }
-        
-        CreatePlantedC4(bombCarrier);
-
-        return HookResult.Continue;
-    }
-    
-    private void CreatePlantedC4(CCSPlayerController bombCarrier)
-    {
-        Console.WriteLine($"{LogPrefix}CreatePlantedC4 called...");
-        
-        bombCarrier.RemoveItemByDesignerName("weapon_c4", true);
-        bombCarrier.ExecuteClientCommand("lastinv");
-        
-        BombFunctions.ShootSatchelCharge(bombCarrier.PlayerPawn.Value);
-        
-        Console.WriteLine($"{LogPrefix}CreatePlantedC4 complete.");
     }
 }
