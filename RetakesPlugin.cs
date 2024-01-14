@@ -770,8 +770,7 @@ public class RetakesPlugin : BasePlugin
         
         if (_planter != null && Helpers.IsValidPlayer(_planter))
         {
-            BombFunctions.ShootSatchelCharge(_planter.PlayerPawn.Value);
-            Helpers.SendBombPlantedEvent(_planter, _currentBombsite);
+            BombFunctions.PlantTickingBomb(_planter, _currentBombsite);
         }
         else
         {
