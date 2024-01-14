@@ -1,6 +1,7 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities;
+using CounterStrikeSharp.API.Modules.Utils;
 
 namespace RetakesPlugin.Modules.Managers;
 
@@ -64,24 +65,24 @@ public class BreakerManager
                 {
                     case "func_breakable":
                     case "func_breakable_surf":
-                        new CBreakable(pEntity.Handle).AcceptInput(action);
+                        new PointerTo<CBreakable>(pEntity.Handle).Value.AcceptInput(action);
                         break;
                         
                     case "prop.breakable.01":
                     case "prop.breakable.02":
-                        new CBreakableProp(pEntity.Handle).AcceptInput(action);
+                        new PointerTo<CBreakableProp>(pEntity.Handle).Value.AcceptInput(action);
                         break;
                         
                     case "prop_dynamic":
-                        new CDynamicProp(pEntity.Handle).AcceptInput(action);
+                        new PointerTo<CDynamicProp>(pEntity.Handle).Value.AcceptInput(action);
                         break;
                         
                     case "func_button":
-                        new CBaseButton(pEntity.Handle).AcceptInput(action);
+                        new PointerTo<CBaseButton>(pEntity.Handle).Value.AcceptInput(action);
                         break;
                         
                     case "prop_door_rotating":
-                        new CPropDoorRotating(pEntity.Handle).AcceptInput(action);
+                        new PointerTo<CPropDoorRotating>(pEntity.Handle).Value.AcceptInput(action);
                         break;
                 }
                 break;
