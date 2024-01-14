@@ -10,7 +10,7 @@ public class BreakerManager
 
     public BreakerManager(bool? isBreakerEnabled, bool? shouldOpenDoors)
     {
-        _isBreakerEnabled = isBreakerEnabled ?? false;
+        _isBreakerEnabled = isBreakerEnabled ?? true;
         _shouldOpenDoors = shouldOpenDoors ?? false;
     }
 
