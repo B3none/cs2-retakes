@@ -7,16 +7,11 @@ namespace RetakesPlugin.Modules.Managers;
 
 public class BreakerManager
 {
-    private readonly bool _shouldBreakBreakables;
-    private readonly bool _shouldOpenDoors;
     private readonly List<(string designerName, string action)> _entityActions = new();
 
     public BreakerManager(bool? shouldBreakBreakables, bool? shouldOpenDoors)
     {
-        _shouldBreakBreakables = shouldBreakBreakables ?? false;
-        _shouldOpenDoors = shouldOpenDoors ?? false;
-
-        if (_shouldBreakBreakables)
+        if (shouldBreakBreakables ?? false)
         {
             _entityActions.AddRange(new List<(string designerName, string action)>
             {
@@ -37,7 +32,7 @@ public class BreakerManager
             }
         }
 
-        if (_shouldOpenDoors)
+        if (shouldOpenDoors ?? false)
         {
             _entityActions.Add(("prop_door_rotating", "open"));
         }
