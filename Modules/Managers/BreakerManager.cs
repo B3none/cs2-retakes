@@ -30,51 +30,73 @@ public class BreakerManager
     }
     
     private static void DestroyBreakables()
+{
+    var breakableEntities = new List<(string designerName, string action, Type entityType)>
     {
-        // TODO: This is slow as balls, merge them into one loop of the entities.
-        var breakableEntities = 
-            Utilities.FindAllEntitiesByDesignerName<CBreakable>("func_breakable")
-                .Concat(Utilities.FindAllEntitiesByDesignerName<CBreakable>("func_breakable_surf"))
-                .Concat(Utilities.FindAllEntitiesByDesignerName<CBreakable>("prop_dynamic"));
+        ("func_breakable", "Break", typeof(CBreakable)),
+        ("func_breakable_surf", "Break", typeof(CBreakable)),
+        ("prop.breakable.01", "Break", typeof(CBreakableProp)),
+        ("prop.breakable.02", "Break", typeof(CBreakableProp))
+    };
 
-        foreach (var breakableEntity in breakableEntities)
-        {
-            breakableEntity.AcceptInput("Break");
-        }
-        
-        // TODO: This is slow as balls, merge them into one loop of the entities.
-        var breakableProps = Utilities.FindAllEntitiesByDesignerName<CBreakableProp>("prop.breakable.01")
-            .Concat(Utilities.FindAllEntitiesByDesignerName<CBreakableProp>("prop.breakable.02"));
-        
-        foreach (var breakableProp in breakableProps)
-        {
-            breakableProp.AcceptInput("break");
-        }
+    breakableEntities.AddRange(
+        Utilities.FindAllEntitiesByDesignerName<CBreakable>("func_breakable")
+            .Select(entity => (entity.DesignerName, "Break", entity.GetType()))
+    );
 
-        if (Server.MapName == "de_vertigo" || Server.MapName == "de_cache" || Server.MapName == "de_nuke")
-        {
-            // TODO: This is slow as balls, merge them into one loop of the entities.
-            var dynamicProps = Utilities.FindAllEntitiesByDesignerName<CDynamicProp>("prop_dynamic");
-            
-            foreach (var dynamicProp in dynamicProps)
-            {
-                dynamicProp.AcceptInput("Break");
-            }
-        }
+    breakableEntities.AddRange(
+        Utilities.FindAllEntitiesByDesignerName<CBreakable>("func_breakable_surf")
+            .Select(entity => (entity.DesignerName, "Break", entity.GetType()))
+    );
 
-        switch (Server.MapName)
+    breakableEntities.AddRange(
+        Utilities.FindAllEntitiesByDesignerName<CBreakableProp>("prop_dynamic")
+            .Select(entity => (entity.DesignerName, "Break", entity.GetType()))
+    );
+
+    if (Server.MapName == "de_vertigo" || Server.MapName == "de_cache" || Server.MapName == "de_nuke")
+    {
+        breakableEntities.Add(("prop_dynamic", "Break", typeof(CDynamicProp)));
+    }
+
+    if (Server.MapName == "de_nuke")
+    {
+        breakableEntities.Add(("func_button", "Kill", typeof(CBaseButton)));
+    }
+
+    foreach (var (designerName, action, entityType) in breakableEntities)
+{
+    IEnumerable<object> entities = entityType switch
+    {
+        Type et when et == typeof(CBreakable) => Utilities.FindAllEntitiesByDesignerName<CBreakable>(designerName),
+        Type et when et == typeof(CBreakableProp) => Utilities.FindAllEntitiesByDesignerName<CBreakableProp>(designerName),
+        Type et when et == typeof(CDynamicProp) => Utilities.FindAllEntitiesByDesignerName<CDynamicProp>(designerName),
+        Type et when et == typeof(CBaseButton) => Utilities.FindAllEntitiesByDesignerName<CBaseButton>(designerName),
+        _ => throw new InvalidOperationException("Unsupported entity type")
+    };
+
+    foreach (var entity in entities)
+    {
+        if (entity is CBreakable breakable)
         {
-            case "de_nuke":
-                // TODO: This is slow as balls, merge them into one loop of the entities.
-                var buttonEntities = Utilities.FindAllEntitiesByDesignerName<CBaseButton>("func_button");
-                
-                foreach (var buttonEntity in buttonEntities)
-                {
-                    buttonEntity.AcceptInput("Kill");
-                }
-                break;
+            breakable.AcceptInput("Break");
+        }
+        else if (entity is CBreakableProp breakableProp)
+        {
+            breakableProp.AcceptInput("Break");
+        }
+        else if (entity is CDynamicProp dynamicProp)
+        {
+            dynamicProp.AcceptInput("Break");
+        }
+        else if (entity is CBaseButton baseButton)
+        {
+            baseButton.AcceptInput("Break");
         }
     }
+}
+
+}
 
     private static void OpenDoors()
     {
