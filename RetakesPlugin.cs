@@ -194,39 +194,12 @@ public class RetakesPlugin : BasePlugin
             return;
         }
         
-        // Pre cache the sprites.
-        Server.PrecacheModel("sprites/laserbeam.vmt");
-        
         foreach (var spawn in spawns)
         {
-            // Tell the player about the spawn.
-            player!.PrintToChat($"{LogPrefix}Spawn: {spawn.Vector} {spawn.QAngle} {spawn.Team} {spawn.Bombsite} {(spawn.CanBePlanter ? "Y" : "N")}");
-            
-            // Create beam
-            var beam = Utilities.CreateEntityByName<CEnvBeam>("env_beam");
-
-            if (beam == null)
-            {
-                throw new Exception("Failed to create beam entity.");
-            }
-
-            var endBeam = spawn.Vector;
-            endBeam.Z = spawn.Vector.Z + 3000;
-            
-            Helpers.MoveBeam(beam, spawn.Vector, endBeam);
-            beam.SetModel("sprites/laserbeam.vmt");
-            beam.Radius = 10;
-            beam.StartFrame = 0;
-            beam.FrameRate = 0;
-            beam.LifeState = 1;
-            beam.Width = 1;
-            beam.EndWidth = 1;
-            beam.Amplitude = 0;
-            beam.Speed = 50;
-            beam.Flags = 0;
-            beam.FadeLength = 0;
-            beam.Render = spawn.Team == CsTeam.Terrorist ? (spawn.CanBePlanter ? Color.Orange : Color.Red) : Color.Blue;
+			Helpers.ShowSpawn(spawn);
         }
+		
+		commandInfo.ReplyToCommand($"{LogPrefix}Showing {spawns.Count} spawns for bombsite {bombsite}.");
     }
 
     [ConsoleCommand("css_teleport", "This command teleports the player to the given coordinates")]
