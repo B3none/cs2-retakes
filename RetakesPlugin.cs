@@ -19,7 +19,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(131)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.3.0";
+    private const string Version = "1.3.1";
     
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -36,6 +36,7 @@ public class RetakesPlugin : BasePlugin
     #region Helpers
     private Translator _translator;
     private GameManager? _gameManager;
+    private BreakerManager? _breakerManager;
     #endregion
     
     #region Configs
@@ -297,6 +298,11 @@ public class RetakesPlugin : BasePlugin
             _retakesConfig?.RetakesConfigData?.RoundsToScramble,
             _retakesConfig?.RetakesConfigData?.IsScrambleEnabled
         );
+        
+        _breakerManager = new BreakerManager(
+            _retakesConfig?.RetakesConfigData?.IsBreakerEnabled,
+            _retakesConfig?.RetakesConfigData?.ShouldBreakerOpenDoors
+        );
     }
 
     [GameEventHandler]
@@ -389,6 +395,7 @@ public class RetakesPlugin : BasePlugin
         }
         
         // Reset round state.
+        _breakerManager?.Handle();
         _currentBombsite = Helpers.Random.Next(0, 2) == 0 ? Bombsite.A : Bombsite.B;
         _planter = null;
         _gameManager.ResetPlayerScores();
