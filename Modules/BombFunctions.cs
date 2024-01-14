@@ -1,6 +1,6 @@
 ﻿using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Memory;
 using CounterStrikeSharp.API.Modules.Memory.DynamicFunctions;
-using CounterStrikeSharp.API.Modules.Utils;
 
 namespace RetakesPlugin.Modules;
 
@@ -34,22 +34,22 @@ public static class BombFunctions
         }
         
         Console.WriteLine(Environment.OSVersion.Platform == PlatformID.Unix ? "Linux" : "Windows");
-
+        
         if (Environment.OSVersion.Platform == PlatformID.Unix)
         {
             BombVirtualFunctions.ShootSatchelCharge.Invoke(
                 playerPawn.Handle,
-                IntPtr.Zero,
-                IntPtr.Zero
+                playerPawn.AbsOrigin.Handle,
+                playerPawn.AbsRotation.Handle
             );
-
-            var plantedC4 = Helpers.GetPlantedC4();
-            if (plantedC4 == null)
-            {
-                return;
-            }
             
-            plantedC4.Teleport(playerPawn.AbsOrigin, playerPawn.AbsRotation, new Vector());
+            // var plantedC4 = Helpers.GetPlantedC4();
+            // if (plantedC4 == null)
+            // {
+            //     return;
+            // }
+            //
+            // plantedC4.Teleport(playerPawn.AbsOrigin, playerPawn.AbsRotation, new Vector());
             
             return;
         }
