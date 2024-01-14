@@ -12,4 +12,6 @@ public class RetakesConfigData
     public bool EnableFallbackAllocation { get; set; } = true;
     public bool EnableBombsiteAnnouncementVoices { get; set; } = true;
     public bool EnableBombsiteAnnouncementCenter { get; set; } = true;
+    public bool IsBreakerEnabled { get; set; } = true;
+    public bool ShouldBreakerOpenDoors { get; set; } = false;
 }

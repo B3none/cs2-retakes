@@ -299,10 +299,9 @@ public class RetakesPlugin : BasePlugin
             _retakesConfig?.RetakesConfigData?.IsScrambleEnabled
         );
         
-        // TODO: Implement config variables for this.
         _breakerManager = new BreakerManager(
-            true, // _retakesConfig?.RetakesConfigData?.IsBreakerEnabled,
-            true // _retakesConfig?.RetakesConfigData?.ShouldOpenDoors
+            _retakesConfig?.RetakesConfigData?.IsBreakerEnabled,
+            _retakesConfig?.RetakesConfigData?.ShouldBreakerOpenDoors
         );
     }
 
