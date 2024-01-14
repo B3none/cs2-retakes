@@ -5,12 +5,12 @@ namespace RetakesPlugin.Modules.Managers;
 
 public class BreakerManager
 {
-    private readonly bool _isBreakerEnabled;
+    private readonly bool _shouldBreakBreakables;
     private readonly bool _shouldOpenDoors;
 
-    public BreakerManager(bool? isBreakerEnabled, bool? shouldOpenDoors)
+    public BreakerManager(bool? shouldBreakBreakables, bool? shouldOpenDoors)
     {
-        _isBreakerEnabled = isBreakerEnabled ?? false;
+        _shouldBreakBreakables = shouldBreakBreakables ?? false;
         _shouldOpenDoors = shouldOpenDoors ?? false;
     }
 
@@ -18,7 +18,7 @@ public class BreakerManager
     {
         var entityActions = new List<(string designerName, string action, Type entityType)>();
 
-        if (_isBreakerEnabled)
+        if (_shouldBreakBreakables)
         {
             entityActions.AddRange(new List<(string designerName, string action, Type entityType)>
             {

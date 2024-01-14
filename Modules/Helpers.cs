@@ -1,7 +1,8 @@
-﻿using CounterStrikeSharp.API;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
+using RetakesPlugin.Modules.Enums;
 
 namespace RetakesPlugin.Modules;
 
@@ -215,15 +216,118 @@ public static class Helpers
         
         if (tHumanCount == 0 || ctHumanCount == 0) 
         {
-            // TODO: once this stops crashing on windows use it there too
-            if (Environment.OSVersion.Platform == PlatformID.Unix)
+            TerminateRound(RoundEndReason.TerroristsWin);
+        }
+    }
+
+    public static void TerminateRound(RoundEndReason roundEndReason)
+    {
+        // TODO: once this stops crashing on windows use it there too
+        if (Environment.OSVersion.Platform == PlatformID.Unix)
+        {
+            GetGameRules().TerminateRound(0.1f, roundEndReason);
+        }
+        else
+        {
+            Console.WriteLine($"{RetakesPlugin.LogPrefix}Windows server detected (Can't use TerminateRound) trying to kill all alive players instead.");
+            var alivePlayers = Utilities.GetPlayers()
+                .Where(IsValidPlayer)
+                .Where(player => player.PawnIsAlive)
+                .ToList();
+
+            foreach (var player in alivePlayers)
             {
-                GetGameRules().TerminateRound(0.1f, RoundEndReason.TerroristsWin);
-            }
-            else
-            {
-                Console.WriteLine($"{RetakesPlugin.LogPrefix}Windows server detected (Can't use TerminateRound)");
+                player.CommitSuicide(false, true);
             }
         }
+    }
+
+    public static CPlantedC4? GetPlantedC4()
+    {
+        return Utilities.FindAllEntitiesByDesignerName<CPlantedC4>("planted_c4").FirstOrDefault();
+    }
+
+    public static bool IsInRange(float range, Vector v1, Vector v2)
+    {
+        var dx = v1.X - v2.X;
+        var dy = v1.Y - v2.Y;
+        
+        return Math.Sqrt(Math.Pow(dx, 2) + Math.Pow(dy, 2)) <= range;
+    }
+
+    public static bool IsOnGround(CCSPlayerController player)
+    {
+        return (player.PlayerPawn.Value!.Flags & (int)PlayerFlags.FL_ONGROUND) != 0;
+    }
+    
+    public static void PlantTickingBomb(CCSPlayerController? player, Bombsite bombsite)
+    {
+        if (player == null || !player.IsValid)
+        {
+            throw new Exception("Player controller is not valid");
+        }
+
+        var playerPawn = player.PlayerPawn.Value;
+        
+        if (playerPawn == null || !playerPawn.IsValid)
+        {
+            throw new Exception("Player pawn is not valid");
+        }
+        
+        if (playerPawn.AbsOrigin == null)
+        {
+            throw new Exception("Player pawn abs origin is null");
+        }
+        
+        if (playerPawn.AbsRotation == null)
+        {
+            throw new Exception("Player pawn abs rotation is null");
+        }
+        
+        var plantedC4 = Utilities.CreateEntityByName<CPlantedC4>("planted_c4");
+
+        if (plantedC4 == null)
+        {
+            throw new Exception("c4 is null");
+        }
+
+        if (plantedC4.AbsOrigin == null)
+        {
+            throw new Exception("c4.AbsOrigin is null");
+        }
+        
+        plantedC4.AbsOrigin.X = playerPawn.AbsOrigin.X;
+        plantedC4.AbsOrigin.Y = playerPawn.AbsOrigin.Y;
+        plantedC4.AbsOrigin.Z = playerPawn.AbsOrigin.Z;
+        plantedC4.HasExploded = false;
+
+        plantedC4.OwnerEntity.Raw = playerPawn.EntityHandle.Raw;
+
+        plantedC4.BombSite = 0;
+        plantedC4.BombTicking = true;
+        plantedC4.CannotBeDefused = false;
+
+        plantedC4.DispatchSpawn();
+
+        var gameRules = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules!;
+        gameRules.BombPlanted = true;
+        gameRules.BombDefused = false;
+
+        SendBombPlantedEvent(player, bombsite);
+    }
+    
+    public static void SendBombPlantedEvent(CCSPlayerController bombCarrier, Bombsite bombsite)
+    {
+        if (!bombCarrier.IsValid || bombCarrier.PlayerPawn.Value == null)
+        {
+            return;
+        }
+
+        var eventPtr = NativeAPI.CreateEvent("bomb_planted", true);
+        NativeAPI.SetEventPlayerController(eventPtr, "userid", bombCarrier.Handle);
+        NativeAPI.SetEventInt(eventPtr, "userid", (int)bombCarrier.PlayerPawn.Value.Index);
+        NativeAPI.SetEventInt(eventPtr, "site", (int)bombsite);
+
+        NativeAPI.FireEvent(eventPtr, false);
     }
 }

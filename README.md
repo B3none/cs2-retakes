@@ -20,6 +20,7 @@ If you appreciate the project then please take the time to star the repository ð
 - [x] Add translations
 - [x] Improve bombsite announcement
 - [x] Queue priority for VIPs
+- [x] Add autoplant
 - [ ] Add a command to view the spawns for the current map
 - [ ] Implement better spawn management system
 
@@ -30,7 +31,6 @@ If you appreciate the project then please take the time to star the repository ð
 ## Recommendations
 I also recommend installing these plugins for an improved player experience
 - Instadefuse: https://github.com/B3none/cs2-instadefuse
-- Instaplant: https://github.com/B3none/cs2-instaplant
 - Clutch Announce: https://github.com/B3none/cs2-clutch-announce
 
 This package comes with a weapon allocation system, however I recommend using **one** of the following plugins for a better experience
@@ -50,6 +50,8 @@ When the plugin is first loaded it will create a `retakes_config.json` file in t
 | EnableFallbackAllocation         | Whether to enable the fallback weapon allocation. You should set this value to false if you're using a standalone weapon allocator. | true       | false      | true       |
 | EnableBombsiteAnnouncementVoices | Whether to play the bombsite announcement voices. The volume for these values is client sided `snd_toolvolume`.                     | true       | false      | true       |
 | EnableBombsiteAnnouncementCenter | Whether to display the bombsite in the center announcement box.                                                                     | true       | false      | true       |
+| ShouldBreakBreakables            | Whether to break all breakable props on round start                                                                                 | true       | false      | true       |
+| ShouldOpenDoors                  | Whether to open doors on round start                                                                                                | true       | false      | true       |
 
 ## Credits
 This was inspired by the [CS:GO Retakes project](https://github.com/splewis/csgo-retakes) written by [splewis](https://github.com/splewis).
