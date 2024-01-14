@@ -7,7 +7,7 @@ public static class BombVirtualFunctions
 {
     public static MemoryFunctionVoid<IntPtr, IntPtr, IntPtr> ShootSatchelCharge = new(
         Environment.OSVersion.Platform == PlatformID.Unix ?
-            @"FIND ME PLEASE"
+            @"\x55\x48\x89\xe5\x41\x55\x41\x54"
             : @"\x48\x89\x5C\x24\x08\x48\x89\x6C\x24\x10\x56\x57\x41\x56\x48\x83\xEC\x20\x4C\x8B\xF1\x33\xDB"
     );
 }
