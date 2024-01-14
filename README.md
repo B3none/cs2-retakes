@@ -50,8 +50,8 @@ When the plugin is first loaded it will create a `retakes_config.json` file in t
 | EnableFallbackAllocation         | Whether to enable the fallback weapon allocation. You should set this value to false if you're using a standalone weapon allocator. | true       | false      | true       |
 | EnableBombsiteAnnouncementVoices | Whether to play the bombsite announcement voices. The volume for these values is client sided `snd_toolvolume`.                     | true       | false      | true       |
 | EnableBombsiteAnnouncementCenter | Whether to display the bombsite in the center announcement box.                                                                     | true       | false      | true       |
-| IsBreakerEnabled                 | Whether to break all breakable props on round start                                                                                 | true       | false      | true       |
-| ShouldBreakerOpenDoors           | Whether to open doors on round start (breaker must be enabled)                                                                      | true       | false      | true       |
+| ShouldBreakBreakables            | Whether to break all breakable props on round start                                                                                 | true       | false      | true       |
+| ShouldOpenDoors                  | Whether to open doors on round start                                                                                                | true       | false      | true       |
 
 ## Credits
 This was inspired by the [CS:GO Retakes project](https://github.com/splewis/csgo-retakes) written by [splewis](https://github.com/splewis).

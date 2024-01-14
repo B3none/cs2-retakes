@@ -300,8 +300,8 @@ public class RetakesPlugin : BasePlugin
         );
         
         _breakerManager = new BreakerManager(
-            _retakesConfig?.RetakesConfigData?.IsBreakerEnabled,
-            _retakesConfig?.RetakesConfigData?.ShouldBreakerOpenDoors
+            _retakesConfig?.RetakesConfigData?.ShouldBreakBreakables,
+            _retakesConfig?.RetakesConfigData?.ShouldOpenDoors
         );
     }
 
