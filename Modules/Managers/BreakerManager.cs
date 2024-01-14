@@ -55,34 +55,36 @@ public class BreakerManager
         {
             foreach (var (designerName, action) in entityActions)
             {
-                if (pEntity.DesignerName == designerName)
+                if (pEntity.DesignerName != designerName)
                 {
-                    switch (pEntity.DesignerName)
-                    {
-                        case "func_breakable":
-                        case "func_breakable_surf":
-                            new CBreakable(pEntity.Handle).AcceptInput(action);
-                            break;
-                        
-                        case "prop.breakable.01":
-                        case "prop.breakable.02":
-                            new CBreakableProp(pEntity.Handle).AcceptInput(action);
-                            break;
-                        
-                        case "prop_dynamic":
-                            new CDynamicProp(pEntity.Handle).AcceptInput(action);
-                            break;
-                        
-                        case "func_button":
-                            new CBaseButton(pEntity.Handle).AcceptInput(action);
-                            break;
-                        
-                        case "prop_door_rotating":
-                            new CPropDoorRotating(pEntity.Handle).AcceptInput(action);
-                            break;
-                    }
-                    break;
+                    continue;
                 }
+                
+                switch (pEntity.DesignerName)
+                {
+                    case "func_breakable":
+                    case "func_breakable_surf":
+                        new CBreakable(pEntity.Handle).AcceptInput(action);
+                        break;
+                        
+                    case "prop.breakable.01":
+                    case "prop.breakable.02":
+                        new CBreakableProp(pEntity.Handle).AcceptInput(action);
+                        break;
+                        
+                    case "prop_dynamic":
+                        new CDynamicProp(pEntity.Handle).AcceptInput(action);
+                        break;
+                        
+                    case "func_button":
+                        new CBaseButton(pEntity.Handle).AcceptInput(action);
+                        break;
+                        
+                    case "prop_door_rotating":
+                        new CPropDoorRotating(pEntity.Handle).AcceptInput(action);
+                        break;
+                }
+                break;
             }
         }
     }
