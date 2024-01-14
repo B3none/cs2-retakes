@@ -21,7 +21,7 @@ public class RetakesPlugin : BasePlugin
     private const string Version = "1.2.9";
     
     #region Plugin info
-    public override string ModuleName => "Retakes & Breaker Plugin";
+    public override string ModuleName => "Retakes Plugin";
     public override string ModuleVersion => Version;
     public override string ModuleAuthor => "B3none";
     public override string ModuleDescription => "Community retakes for CS2.";
