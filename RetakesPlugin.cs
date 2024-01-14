@@ -225,7 +225,7 @@ public class RetakesPlugin : BasePlugin
             beam.Speed = 50;
             beam.Flags = 0;
             beam.FadeLength = 0;
-            beam.Render = spawn.Team == CsTeam.Terrorist ? Color.Red : Color.Blue;
+            beam.Render = spawn.Team == CsTeam.Terrorist ? (spawn.CanBePlanter ? Color.Orange : Color.Red) : Color.Blue;
         }
     }
 
