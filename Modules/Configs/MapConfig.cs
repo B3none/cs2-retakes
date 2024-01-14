@@ -85,9 +85,18 @@ public class MapConfig
         return true;
     }
 
-    public void RemoveSpawn()
+    public bool RemoveSpawn(Spawn spawn)
     {
-        // TODO: Implement this.
+        _mapConfigData ??= new MapConfigData();
+        
+        _mapConfigData.Spawns.Remove(spawn);
+        
+        Save();
+        
+        // TODO: Figure out why the spawns can't be added on the fly.
+        Load();
+
+        return true;
     }
     
     private MapConfigData GetSanitisedMapConfigData()
