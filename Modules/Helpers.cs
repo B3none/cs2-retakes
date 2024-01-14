@@ -258,4 +258,19 @@ public static class Helpers
     {
         return (player.PlayerPawn.Value!.Flags & (int)PlayerFlags.FL_ONGROUND) != 0;
     }
+    
+    public static void SendBombPlantedEvent(CCSPlayerController bombCarrier)
+    {
+        if (bombCarrier.PlayerPawn.Value == null)
+        {
+            return;
+        }
+
+        var eventPtr = NativeAPI.CreateEvent("bomb_planted", true);
+        NativeAPI.SetEventPlayerController(eventPtr, "userid", bombCarrier.Handle);
+        NativeAPI.SetEventInt(eventPtr, "userid", (int)bombCarrier.PlayerPawn.Value.Index);
+        NativeAPI.SetEventInt(eventPtr, "site", 0);
+
+        NativeAPI.FireEvent(eventPtr, false);
+    }
 }

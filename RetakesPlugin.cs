@@ -581,60 +581,12 @@ public class RetakesPlugin : BasePlugin
         return HookResult.Continue;
     }
     
-    [GameEventHandler]
-    public HookResult OnWeaponFire(EventWeaponFire @event, GameEventInfo info)
-    {
-        var player = @event.Userid;
-
-        if (!Helpers.IsValidPlayer(player))
-        {
-            return HookResult.Continue;
-        }
-
-        if (Helpers.HasBomb(player))
-        {
-            Console.WriteLine($"{LogPrefix}Player has bomb, swap to bomb userid({(int)player.UserId!}).");
-            
-            // TODO: Investigate this because sometimes it doesn't work.
-            // Change to their knife to prevent planting.
-            NativeAPI.IssueClientCommand((int)player.UserId!, "slot5");
-        }
-
-        return HookResult.Continue;
-    }
-
-    // [GameEventHandler]
-    // public HookResult OnBombDropped(EventBombDropped @event, GameEventInfo info)
-    // {
-    //     var player = @event.Userid;
-    //     
-    //     if (!Helpers.IsValidPlayer(player))
-    //     {
-    //         return HookResult.Continue;
-    //     }
-    //     
-    //     // Remove the bomb entity and give the player that dropped it the bomb
-    //     var bombEntities = Utilities.FindAllEntitiesByDesignerName<CBaseEntity>("weapon_c4").ToList();
-    //
-    //     if (bombEntities.Count > 0)
-    //     {
-    //         foreach (var bomb in bombEntities)
-    //         {
-    //             bomb.Remove();
-    //         }
-    //     }
-    //     
-    //     Helpers.GiveAndSwitchToBomb(player);
-    //     
-    //     return HookResult.Continue;
-    // }
-    
     [GameEventHandler(HookMode.Pre)]
     public HookResult OnBombPlanted(EventBombPlanted @event, GameEventInfo info)
     {
         _isBombPlanted = true;
         
-        Console.WriteLine($"{MessagePrefix}OnBombPlanted event fired");
+        Console.WriteLine($"{LogPrefix}OnBombPlanted event fired");
         
         AddTimer(4.1f, () => AnnounceBombsite(_currentBombsite, true));
         
@@ -822,6 +774,7 @@ public class RetakesPlugin : BasePlugin
         if (_planter != null && Helpers.IsValidPlayer(_planter))
         {
             BombFunctions.ShootSatchelCharge(_planter.PlayerPawn.Value);
+            Helpers.SendBombPlantedEvent(_planter);
         }
         else
         {
