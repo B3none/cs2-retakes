@@ -538,6 +538,13 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnRoundFreezeEnd(EventRoundFreezeEnd @event, GameEventInfo info)
     {
+        // If we are in warmup, skip.
+        if (Helpers.GetGameRules().WarmupPeriod)
+        {
+            Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
+            return HookResult.Continue;
+        }
+        
         HandleAutoPlant();
         return HookResult.Continue;
     }
