@@ -194,45 +194,12 @@ public class RetakesPlugin : BasePlugin
             return;
         }
         
-        // Pre cache the sprites.
-        // Server.PrecacheModel("sprites/laserbeam.vmt");
-        
         foreach (var spawn in spawns)
         {
-            // Tell the player about the spawn.
-            player!.PrintToChat($"{LogPrefix}Spawn: {spawn.Vector} {spawn.QAngle} {spawn.Team} {spawn.Bombsite} {(spawn.CanBePlanter ? "Y" : "N")}");
-            
-            // Create beam
-            var beam = Utilities.CreateEntityByName<CBeam>("beam");
-
-            if (beam == null)
-            {
-                throw new Exception("Failed to create beam entity.");
-            }
-            
-            // Helpers.MoveBeam(beam, spawn.Vector, endBeam);
-            // beam.SetModel("sprites/laserbeam.vmt");
-            beam.StartFrame = 0;
-            beam.FrameRate = 0;
-            beam.LifeState = 1;
-            beam.Width = 5;
-            beam.EndWidth = 5;
-            beam.Amplitude = 0;
-            beam.Speed = 50;
-            beam.Flags = 0;
-			beam.BeamType = BeamType_t.BEAM_LASER;
-			beam.FadeLength = 10.0f;
-            beam.Render = spawn.Team == CsTeam.Terrorist ? (spawn.CanBePlanter ? Color.Orange : Color.Red) : Color.Blue;
-
-			var vSpawn = spawn.Vector;
-
-			beam.EndPos.X = vSpawn.X;
-			beam.EndPos.Y = vSpawn.Y;
-			beam.EndPos.Z = (vSpawn.Z + 100.0f);
-
-			beam.Teleport(vSpawn, new QAngle(IntPtr.Zero), new Vector(IntPtr.Zero, IntPtr.Zero, IntPtr.Zero));
-			beam.DispatchSpawn();
+			Helpers.ShowSpawn(spawn);
         }
+		
+		commandInfo.ReplyToCommand($"{LogPrefix}Showing {spawns.Count} spawns for bombsite {bombsite}.");
     }
 
     [ConsoleCommand("css_teleport", "This command teleports the player to the given coordinates")]
