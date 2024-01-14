@@ -36,6 +36,7 @@ public class RetakesPlugin : BasePlugin
     #region Helpers
     private Translator _translator;
     private GameManager? _gameManager;
+    private SpawnManager? _spawnManager;
     private BreakerManager? _breakerManager;
     #endregion
     
@@ -202,6 +203,54 @@ public class RetakesPlugin : BasePlugin
 		commandInfo.ReplyToCommand($"{LogPrefix}Showing {spawns.Count} spawns for bombsite {bombsite}.");
     }
 
+    [ConsoleCommand("css_removespawn", "This command removes the spawn closest to you.")]
+    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
+    [RequiresPermissions("@css/root")]
+    public void OnCommandRemoveSpawn(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        if (!Helpers.DoesPlayerHavePawn(player))
+        {
+            return;
+        }
+
+        if (_mapConfig == null)
+        {
+            commandInfo.ReplyToCommand($"{LogPrefix}Map config not loaded for some reason...");
+            return;
+        }
+
+		var spawns = _mapConfig.GetSpawnsClone();
+        
+        if (spawns.Count == 0)
+        {
+            commandInfo.ReplyToCommand($"{LogPrefix}No spawns found.");
+            return;
+        }
+
+		double closestDistance = 9999.9;
+		Spawn? closestSpawn = null;
+
+        foreach (var spawn in spawns)
+        {
+			var distance = Helpers.GetDistanceBetweenVectors(spawn.Vector, player!.PlayerPawn.Value!.AbsOrigin!);
+
+			if (distance < closestDistance)
+			{
+				closestDistance = distance;
+				closestSpawn = spawn;
+			}
+        }
+
+		if (closestSpawn == null)
+		{
+			commandInfo.ReplyToCommand($"{LogPrefix}No spawns found.");
+			return;
+		}
+
+		_mapConfig.RemoveSpawn(closestSpawn);
+		commandInfo.ReplyToCommand($"{LogPrefix}No spawns found.");
+    }
+
     [ConsoleCommand("css_teleport", "This command teleports the player to the given coordinates")]
     [RequiresPermissions("@css/root")]
     public void OnCommandTeleport(CCSPlayerController? player, CommandInfo commandInfo)
@@ -260,7 +309,17 @@ public class RetakesPlugin : BasePlugin
             _retakesConfig = new RetakesConfig(ModuleDirectory);
             _retakesConfig.Load();
         }
-        
+
+		if (_mapConfig == null) 
+		{
+			throw new Exception("Map config is null");
+		}
+
+		_spawnManager = new SpawnManager(
+			_translator,
+			_mapConfig
+		);
+
         _gameManager = new GameManager(
             _translator,
             new QueueManager(
@@ -366,86 +425,19 @@ public class RetakesPlugin : BasePlugin
             Console.WriteLine($"{LogPrefix}Game manager not loaded.");
             return HookResult.Continue;
         }
+
+        if (_spawnManager == null)
+        {
+            Console.WriteLine($"{LogPrefix}Spawn manager not loaded.");
+            return HookResult.Continue;
+        }
         
         // Reset round state.
         _breakerManager?.Handle();
         _currentBombsite = Helpers.Random.Next(0, 2) == 0 ? Bombsite.A : Bombsite.B;
-        _planter = null;
         _gameManager.ResetPlayerScores();
         
-        // TODO: Cache the spawns so we don't have to do this every round.
-        // TODO: Move spawning functionality to a "SpawnManager"
-        // Filter the spawns.
-        List<Spawn> tSpawns = new();
-        List<Spawn> ctSpawns = new();
-        foreach (var spawn in Helpers.Shuffle(_mapConfig!.GetSpawnsClone()))
-        {
-            if (spawn.Bombsite != _currentBombsite)
-            {
-                continue;
-            }
-            
-            switch (spawn.Team)
-            {
-                case CsTeam.Terrorist:
-                    tSpawns.Add(spawn);
-                    break;
-                case CsTeam.CounterTerrorist:
-                    ctSpawns.Add(spawn);
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-        }
-        
-        Console.WriteLine($"{LogPrefix}There are {tSpawns.Count} Terrorist, and {ctSpawns.Count} Counter-Terrorist spawns available for bombsite {(_currentBombsite == Bombsite.A ? "A" : "B")}.");
-        // Server.PrintToChatAll($"{MessagePrefix}There are {tSpawns.Count} Terrorist, and {ctSpawns.Count} Counter-Terrorist spawns available for bombsite {(_currentBombsite == Bombsite.A ? "A" : "B")}.");
-        
-        Console.WriteLine($"{LogPrefix}Moving players to spawns.");
-        // Now move the players to their spawns.
-        // We shuffle this list to ensure that 1 player does not have to plant every round.
-        foreach (var player in Helpers.Shuffle(_gameManager.QueueManager.ActivePlayers))
-        {
-            if (!Helpers.IsValidPlayer(player) || (CsTeam)player.TeamNum < CsTeam.Terrorist)
-            {
-                continue;
-            }
-            
-            var playerPawn = player.PlayerPawn.Value;
-
-            if (playerPawn == null)
-            {
-                continue;
-            }
-            
-            var isTerrorist = (CsTeam)player.TeamNum == CsTeam.Terrorist;
-
-            Spawn spawn;
-            
-            if (_planter == null && isTerrorist)
-            {
-                _planter = player;
-                
-                var spawnIndex = tSpawns.FindIndex(tSpawn => tSpawn.CanBePlanter);
-
-                if (spawnIndex == -1)
-                {
-                    Console.WriteLine($"{LogPrefix}No bomb planter spawn found in configuration.");
-                    throw new Exception("No bomb planter spawn found in configuration.");
-                }
-                
-                spawn = tSpawns[spawnIndex];
-                
-                tSpawns.RemoveAt(spawnIndex);
-            }
-            else
-            {
-                spawn = Helpers.GetAndRemoveRandomItem(isTerrorist ? tSpawns : ctSpawns);
-            }
-            
-            playerPawn.Teleport(spawn.Vector, spawn.QAngle, new Vector());
-        }
-        Console.WriteLine($"{LogPrefix}Moving players to spawns COMPLETE.");
+		_planter = _spawnManager.HandleRoundSpawns(_currentBombsite, _gameManager.QueueManager.ActivePlayers);
 
         AnnounceBombsite(_currentBombsite);
         

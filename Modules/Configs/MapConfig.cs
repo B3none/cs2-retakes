@@ -85,9 +85,24 @@ public class MapConfig
         return true;
     }
 
-    public void RemoveSpawn()
+    public void RemoveSpawn(Spawn spawn)
     {
-        // TODO: Implement this.
+        _mapConfigData ??= new MapConfigData();
+        
+        // Check if the spawn already exists based on vector and bombsite
+        if (!_mapConfigData.Spawns.Any(existingSpawn => existingSpawn.Vector == spawn.Vector && existingSpawn.Bombsite == spawn.Bombsite))
+        {
+            return; // Spawn doesn't exist, avoid removing
+        }
+        
+        _mapConfigData.Spawns.Remove(spawn);
+        
+        Save();
+        
+        // TODO: Figure out why the spawns can't be added on the fly.
+        Load();
+
+        return;
     }
     
     private MapConfigData GetSanitisedMapConfigData()
