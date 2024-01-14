@@ -1,4 +1,5 @@
-﻿using CounterStrikeSharp.API.Core;
+﻿using CounterStrikeSharp.API;
+using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities;
 
 namespace RetakesPlugin.Modules.Managers;
@@ -25,10 +26,18 @@ public class BreakerManager
                 ("func_breakable", "Break", typeof(CBreakable)),
                 ("func_breakable_surf", "Break", typeof(CBreakable)),
                 ("prop.breakable.01", "Break", typeof(CBreakableProp)),
-                ("prop.breakable.02", "Break", typeof(CBreakableProp)),
-                ("prop_dynamic", "Break", typeof(CDynamicProp)),
-                ("func_button", "Kill", typeof(CBaseButton)) 
+                ("prop.breakable.02", "Break", typeof(CBreakableProp))
             });
+            
+            if (Server.MapName == "de_vertigo" || Server.MapName == "de_nuke")
+            {
+                entityActions.Add(("prop_dynamic", "Break", typeof(CDynamicProp)));
+            }
+
+            if (Server.MapName == "de_nuke")
+            {
+                entityActions.Add(("func_button", "Kill", typeof(CBaseButton)));
+            }
         }
 
         if (_shouldOpenDoors)
@@ -46,14 +55,15 @@ public class BreakerManager
         {
             foreach (var (designerName, action, type) in entityActions)
             {
-                if (
-                    pEntity.DesignerName == designerName
-                    && pEntity.GetType() == type
-                )
+                if (pEntity.DesignerName == designerName)
                 {
-                    var entity = new CBaseEntity(pEntity.Handle);
+                    dynamic? entity = Activator.CreateInstance(type, pEntity.Handle);
                     
-                    entity.AcceptInput(action);
+                    if (entity != null)
+                    {
+                        entity.AcceptInput(action);
+                    }
+                    
                     break;
                 }
             }
