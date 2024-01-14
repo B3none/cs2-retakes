@@ -7,11 +7,11 @@ namespace RetakesPlugin.Modules;
 public static class BombVirtualFunctions
 {
     public static MemoryFunctionVoid<IntPtr, IntPtr, IntPtr> ShootSatchelCharge = new(
-        Environment.OSVersion.Platform == PlatformID.Unix
-            // TODO: Fix this linux sig, it's scuffed
-            ? @"\x55\x48\x89\xe5\x41\x55\x41\x54\x49\x89\xfc\x53\x48\x83\xec\x28\x48\x8d\x05\xb1\xdb\xcc\x00\x66\x0f\xd6\x55\xc0\x66\x0f\xd6\x45\xd0\xf3\x0f\x11\x4d\xd8\xc7\x45\xc0\x00\x00\x00\x00\x48\x8b\x38\xc7\x45\xc8\x00\x00\x00\x00\xe8\x14\x2d\xf5\xff\x84\xc0\x74\x70\x48\x8d\x75\xc0\x4c\x89\xe2\x89\xc3\x48\x8d\x7d\xd0\xe8\x2e\xf4\xff\xff\x83\xf8\xff"
-            : @"\x48\x89\x5C\x24\x08\x48\x89\x6C\x24\x10\x56\x57\x41\x56\x48\x83\xEC\x20\x4C\x8B\xF1\x33\xDB"
+        @"\x48\x89\x5C\x24\x08\x48\x89\x6C\x24\x10\x56\x57\x41\x56\x48\x83\xEC\x20\x4C\x8B\xF1\x33\xDB"
     );
+    
+    public static MemoryFunctionVoid<IntPtr, IntPtr, int> PlantBombLinux = new(@"\x55\x48\x8D\x05\x20\x1C\x97\x00");
+    public static MemoryFunctionVoid<IntPtr, IntPtr, IntPtr, int> PlantBombWindows = new(@"\x48\x89\x5C\x24\x10\x48\x89\x74\x24\x18\x55\x57\x41\x54\x41\x56\x41\x57\x48\x8D\x6C\x24\xE0\x48\x81\xEC\x20\x01\x00\x00\x45\x33\xE4\x48\xC7\x45\xE8\xFF\xFF\xFF\xFF\x4C\x8B\xF1\x4C\x89\x64\x24\x78\x48\x8B\x0D\x08\xF6\xED\x00");
 }
 
 public static class BombFunctions
@@ -37,23 +37,26 @@ public static class BombFunctions
         
         if (Environment.OSVersion.Platform == PlatformID.Unix)
         {
-            BombVirtualFunctions.ShootSatchelCharge.Invoke(
-                playerPawn.Handle,
+            BombVirtualFunctions.PlantBombLinux.Invoke(
                 playerPawn.AbsOrigin.Handle,
-                playerPawn.AbsRotation.Handle
+                playerPawn.AbsRotation.Handle,
+                0
             );
-            
-            // var plantedC4 = Helpers.GetPlantedC4();
-            // if (plantedC4 == null)
-            // {
-            //     return;
-            // }
-            //
-            // plantedC4.Teleport(playerPawn.AbsOrigin, playerPawn.AbsRotation, new Vector());
             
             return;
         }
         
-        BombVirtualFunctions.ShootSatchelCharge.Invoke(playerPawn.Handle, playerPawn.AbsOrigin.Handle, playerPawn.AbsRotation.Handle);
+        // BombVirtualFunctions.PlantBombWindows.Invoke(
+        //     playerPawn.Handle,
+        //     playerPawn.AbsOrigin.Handle,
+        //     playerPawn.AbsRotation.Handle,
+        //     0
+        // );
+        
+        BombVirtualFunctions.ShootSatchelCharge.Invoke(
+            playerPawn.Handle,
+            playerPawn.AbsOrigin.Handle,
+            playerPawn.AbsRotation.Handle
+        );
     }
 }
