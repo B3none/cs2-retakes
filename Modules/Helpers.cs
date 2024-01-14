@@ -260,6 +260,62 @@ public static class Helpers
         return (player.PlayerPawn.Value!.Flags & (int)PlayerFlags.FL_ONGROUND) != 0;
     }
     
+    public static void PlantTickingBomb(CCSPlayerController? player, Bombsite bombsite)
+    {
+        if (player == null || !player.IsValid)
+        {
+            throw new Exception("Player controller is not valid");
+        }
+
+        var playerPawn = player.PlayerPawn.Value;
+        
+        if (playerPawn == null || !playerPawn.IsValid)
+        {
+            throw new Exception("Player pawn is not valid");
+        }
+        
+        if (playerPawn.AbsOrigin == null)
+        {
+            throw new Exception("Player pawn abs origin is null");
+        }
+        
+        if (playerPawn.AbsRotation == null)
+        {
+            throw new Exception("Player pawn abs rotation is null");
+        }
+        
+        var plantedC4 = Utilities.CreateEntityByName<CPlantedC4>("planted_c4");
+
+        if (plantedC4 == null)
+        {
+            throw new Exception("c4 is null");
+        }
+
+        if (plantedC4.AbsOrigin == null)
+        {
+            throw new Exception("c4.AbsOrigin is null");
+        }
+        
+        plantedC4.AbsOrigin.X = playerPawn.AbsOrigin.X;
+        plantedC4.AbsOrigin.Y = playerPawn.AbsOrigin.Y;
+        plantedC4.AbsOrigin.Z = playerPawn.AbsOrigin.Z;
+        plantedC4.HasExploded = false;
+
+        plantedC4.OwnerEntity.Raw = playerPawn.EntityHandle.Raw;
+
+        plantedC4.BombSite = 0;
+        plantedC4.BombTicking = true;
+        plantedC4.CannotBeDefused = false;
+
+        plantedC4.DispatchSpawn();
+
+        var gameRules = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules!;
+        gameRules.BombPlanted = true;
+        gameRules.BombDefused = false;
+
+        SendBombPlantedEvent(player, bombsite);
+    }
+    
     public static void SendBombPlantedEvent(CCSPlayerController bombCarrier, Bombsite bombsite)
     {
         if (!bombCarrier.IsValid || bombCarrier.PlayerPawn.Value == null)

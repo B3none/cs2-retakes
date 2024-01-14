@@ -770,7 +770,7 @@ public class RetakesPlugin : BasePlugin
         
         if (_planter != null && Helpers.IsValidPlayer(_planter))
         {
-            BombFunctions.PlantTickingBomb(_planter, _currentBombsite);
+            Helpers.PlantTickingBomb(_planter, _currentBombsite);
         }
         else
         {
