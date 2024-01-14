@@ -20,6 +20,7 @@ If you appreciate the project then please take the time to star the repository ð
 - [x] Add translations
 - [x] Improve bombsite announcement
 - [x] Queue priority for VIPs
+- [x] Add autoplant
 - [ ] Add a command to view the spawns for the current map
 - [ ] Implement better spawn management system
 
@@ -30,7 +31,6 @@ If you appreciate the project then please take the time to star the repository ð
 ## Recommendations
 I also recommend installing these plugins for an improved player experience
 - Instadefuse: https://github.com/B3none/cs2-instadefuse
-- Instaplant: https://github.com/B3none/cs2-instaplant
 - Clutch Announce: https://github.com/B3none/cs2-clutch-announce
 
 This package comes with a weapon allocation system, however I recommend using **one** of the following plugins for a better experience
