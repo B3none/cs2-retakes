@@ -1,5 +1,7 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Entities;
+using CounterStrikeSharp.API.Modules.Utils;
 
 namespace RetakesPlugin.Modules.Managers;
 
@@ -39,20 +41,25 @@ public class BreakerManager
             ("prop.breakable.02", "Break", typeof(CBreakableProp))
         };
 
-        breakableEntities.AddRange(
-            Utilities.FindAllEntitiesByDesignerName<CBreakable>("func_breakable")
-                .Select(entity => (entity.DesignerName, "Break", entity.GetType()))
-        );
+        var pEntity = new CEntityIdentity(EntitySystem.FirstActiveEntity);
+        for (; pEntity != null && pEntity.Handle != IntPtr.Zero; pEntity = pEntity.Next)
+        {
+            if (pEntity.DesignerName == null)
+            {
+                continue;
+            }
 
-        breakableEntities.AddRange(
-            Utilities.FindAllEntitiesByDesignerName<CBreakable>("func_breakable_surf")
-                .Select(entity => (entity.DesignerName, "Break", entity.GetType()))
-        );
-
-        breakableEntities.AddRange(
-            Utilities.FindAllEntitiesByDesignerName<CBreakableProp>("prop_dynamic")
-                .Select(entity => (entity.DesignerName, "Break", entity.GetType()))
-        );
+            if (
+                pEntity.DesignerName.Contains("func_breakable") 
+                || pEntity.DesignerName.Contains("func_breakable_surf")
+                || pEntity.DesignerName.Contains("prop_dynamic")
+            ) {
+                breakableEntities.Add(
+                    (pEntity.DesignerName, "Break", pEntity.GetType())
+                );
+                continue;
+            }
+        }
 
         if (Server.MapName == "de_vertigo" || Server.MapName == "de_cache" || Server.MapName == "de_nuke")
         {
