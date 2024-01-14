@@ -9,20 +9,16 @@ public class BreakerManager
 {
     private readonly bool _shouldBreakBreakables;
     private readonly bool _shouldOpenDoors;
+    private readonly List<(string designerName, string action)> _entityActions = new();
 
     public BreakerManager(bool? shouldBreakBreakables, bool? shouldOpenDoors)
     {
         _shouldBreakBreakables = shouldBreakBreakables ?? false;
         _shouldOpenDoors = shouldOpenDoors ?? false;
-    }
-
-    public void Handle()
-    {
-        var entityActions = new List<(string designerName, string action)>();
 
         if (_shouldBreakBreakables)
         {
-            entityActions.AddRange(new List<(string designerName, string action)>
+            _entityActions.AddRange(new List<(string designerName, string action)>
             {
                 ("func_breakable", "Break"),
                 ("func_breakable_surf", "Break"),
@@ -32,21 +28,24 @@ public class BreakerManager
             
             if (Server.MapName == "de_vertigo" || Server.MapName == "de_nuke")
             {
-                entityActions.Add(("prop_dynamic", "Break"));
+                _entityActions.Add(("prop_dynamic", "Break"));
             }
 
             if (Server.MapName == "de_nuke")
             {
-                entityActions.Add(("func_button", "Kill"));
+                _entityActions.Add(("func_button", "Kill"));
             }
         }
 
         if (_shouldOpenDoors)
         {
-            entityActions.Add(("prop_door_rotating", "open"));
+            _entityActions.Add(("prop_door_rotating", "open"));
         }
+    }
 
-        if (entityActions.Count == 0)
+    public void Handle()
+    {
+        if (_entityActions.Count == 0)
         {
             return;
         }
@@ -54,7 +53,7 @@ public class BreakerManager
         var pEntity = new CEntityIdentity(EntitySystem.FirstActiveEntity);
         for (; pEntity != null && pEntity.Handle != IntPtr.Zero; pEntity = pEntity.Next)
         {
-            foreach (var (designerName, action) in entityActions)
+            foreach (var (designerName, action) in _entityActions)
             {
                 if (pEntity.DesignerName != designerName)
                 {
