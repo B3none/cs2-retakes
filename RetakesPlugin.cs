@@ -215,7 +215,7 @@ public class RetakesPlugin : BasePlugin
 
         if (_mapConfig == null)
         {
-            commandInfo.ReplyToCommand($"{LogPrefix}Map config not loaded for some reason...");
+            commandInfo.ReplyToCommand($"{MessagePrefix}Map config not loaded for some reason...");
             return;
         }
 
@@ -223,7 +223,7 @@ public class RetakesPlugin : BasePlugin
         
         if (spawns.Count == 0)
         {
-            commandInfo.ReplyToCommand($"{LogPrefix}No spawns found.");
+            commandInfo.ReplyToCommand($"{MessagePrefix}No spawns found.");
             return;
         }
 
@@ -243,12 +243,12 @@ public class RetakesPlugin : BasePlugin
 
 		if (closestSpawn == null)
 		{
-			commandInfo.ReplyToCommand($"{LogPrefix}No spawns found.");
+			commandInfo.ReplyToCommand($"{MessagePrefix}No spawns found.");
 			return;
 		}
 
 		_mapConfig.RemoveSpawn(closestSpawn);
-		commandInfo.ReplyToCommand($"{LogPrefix}No spawns found.");
+		commandInfo.ReplyToCommand($"{MessagePrefix}Removed spawn.");
     }
 
     [ConsoleCommand("css_teleport", "This command teleports the player to the given coordinates")]
