@@ -35,8 +35,7 @@ public class BreakerManager
         var breakableEntities = 
             Utilities.FindAllEntitiesByDesignerName<CBreakable>("func_breakable")
                 .Concat(Utilities.FindAllEntitiesByDesignerName<CBreakable>("func_breakable_surf"))
-                .Concat(Utilities.FindAllEntitiesByDesignerName<CBreakable>("prop_dynamic"))
-            ;
+                .Concat(Utilities.FindAllEntitiesByDesignerName<CBreakable>("prop_dynamic"));
 
         foreach (var breakableEntity in breakableEntities)
         {
