@@ -2,6 +2,7 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
+using RetakesPlugin.Modules.Enums;
 
 namespace RetakesPlugin.Modules;
 
@@ -259,9 +260,9 @@ public static class Helpers
         return (player.PlayerPawn.Value!.Flags & (int)PlayerFlags.FL_ONGROUND) != 0;
     }
     
-    public static void SendBombPlantedEvent(CCSPlayerController bombCarrier)
+    public static void SendBombPlantedEvent(CCSPlayerController bombCarrier, Bombsite bombsite)
     {
-        if (bombCarrier.PlayerPawn.Value == null)
+        if (!bombCarrier.IsValid || bombCarrier.PlayerPawn.Value == null)
         {
             return;
         }
@@ -269,7 +270,7 @@ public static class Helpers
         var eventPtr = NativeAPI.CreateEvent("bomb_planted", true);
         NativeAPI.SetEventPlayerController(eventPtr, "userid", bombCarrier.Handle);
         NativeAPI.SetEventInt(eventPtr, "userid", (int)bombCarrier.PlayerPawn.Value.Index);
-        NativeAPI.SetEventInt(eventPtr, "site", 0);
+        NativeAPI.SetEventInt(eventPtr, "site", (int)bombsite);
 
         NativeAPI.FireEvent(eventPtr, false);
     }
