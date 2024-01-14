@@ -11,7 +11,7 @@ public abstract class GrenadeAllocator
         switch (Helpers.Random.Next(4))
         {
             case 0:
-                player.GiveNamedItem(CsItem.SmokeGrenade);    
+                player.GiveNamedItem(CsItem.SmokeGrenade);   
                 break;
             case 1:
                 player.GiveNamedItem(CsItem.Flashbang);

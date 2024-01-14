@@ -153,7 +153,7 @@ public class RetakesPlugin : BasePlugin
             return;
         }
 
-        var playerPawn = player!.PlayerPawn.Value!; 
+        var playerPawn = player!.PlayerPawn.Value!;
         var qAngle = playerPawn.AbsRotation;
         var lookTargetPosition = playerPawn.LookTargetPosition;
         var eyeAngles = playerPawn.EyeAngles;
@@ -211,7 +211,7 @@ public class RetakesPlugin : BasePlugin
             }
 
             var endBeam = spawn.Vector;
-            endBeam.Z = spawn.Vector.Z + 3000; 
+            endBeam.Z = spawn.Vector.Z + 3000;
             
             Helpers.MoveBeam(beam, spawn.Vector, endBeam);
             beam.SetModel("sprites/laserbeam.vmt");
