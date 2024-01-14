@@ -38,8 +38,12 @@ public class BreakerManager
             ("func_breakable", "Break", typeof(CBreakable)),
             ("func_breakable_surf", "Break", typeof(CBreakable)),
             ("prop.breakable.01", "Break", typeof(CBreakableProp)),
-            ("prop.breakable.02", "Break", typeof(CBreakableProp))
+            ("prop.breakable.02", "Break", typeof(CBreakableProp)),
+            ("prop_dynamic", "Break", typeof(CDynamicProp)),
+            ("func_button", "Kill", typeof(CBaseButton))
         };
+
+        var entitiesToBreak = new List<CEntityIdentity>();
 
         var pEntity = new CEntityIdentity(EntitySystem.FirstActiveEntity);
         for (; pEntity != null && pEntity.Handle != IntPtr.Zero; pEntity = pEntity.Next)
@@ -49,15 +53,16 @@ public class BreakerManager
                 continue;
             }
 
-            if (
-                pEntity.DesignerName.Contains("func_breakable") 
-                || pEntity.DesignerName.Contains("func_breakable_surf")
-                || pEntity.DesignerName.Contains("prop_dynamic")
-            ) {
-                breakableEntities.Add(
-                    (pEntity.DesignerName, "Break", pEntity.GetType())
-                );
-                continue;
+            foreach (var (designerName, action, type) in breakableEntities)
+            {
+                if (
+                    pEntity.DesignerName == designerName
+                    && pEntity.GetType() == type
+                )
+                {
+                    pEntity.AcceptInput(action);
+                    break;
+                }
             }
         }
 
