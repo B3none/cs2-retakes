@@ -47,7 +47,7 @@ public class Translator
             .Replace("[LIGHT_BLUE]", ChatColors.LightBlue.ToString())
             .Replace("[LIGHT_PURPLE]", ChatColors.LightPurple.ToString())
             .Replace("[LIGHT_YELLOW]", ChatColors.LightYellow.ToString())
-            .Replace("[DARK_RED]", ChatColors.Darkred.ToString())
+            .Replace("[DARK_RED]", ChatColors.DarkRed.ToString())
             .Replace("[DARK_BLUE]", ChatColors.DarkBlue.ToString())
             .Replace("[BLUE_GREY]", ChatColors.BlueGrey.ToString())
             .Replace("[OLIVE]", ChatColors.Olive.ToString())
