@@ -99,6 +99,15 @@ public static class Helpers
             {
                 continue;
             }
+            
+            // Don't remove a players knife
+            if (
+                weapon.Value.DesignerName == CsItem.KnifeCT.ToString() 
+                || weapon.Value.DesignerName == CsItem.KnifeT.ToString()
+                )
+            {
+                continue;
+            }
         
             player.PlayerPawn.Value.RemovePlayerItem(weapon.Value);
             weapon.Value.Remove();
