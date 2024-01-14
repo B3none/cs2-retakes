@@ -46,7 +46,6 @@ public class RetakesPlugin : BasePlugin
     #region State
     private Bombsite _currentBombsite = Bombsite.A;
     private CCSPlayerController? _planter;
-    private bool _isBombPlanted;
     private CsTeam _lastRoundWinner;
     #endregion
     
@@ -354,7 +353,7 @@ public class RetakesPlugin : BasePlugin
         {
             case CsTeam.CounterTerrorist:
                 Console.WriteLine($"{LogPrefix}Calling CounterTerroristRoundWin()");
-                _gameManager.CounterTerroristRoundWin(_planter, _isBombPlanted);
+                _gameManager.CounterTerroristRoundWin();
                 Console.WriteLine($"{LogPrefix}CounterTerroristRoundWin call complete");
                 break;
             
@@ -584,8 +583,6 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler(HookMode.Pre)]
     public HookResult OnBombPlanted(EventBombPlanted @event, GameEventInfo info)
     {
-        _isBombPlanted = true;
-        
         Console.WriteLine($"{LogPrefix}OnBombPlanted event fired");
         
         AddTimer(4.1f, () => AnnounceBombsite(_currentBombsite, true));

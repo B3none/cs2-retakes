@@ -81,13 +81,8 @@ public class GameManager
         }
     }
     
-    public void CounterTerroristRoundWin(CCSPlayerController? planter, bool wasBombPlanted)
+    public void CounterTerroristRoundWin()
     {
-        if (planter != null && !wasBombPlanted)
-        {
-            Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["bombsite.failed_to_plant", planter.PlayerName]}");
-        }
-        
         if (_consecutiveRoundsWon >= 3)
         {
             Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["teams.win_streak_over", _consecutiveRoundsWon]}");
