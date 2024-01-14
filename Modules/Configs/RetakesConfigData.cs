@@ -2,7 +2,7 @@
 
 public class RetakesConfigData
 {
-    public static int CurrentVersion = 3;
+    public static int CurrentVersion = 4;
 
     public int Version { get; set; } = CurrentVersion;
     public int MaxPlayers { get; set; } = 9;
