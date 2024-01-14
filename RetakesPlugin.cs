@@ -72,7 +72,7 @@ public class RetakesPlugin : BasePlugin
     
     #region Commands
     [ConsoleCommand("css_addspawn", "Adds a spawn point for retakes to the map.")]
-    [CommandHelper(minArgs: 2, usage: "[T/CT] [A/B] [Y/N (can be planter / default N)]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
+    [CommandHelper(minArgs: 2, usage: "[T/CT] [A/B] [Y/N (can be planter / default = if you are stood in a bombsite)]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
     [RequiresPermissions("@css/root")]
     public void OnCommandAddSpawn(CCSPlayerController? player, CommandInfo commandInfo)
     {
@@ -115,7 +115,7 @@ public class RetakesPlugin : BasePlugin
         )
         {
             Team = team == "T" ? CsTeam.Terrorist : CsTeam.CounterTerrorist,
-            CanBePlanter = team == "T" && canBePlanter == "Y",
+            CanBePlanter = team == "T" && (canBePlanter == "Y" || player.PlayerPawn.Value.InBombZone),
             Bombsite = bombsite == "A" ? Bombsite.A : Bombsite.B
         };
 
