@@ -105,7 +105,7 @@ public static class Helpers
             if (
                 weapon.Value.DesignerName == CsItem.KnifeCT.ToString() 
                 || weapon.Value.DesignerName == CsItem.KnifeT.ToString()
-                )
+            )
             {
                 continue;
             }
