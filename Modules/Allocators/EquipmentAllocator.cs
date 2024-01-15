@@ -11,7 +11,7 @@ public abstract class EquipmentAllocator
         player.GiveNamedItem(CsItem.KevlarHelmet);
 
         if (
-            (CsTeam)player.TeamNum == CsTeam.CounterTerrorist
+            player.Team == CsTeam.CounterTerrorist
             && player.PlayerPawn.IsValid
             && player.PlayerPawn.Value != null
             && player.PlayerPawn.Value.IsValid
