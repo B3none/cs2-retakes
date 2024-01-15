@@ -22,5 +22,7 @@ public abstract class WeaponsAllocator
             // player.GiveNamedItem(CsItem.USPS);
             player.GiveNamedItem(CsItem.Deagle);
         }
+
+        player.GiveNamedItem(CsItem.Knife);
     }
 }
