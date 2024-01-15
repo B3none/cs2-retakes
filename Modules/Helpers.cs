@@ -133,7 +133,7 @@ public static class Helpers
 
         foreach (var player in Utilities.GetPlayers().Where(player => IsValidPlayer(player) && IsPlayerConnected(player)))
         {
-            if ((CsTeam)player.TeamNum == csTeam)
+            if (player.Team == csTeam)
             {
                 players++;
             }

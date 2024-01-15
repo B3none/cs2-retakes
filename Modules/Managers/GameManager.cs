@@ -148,7 +148,7 @@ public class GameManager
             var terroristsWithZeroScore = QueueManager.ActivePlayers
                 .Where(player =>  
                     Helpers.IsValidPlayer(player)
-                    && (CsTeam)player.TeamNum == CsTeam.Terrorist
+                    && player.Team == CsTeam.Terrorist
                     && _playerRoundScores.GetValueOrDefault((int)player.UserId!, 0) == 0
                 )
                 .Except(newTerrorists)
@@ -164,7 +164,7 @@ public class GameManager
                     QueueManager.ActivePlayers
                         .Except(newCounterTerrorists)
                         .Except(newTerrorists)
-                        .Where(player => Helpers.IsValidPlayer(player) && (CsTeam)player.TeamNum == CsTeam.Terrorist)
+                        .Where(player => Helpers.IsValidPlayer(player) && player.Team == CsTeam.Terrorist)
                         .OrderBy(player => _playerRoundScores.GetValueOrDefault((int)player.UserId!, 0))
                         .Take(numTerroristsNeeded - newCounterTerrorists.Count)
                         .ToList()
@@ -179,7 +179,7 @@ public class GameManager
     {
         return QueueManager.ActivePlayers
             .Where(Helpers.IsValidPlayer)
-            .Where(player => team == null || (CsTeam)player.TeamNum == team)
+            .Where(player => team == null || player.Team == team)
             .OrderByDescending(player => _playerRoundScores.GetValueOrDefault((int)player.UserId!, 0))
             .ToList();
     }
@@ -193,14 +193,14 @@ public class GameManager
         {
             if (terrorists.Contains(player))
             {
-                if ((CsTeam)player.TeamNum != CsTeam.Terrorist)
+                if (player.Team != CsTeam.Terrorist)
                 {
                     player.SwitchTeam(CsTeam.Terrorist);
                 }
             }
             else if (counterTerrorists.Contains(player))
             {
-                if ((CsTeam)player.TeamNum != CsTeam.CounterTerrorist)
+                if (player.Team != CsTeam.CounterTerrorist)
                 {
                     player.SwitchTeam(CsTeam.CounterTerrorist);
                 }

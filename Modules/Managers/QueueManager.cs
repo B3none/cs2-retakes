@@ -188,7 +188,7 @@ public class QueueManager
             {
                 ActivePlayers.Add(player);
                 
-                if ((CsTeam)player.TeamNum != CsTeam.CounterTerrorist)
+                if (player.Team != CsTeam.CounterTerrorist)
                 {
                     player.SwitchTeam(CsTeam.CounterTerrorist);
                 }
@@ -266,7 +266,7 @@ public class QueueManager
     
     public void SetRoundTeams()
     {
-        _roundTerrorists = Utilities.GetPlayers().Where(player => Helpers.IsValidPlayer(player) && (CsTeam)player.TeamNum == CsTeam.Terrorist).ToList();
-        _roundCounterTerrorists = Utilities.GetPlayers().Where(player => Helpers.IsValidPlayer(player) && (CsTeam)player.TeamNum == CsTeam.CounterTerrorist).ToList();
+        _roundTerrorists = Utilities.GetPlayers().Where(player => Helpers.IsValidPlayer(player) && player.Team == CsTeam.Terrorist).ToList();
+        _roundCounterTerrorists = Utilities.GetPlayers().Where(player => Helpers.IsValidPlayer(player) && player.Team == CsTeam.CounterTerrorist).ToList();
     }
 }

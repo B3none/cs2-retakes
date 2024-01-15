@@ -15,7 +15,7 @@ using Helpers = RetakesPlugin.Modules.Helpers;
 
 namespace RetakesPlugin;
 
-[MinimumApiVersion(131)]
+[MinimumApiVersion(147)]
 public class RetakesPlugin : BasePlugin
 {
     private const string Version = "1.3.3";
@@ -740,7 +740,7 @@ public class RetakesPlugin : BasePlugin
                 continue;
             }
 
-            if ((CsTeam)player.TeamNum == CsTeam.CounterTerrorist)
+            if (player.Team == CsTeam.CounterTerrorist)
             {
                 player.PrintToCenter(announcementMessage);
             }

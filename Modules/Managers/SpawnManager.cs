@@ -83,7 +83,7 @@ public class SpawnManager
 				continue;
 			}
 
-			var team = (CsTeam)player.TeamNum;
+			var team = player.Team;
 			if (planter == null && team == CsTeam.Terrorist)
 			{
 				planter = player;
