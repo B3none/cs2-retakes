@@ -37,7 +37,7 @@ This package comes with a weapon allocation system, however I recommend using **
 - Yoni's Allocator: https://github.com/yonilerner/cs2-retakes-allocator
 - Ravid's Allocator: https://github.com/Ravid-A/cs2-retakes-weapon-allocator
 
-## Plugin Configuration
+## Configuration
 When the plugin is first loaded it will create a `retakes_config.json` file in the plugin directory. This file contains all of the configuration options for the plugin:
 
 | Config                           | Description                                                                                                                         | Default    | Min        | Max        |
