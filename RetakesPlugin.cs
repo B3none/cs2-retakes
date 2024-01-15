@@ -72,99 +72,7 @@ public class RetakesPlugin : BasePlugin
     }
     
     #region Commands
-    [ConsoleCommand("css_addspawn", "Adds a spawn point for retakes to the map.")]
-    [CommandHelper(minArgs: 2, usage: "[T/CT] [A/B] [Y/N (can be planter / default = if you are stood in a bombsite)]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
-    [RequiresPermissions("@css/root")]
-    public void OnCommandAddSpawn(CCSPlayerController? player, CommandInfo commandInfo)
-    {
-        if (!Helpers.DoesPlayerHavePawn(player))
-        {
-            commandInfo.ReplyToCommand($"{LogPrefix}You must be a player.");
-            return;
-        }
-        
-        var team = commandInfo.GetArg(1).ToUpper();
-        if (team != "T" && team != "CT")
-        {
-            commandInfo.ReplyToCommand($"{LogPrefix}You must specify a team [T / CT] - [Value: {team}].");
-            return;
-        }
-        
-        var bombsite = commandInfo.GetArg(2).ToUpper();
-        if (bombsite != "A" && bombsite != "B")
-        {
-            commandInfo.ReplyToCommand($"{LogPrefix}You must specify a bombsite [A / B] - [Value: {bombsite}].");
-            return;
-        }
-
-        var canBePlanter = commandInfo.GetArg(3).ToUpper();
-        if (canBePlanter != "" && canBePlanter != "Y" && canBePlanter != "N")
-        {
-            commandInfo.ReplyToCommand($"{LogPrefix}Invalid value passed to can be a planter [Y / N] - [Value: {canBePlanter}].");
-            return;
-        }
-
-        if (team != "T" && canBePlanter == "Y")
-        {
-            commandInfo.ReplyToCommand($"{LogPrefix}It looks like you tried to place a bomb planter spawn for a CT? Is this correct?");
-            return;
-        }
-
-        var spawn = new Spawn(
-            vector: player!.PlayerPawn.Value!.AbsOrigin!,
-            qAngle: player!.PlayerPawn.Value!.AbsRotation!
-        )
-        {
-            Team = team == "T" ? CsTeam.Terrorist : CsTeam.CounterTerrorist,
-            CanBePlanter = team == "T" && (canBePlanter == "Y" || player.PlayerPawn.Value.InBombZone),
-            Bombsite = bombsite == "A" ? Bombsite.A : Bombsite.B
-        };
-
-        if (_mapConfig == null)
-        {
-            commandInfo.ReplyToCommand($"{LogPrefix}Map config not loaded for some reason...");
-            return;
-        }
-        
-        var didAddSpawn = _mapConfig.AddSpawn(spawn);
-        
-        commandInfo.ReplyToCommand($"{LogPrefix}{(didAddSpawn ? "Spawn added" : "Error adding spawn")}");
-    }
-
-    [ConsoleCommand("css_debugqueues", "Prints the state of the queues to the console.")]
-    [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
-    [RequiresPermissions("@css/root")]
-    public void OnCommandDebugState(CCSPlayerController? player, CommandInfo commandInfo)
-    {
-        if (_gameManager == null)
-        {
-            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
-            return;
-        }
-        
-        _gameManager.QueueManager.DebugQueues(true);
-    }
-
-    [ConsoleCommand("css_showqangle", "This command shows the players current QAngle")]
-    [RequiresPermissions("@css/root")]
-    public void OnCommandShowQangle(CCSPlayerController? player, CommandInfo commandInfo)
-    {
-        if (!Helpers.IsValidPlayer(player))
-        {
-            return;
-        }
-
-        var playerPawn = player!.PlayerPawn.Value!;
-        var qAngle = playerPawn.AbsRotation;
-        var lookTargetPosition = playerPawn.LookTargetPosition;
-        var eyeAngles = playerPawn.EyeAngles;
-
-        Server.PrintToChatAll($"{MessagePrefix}lookTargetPosition: x({lookTargetPosition!.X}) y({lookTargetPosition!.Y}) z({lookTargetPosition!.Z})");
-        Server.PrintToChatAll($"{MessagePrefix}qAngle: x({qAngle!.X}) y({qAngle!.Y}) z({qAngle!.Z})");
-        Server.PrintToChatAll($"{MessagePrefix}eyeAngles: x({eyeAngles!.X}) y({eyeAngles!.Y}) z({eyeAngles!.Z})");
-    }
-
-    [ConsoleCommand("css_showspawns", "This command shows the spawns")]
+    [ConsoleCommand("css_showspawns", "Show the spawns for the specified bombsite.")]
     [CommandHelper(minArgs: 1, usage: "[A/B]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
     [RequiresPermissions("@css/root")]
     public void OnCommandShowSpawns(CCSPlayerController? player, CommandInfo commandInfo)
@@ -200,17 +108,75 @@ public class RetakesPlugin : BasePlugin
 			Helpers.ShowSpawn(spawn);
         }
 
-		_showingSpawnsForBombsite = (bombsite == "A" ? Bombsite.A : Bombsite.B);
+		_showingSpawnsForBombsite = bombsite == "A" ? Bombsite.A : Bombsite.B;
 		commandInfo.ReplyToCommand($"{LogPrefix}Showing {spawns.Count} spawns for bombsite {bombsite}.");
     }
+    
+    [ConsoleCommand("css_addspawn", "Adds a retakes spawn point to the map for the bombsite currently shown.")]
+    [CommandHelper(minArgs: 1, usage: "[T/CT]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
+    [RequiresPermissions("@css/root")]
+    public void OnCommandAddSpawn(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        if (!Helpers.DoesPlayerHavePawn(player))
+        {
+            commandInfo.ReplyToCommand($"{LogPrefix}You must be a player.");
+            return;
+        }
+        
+        if (_showingSpawnsForBombsite == null)
+        {
+            commandInfo.ReplyToCommand($"{MessagePrefix}You can't add a spawn if you're not showing the spawns.");
+            return;
+        }
+        
+        var team = commandInfo.GetArg(1).ToUpper();
+        if (team != "T" && team != "CT")
+        {
+            commandInfo.ReplyToCommand($"{LogPrefix}You must specify a team [T / CT] - [Value: {team}].");
+            return;
+        }
 
-    [ConsoleCommand("css_removespawn", "This command removes the spawn closest to you.")]
+        var spawn = new Spawn(
+            vector: player!.PlayerPawn.Value!.AbsOrigin!,
+            qAngle: player!.PlayerPawn.Value!.AbsRotation!
+        )
+        {
+            Team = team == "T" ? CsTeam.Terrorist : CsTeam.CounterTerrorist,
+            CanBePlanter = team == "T" && player.PlayerPawn.Value.InBombZone,
+            Bombsite = (Bombsite)_showingSpawnsForBombsite
+        };
+        Helpers.ShowSpawn(spawn);
+
+        if (_mapConfig == null)
+        {
+            commandInfo.ReplyToCommand($"{LogPrefix}Map config not loaded for some reason...");
+            return;
+        }
+        
+        var didAddSpawn = _mapConfig.AddSpawn(spawn);
+        
+        commandInfo.ReplyToCommand($"{LogPrefix}{(didAddSpawn ? "Spawn added" : "Error adding spawn")}");
+    }
+
+    [ConsoleCommand("css_removespawn", "Remove the closest visible spawn point.")]
     [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
     [RequiresPermissions("@css/root")]
     public void OnCommandRemoveSpawn(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (!Helpers.DoesPlayerHavePawn(player) || _showingSpawnsForBombsite == null || _spawnManager == null)
+        if (!Helpers.DoesPlayerHavePawn(player))
         {
+            return;
+        }
+        
+        if (_showingSpawnsForBombsite == null)
+        {
+            commandInfo.ReplyToCommand($"{MessagePrefix}You can't remove a spawn if you're not showing the spawns.");
+            return;
+        }
+        
+        if (_spawnManager == null)
+        {
+            commandInfo.ReplyToCommand($"{MessagePrefix}Spawn manager not loaded for some reason...");
             return;
         }
 
@@ -220,7 +186,6 @@ public class RetakesPlugin : BasePlugin
             return;
         }
 
-		// TODO: Figure out why we need to cast this.
 		var spawns = _spawnManager.GetSpawns((Bombsite)_showingSpawnsForBombsite);
         
         if (spawns.Count == 0)
@@ -244,52 +209,48 @@ public class RetakesPlugin : BasePlugin
             closestDistance = distance;
             closestSpawn = spawn;
         }
-
+        
 		if (closestSpawn == null)
 		{
 			commandInfo.ReplyToCommand($"{MessagePrefix}No spawns found within 128 units.");
 			return;
 		}
+        
+        // Remove the beam entity that is showing for the closest spawn.
+        var beamEntities = Utilities.FindAllEntitiesByDesignerName<CBeam>("beam");
+        foreach (var beamEntity in beamEntities)
+        {
+            if (beamEntity.AbsOrigin == null)
+            {
+                continue;
+            }
+            
+            if (
+                beamEntity.AbsOrigin.Z - closestSpawn.Vector.Z == 0 &&
+                beamEntity.AbsOrigin.X - closestSpawn.Vector.X == 0 &&
+                beamEntity.AbsOrigin.Y - closestSpawn.Vector.Y == 0
+            )
+            {
+                beamEntity.Remove();
+            }
+        }
 
 		_mapConfig.RemoveSpawn(closestSpawn);
 		commandInfo.ReplyToCommand($"{MessagePrefix}Removed spawn.");
     }
-
-    [ConsoleCommand("css_teleport", "This command teleports the player to the given coordinates")]
+    
+    [ConsoleCommand("css_debugqueues", "Prints the state of the queues to the console.")]
+    [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
     [RequiresPermissions("@css/root")]
-    public void OnCommandTeleport(CCSPlayerController? player, CommandInfo commandInfo)
+    public void OnCommandDebugState(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (!Helpers.IsValidPlayer(player))
+        if (_gameManager == null)
         {
+            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
             return;
         }
         
-        if (!player!.PlayerPawn.IsValid)
-        {
-            return;
-        }
-        
-        if (commandInfo.ArgCount != 4)
-        {
-            return;
-        }
-
-        if (!float.TryParse(commandInfo.ArgByIndex(1), out var positionX))
-        {
-            return;
-        }
-
-        if (!float.TryParse(commandInfo.ArgByIndex(2), out var positionY))
-        {
-            return;
-        }
-
-        if (!float.TryParse(commandInfo.ArgByIndex(3), out var positionZ))
-        {
-            return;
-        }
-
-        player.PlayerPawn.Value?.Teleport(new Vector(positionX, positionY, positionZ), new QAngle(0f,0f,0f), new Vector(0f, 0f, 0f));
+        _gameManager.QueueManager.DebugQueues(true);
     }
     #endregion
     

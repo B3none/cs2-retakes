@@ -266,10 +266,7 @@ public static class Helpers
 
     public static bool IsInRange(float range, Vector v1, Vector v2)
     {
-        var dx = v1.X - v2.X;
-        var dy = v1.Y - v2.Y;
-        
-        return Math.Sqrt(Math.Pow(dx, 2) + Math.Pow(dy, 2)) <= range;
+        return GetDistanceBetweenVectors(v1, v2) <= range;
     }
 
 	public static double GetDistanceBetweenVectors(Vector v1, Vector v2)
