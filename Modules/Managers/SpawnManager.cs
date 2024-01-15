@@ -61,23 +61,24 @@ public class SpawnManager
 			Helpers.GetCurrentNumPlayers(CsTeam.Terrorist) > spawns[CsTeam.Terrorist].Count
 		)
 		{
+			// TODO: Potentially update the maxRetakesPlayers on the fly.
 			throw new Exception($"There are not enough spawns in the map config for Bombsite {bombsite.ToString()}!");
 		}
 
 		var planterSpawns = spawns[CsTeam.Terrorist].Where(spawn => spawn.CanBePlanter).ToList();
-		var randomPlanterSpawn = planterSpawns[Helpers.Random.Next(planterSpawns.Count)];
-
-		if (randomPlanterSpawn != null) 
+		
+		if (planterSpawns.Count == 0)
 		{
-			spawns[CsTeam.Terrorist].Remove(randomPlanterSpawn);
+			throw new Exception($"There are no planter Spawns for Bombsite {bombsite.ToString()}!");
 		}
-
+		
+		var randomPlanterSpawn = planterSpawns[Helpers.Random.Next(planterSpawns.Count)];
+		spawns[CsTeam.Terrorist].Remove(randomPlanterSpawn);
+		
 		CCSPlayerController? planter = null;
 
-		int i = -1;
 		foreach (var player in Helpers.Shuffle(players))
 		{
-			i++;
 			if (!Helpers.DoesPlayerHavePawn(player))
 			{
 				continue;
@@ -95,11 +96,7 @@ public class SpawnManager
 				continue;
 			}
 
-			var spawn = (player == planter) ? randomPlanterSpawn : spawns[team][Helpers.Random.Next(count)];
-			if (spawn == null)
-			{
-				continue;
-			}
+			var spawn = player == planter ? randomPlanterSpawn : spawns[team][Helpers.Random.Next(count)];
 
 			player.PlayerPawn.Value!.Teleport(spawn.Vector, spawn.QAngle, new Vector());
 			spawns[team].Remove(spawn);
