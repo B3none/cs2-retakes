@@ -22,6 +22,7 @@ If you appreciate the project then please take the time to star the repository ð
 - [x] Queue priority for VIPs
 - [x] Add autoplant
 - [x] Add a command to view the spawns for the current map
+- [x] Add a command to delete the nearest spawn
 - [ ] Implement better spawn management system
 - [ ] Add a release zip file without spawns too
 
@@ -36,6 +37,7 @@ I also recommend installing these plugins for an improved player experience
 
 This package comes with a weapon allocation system, however I recommend using **one** of the following plugins for a better experience
 - Yoni's Allocator: https://github.com/yonilerner/cs2-retakes-allocator
+- NokkviReyr's Allocator: https://github.com/nokkvireyr/kps-allocator
 - Ravid's Allocator: https://github.com/Ravid-A/cs2-retakes-weapon-allocator
 
 ## Configuration
@@ -51,8 +53,8 @@ When the plugin is first loaded it will create a `retakes_config.json` file in t
 | EnableFallbackAllocation         | Whether to enable the fallback weapon allocation. You should set this value to false if you're using a standalone weapon allocator. | true       | false      | true       |
 | EnableBombsiteAnnouncementVoices | Whether to play the bombsite announcement voices. The volume for these values is client sided `snd_toolvolume`.                     | true       | false      | true       |
 | EnableBombsiteAnnouncementCenter | Whether to display the bombsite in the center announcement box.                                                                     | true       | false      | true       |
-| ShouldBreakBreakables            | Whether to break all breakable props on round start                                                                                 | true       | false      | true       |
-| ShouldOpenDoors                  | Whether to open doors on round start                                                                                                | true       | false      | true       |
+| ShouldBreakBreakables            | Whether to break all breakable props on round start                                                                                 | false      | false      | true       |
+| ShouldOpenDoors                  | Whether to open doors on round start                                                                                                | false      | false      | true       |
 
 ## Commands
 | Command         | Arguments | Description                                                          | Permissions |
