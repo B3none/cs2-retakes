@@ -69,7 +69,7 @@ public class SpawnManager
 		
 		if (planterSpawns.Count == 0)
 		{
-			throw new Exception($"There are no planter Spawns for Bombsite {bombsite.ToString()}!");
+			throw new Exception($"There are no planter spawns for Bombsite {bombsite.ToString()}!");
 		}
 		
 		var randomPlanterSpawn = planterSpawns[Helpers.Random.Next(planterSpawns.Count)];
