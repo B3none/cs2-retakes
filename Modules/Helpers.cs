@@ -1,7 +1,9 @@
+using System.Drawing;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
+using RetakesPlugin.Modules.Configs;
 using RetakesPlugin.Modules.Enums;
 
 namespace RetakesPlugin.Modules;
@@ -100,6 +102,15 @@ public static class Helpers
             {
                 continue;
             }
+            
+            // Don't remove a players knife
+            if (
+                weapon.Value.DesignerName == CsItem.KnifeCT.ToString() 
+                || weapon.Value.DesignerName == CsItem.KnifeT.ToString()
+            )
+            {
+                continue;
+            }
         
             player.PlayerPawn.Value.RemovePlayerItem(weapon.Value);
             weapon.Value.Remove();
@@ -190,23 +201,29 @@ public static class Helpers
         Server.ExecuteCommand("mp_restartgame 1");
     }
     
-    public static void MoveBeam(CEnvBeam? laser, Vector start, Vector end)
+    public static void ShowSpawn(Spawn spawn)
     {
-        if (laser == null)
-        {
-            return;
-        }
+		var beam = Utilities.CreateEntityByName<CBeam>("beam") ?? throw new Exception("Failed to create beam entity.");
+		beam.StartFrame = 0;
+		beam.FrameRate = 0;
+		beam.LifeState = 1;
+		beam.Width = 5;
+		beam.EndWidth = 5;
+		beam.Amplitude = 0;
+		beam.Speed = 50;
+		beam.Flags = 0;
+		beam.BeamType = BeamType_t.BEAM_HOSE;
+		beam.FadeLength = 10.0f;
 
-        // set pos
-        laser.Teleport(start, new QAngle(), new Vector());
+		var color = spawn.Team == CsTeam.Terrorist ? (spawn.CanBePlanter ? Color.Orange : Color.Red) : Color.Blue;
+		beam.Render = Color.FromArgb(255, color);
 
-        // end pos
-        // NOTE: we cant just move the whole vec
-        laser.EndPos.X = end.X;
-        laser.EndPos.Y = end.Y;
-        laser.EndPos.Z = end.Z;
+		beam.EndPos.X = spawn.Vector.X;
+		beam.EndPos.Y = spawn.Vector.Y;
+		beam.EndPos.Z = spawn.Vector.Z + 100.0f;
 
-        Utilities.SetStateChanged(laser,"CBeam", "m_vecEndPos");
+		beam.Teleport(spawn.Vector, new QAngle(IntPtr.Zero), new Vector(IntPtr.Zero, IntPtr.Zero, IntPtr.Zero));
+		beam.DispatchSpawn();
     }
     
     public static void CheckRoundDone()
@@ -255,6 +272,14 @@ public static class Helpers
         return Math.Sqrt(Math.Pow(dx, 2) + Math.Pow(dy, 2)) <= range;
     }
 
+	public static double GetDistanceBetweenVectors(Vector v1, Vector v2)
+	{
+		var dx = v1.X - v2.X;
+        var dy = v1.Y - v2.Y;
+
+		return Math.Sqrt(Math.Pow(dx, 2) + Math.Pow(dy, 2));
+	}
+
     public static bool IsOnGround(CCSPlayerController player)
     {
         return (player.PlayerPawn.Value!.Flags & (int)PlayerFlags.FL_ONGROUND) != 0;
@@ -301,9 +326,7 @@ public static class Helpers
         plantedC4.AbsOrigin.Z = playerPawn.AbsOrigin.Z;
         plantedC4.HasExploded = false;
 
-        plantedC4.OwnerEntity.Raw = playerPawn.EntityHandle.Raw;
-
-        plantedC4.BombSite = 0;
+        plantedC4.BombSite = (int)bombsite;
         plantedC4.BombTicking = true;
         plantedC4.CannotBeDefused = false;
 
