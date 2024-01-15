@@ -9,6 +9,18 @@ public class BreakerManager
 {
     private readonly List<(string designerName, string action)> _entityActions = new();
 
+    private static readonly HashSet<string> MapsWithPropDynamic = new()
+    {
+        "de_vertigo",
+        "de_nuke",
+        "de_mirage"
+    };
+
+    private static readonly HashSet<string> MapsWithFuncButton = new()
+    {
+        "de_nuke"
+    };
+
     public BreakerManager(bool? shouldBreakBreakables, bool? shouldOpenDoors)
     {
         if (shouldBreakBreakables ?? false)
@@ -21,12 +33,12 @@ public class BreakerManager
                 ("prop.breakable.02", "Break")
             });
             
-            if (Server.MapName == "de_vertigo" || Server.MapName == "de_nuke")
+            if (MapsWithPropDynamic.Contains(Server.MapName))
             {
                 _entityActions.Add(("prop_dynamic", "Break"));
             }
 
-            if (Server.MapName == "de_nuke")
+            if (MapsWithFuncButton.Contains(Server.MapName))
             {
                 _entityActions.Add(("func_button", "Kill"));
             }
