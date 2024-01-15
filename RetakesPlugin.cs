@@ -229,23 +229,20 @@ public class RetakesPlugin : BasePlugin
             return;
         }
 
-		double closestDistance = 9999.9;
+		var closestDistance = 9999.9;
 		Spawn? closestSpawn = null;
 
         foreach (var spawn in spawns)
         {
 			var distance = Helpers.GetDistanceBetweenVectors(spawn.Vector, player!.PlayerPawn.Value!.AbsOrigin!);
 
-			if (distance > 128.0)
+			if (distance > 128.0 || distance > closestDistance)
 			{
 				continue;
 			}
 
-			if (distance < closestDistance)
-			{
-				closestDistance = distance;
-				closestSpawn = spawn;
-			}
+            closestDistance = distance;
+            closestSpawn = spawn;
         }
 
 		if (closestSpawn == null)
