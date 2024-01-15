@@ -89,7 +89,6 @@ public class MapConfig
     {
         _mapConfigData ??= new MapConfigData();
         
-        // Check if the spawn already exists based on vector and bombsite
         if (!_mapConfigData.Spawns.Any(existingSpawn => existingSpawn.Vector == spawn.Vector && existingSpawn.Bombsite == spawn.Bombsite))
         {
             return; // Spawn doesn't exist, avoid removing
