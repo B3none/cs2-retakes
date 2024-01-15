@@ -93,15 +93,13 @@ public class MapConfig
         {
             return; // Spawn doesn't exist, avoid removing
         }
-        
+  
         _mapConfigData.Spawns.Remove(spawn);
         
         Save();
         
         // TODO: Figure out why the spawns can't be added on the fly.
         Load();
-
-        return;
     }
     
     private MapConfigData GetSanitisedMapConfigData()
