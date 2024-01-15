@@ -36,6 +36,7 @@ I also recommend installing these plugins for an improved player experience
 This package comes with a weapon allocation system, however I recommend using **one** of the following plugins for a better experience
 - Yoni's Allocator: https://github.com/yonilerner/cs2-retakes-allocator
 - Ravid's Allocator: https://github.com/Ravid-A/cs2-retakes-weapon-allocator
+- NokkviReyr's Allocator: https://github.com/nokkvireyr/kps-allocator
 
 ## Plugin Configuration
 When the plugin is first loaded it will create a `retakes_config.json` file in the plugin directory. This file contains all of the configuration options for the plugin:
