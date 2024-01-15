@@ -11,7 +11,6 @@ public class SpawnManager
     private readonly Translator _translator;
     private readonly MapConfig _mapConfig;
 	private readonly Dictionary<Bombsite, Dictionary<CsTeam, List<Spawn>>> _spawns = new();
-	private readonly bool _spawnsInitialized = false;
 
     public SpawnManager(Translator translator, MapConfig mapConfig)
     {
@@ -32,16 +31,10 @@ public class SpawnManager
 
 			_spawns[spawn.Bombsite][spawn.Team].Add(spawn);
 		}
-		_spawnsInitialized = true;
     }
 
 	public List<Spawn> GetSpawns(Bombsite bombsite, CsTeam? team = null)
 	{
-		if (!_spawnsInitialized)
-		{
-			return new List<Spawn>();
-		}
-
 		if (team == null)
 		{
 			return _spawns[bombsite].SelectMany(entry => entry.Value).ToList();
@@ -55,11 +48,6 @@ public class SpawnManager
      */
 	public CCSPlayerController? HandleRoundSpawns(Bombsite bombsite, HashSet<CCSPlayerController> players)
 	{
-		if (!_spawnsInitialized)
-		{
-			return null;
-		}
-
 		Console.WriteLine($"{RetakesPlugin.LogPrefix}Moving players to spawns.");
 
 		// Clone the spawns so we can mutate them
@@ -67,6 +55,14 @@ public class SpawnManager
 			entry => entry.Key,
 			entry => entry.Value.ToList()
 		);
+
+		if (
+			Helpers.GetCurrentNumPlayers(CsTeam.CounterTerrorist) > spawns[CsTeam.CounterTerrorist].Count ||
+			Helpers.GetCurrentNumPlayers(CsTeam.Terrorist) > spawns[CsTeam.Terrorist].Count
+		)
+		{
+			throw new Exception($"There are not enough spawns in the map config for Bombsite {bombsite.ToString()}!");
+		}
 
 		var planterSpawns = spawns[CsTeam.Terrorist].Where(spawn => spawn.CanBePlanter).ToList();
 		var randomPlanterSpawn = planterSpawns[Helpers.Random.Next(planterSpawns.Count)];
