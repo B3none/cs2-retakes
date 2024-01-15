@@ -237,7 +237,7 @@ public class RetakesPlugin : BasePlugin
         {
 			var distance = Helpers.GetDistanceBetweenVectors(spawn.Vector, player!.PlayerPawn.Value!.AbsOrigin!);
 
-			if(distance > 128.0)
+			if (distance > 128.0)
 			{
 				continue;
 			}
