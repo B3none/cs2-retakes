@@ -53,5 +53,13 @@ When the plugin is first loaded it will create a `retakes_config.json` file in t
 | ShouldBreakBreakables            | Whether to break all breakable props on round start                                                                                 | true       | false      | true       |
 | ShouldOpenDoors                  | Whether to open doors on round start                                                                                                | true       | false      | true       |
 
+## Commands
+| Command         | Arguments | Description                                                                    | Permissions |
+|-----------------|-----------|--------------------------------------------------------------------------------|-------------|
+| !showspawns     | <A / B>   | Show the spawns for the specified bombsite.                                    | @css/root   |
+| !addspawn       | <CT / T>  | Adds a retakes spawn point to the map for the bombsite spawns currently shown. | @css/root   |
+| !removespawn    |           | Removes                                                                        | @css/root   |
+| css_debugqueues |           | **SERVER ONLY** Shows the current queue state in the server console.           |             |
+
 ## Credits
 This was inspired by the [CS:GO Retakes project](https://github.com/splewis/csgo-retakes) written by [splewis](https://github.com/splewis).
