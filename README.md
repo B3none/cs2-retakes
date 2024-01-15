@@ -21,7 +21,8 @@ If you appreciate the project then please take the time to star the repository ð
 - [x] Improve bombsite announcement
 - [x] Queue priority for VIPs
 - [x] Add autoplant
-- [ ] Add a command to view the spawns for the current map
+- [x] Add a command to view the spawns for the current map
+- [x] Add a command to delete the nearest spawn
 - [ ] Implement better spawn management system
 
 ## Installation
