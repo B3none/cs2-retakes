@@ -272,6 +272,14 @@ public static class Helpers
         return Math.Sqrt(Math.Pow(dx, 2) + Math.Pow(dy, 2)) <= range;
     }
 
+	public static double GetDistanceBetweenVectors(Vector v1, Vector v2)
+	{
+		var dx = v1.X - v2.X;
+        var dy = v1.Y - v2.Y;
+
+		return Math.Sqrt(Math.Pow(dx, 2) + Math.Pow(dy, 2));
+	}
+
     public static bool IsOnGround(CCSPlayerController player)
     {
         return (player.PlayerPawn.Value!.Flags & (int)PlayerFlags.FL_ONGROUND) != 0;
