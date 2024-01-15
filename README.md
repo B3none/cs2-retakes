@@ -21,8 +21,9 @@ If you appreciate the project then please take the time to star the repository ð
 - [x] Improve bombsite announcement
 - [x] Queue priority for VIPs
 - [x] Add autoplant
-- [ ] Add a command to view the spawns for the current map
+- [x] Add a command to view the spawns for the current map
 - [ ] Implement better spawn management system
+- [ ] Add a release zip file without spawns too
 
 ## Installation
 1. Download the zip file from the [latest release](https://github.com/B3none/cs2-retakes/releases), and extract the contents into your `counterstrikesharp/plugins` directory.
