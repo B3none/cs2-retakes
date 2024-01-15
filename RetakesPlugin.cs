@@ -18,7 +18,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(147)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.3.4";
+    private const string Version = "1.3.5";
     
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -85,13 +85,13 @@ public class RetakesPlugin : BasePlugin
         var bombsite = commandInfo.GetArg(1).ToUpper();
         if (bombsite != "A" && bombsite != "B")
         {
-            commandInfo.ReplyToCommand($"{LogPrefix}You must specify a bombsite [A / B].");
+            commandInfo.ReplyToCommand($"{MessagePrefix}You must specify a bombsite [A / B].");
             return;
         }
         
         if (_mapConfig == null)
         {
-            commandInfo.ReplyToCommand($"{LogPrefix}Map config not loaded for some reason...");
+            commandInfo.ReplyToCommand($"{MessagePrefix}Map config not loaded for some reason...");
             return;
         }
         
@@ -99,7 +99,7 @@ public class RetakesPlugin : BasePlugin
         
         if (spawns.Count == 0)
         {
-            commandInfo.ReplyToCommand($"{LogPrefix}No spawns found for bombsite {bombsite}.");
+            commandInfo.ReplyToCommand($"{MessagePrefix}No spawns found for bombsite {bombsite}.");
             return;
         }
         
@@ -109,7 +109,7 @@ public class RetakesPlugin : BasePlugin
         }
 
 		_showingSpawnsForBombsite = bombsite == "A" ? Bombsite.A : Bombsite.B;
-		commandInfo.ReplyToCommand($"{LogPrefix}Showing {spawns.Count} spawns for bombsite {bombsite}.");
+		commandInfo.ReplyToCommand($"{MessagePrefix}Showing {spawns.Count} spawns for bombsite {bombsite}.");
     }
     
     [ConsoleCommand("css_addspawn", "Adds a retakes spawn point to the map for the bombsite currently shown.")]
@@ -119,7 +119,7 @@ public class RetakesPlugin : BasePlugin
     {
         if (!Helpers.DoesPlayerHavePawn(player))
         {
-            commandInfo.ReplyToCommand($"{LogPrefix}You must be a player.");
+            commandInfo.ReplyToCommand($"{MessagePrefix}You must be a player.");
             return;
         }
         
@@ -132,7 +132,7 @@ public class RetakesPlugin : BasePlugin
         var team = commandInfo.GetArg(1).ToUpper();
         if (team != "T" && team != "CT")
         {
-            commandInfo.ReplyToCommand($"{LogPrefix}You must specify a team [T / CT] - [Value: {team}].");
+            commandInfo.ReplyToCommand($"{MessagePrefix}You must specify a team [T / CT] - [Value: {team}].");
             return;
         }
 
@@ -149,13 +149,13 @@ public class RetakesPlugin : BasePlugin
 
         if (_mapConfig == null)
         {
-            commandInfo.ReplyToCommand($"{LogPrefix}Map config not loaded for some reason...");
+            commandInfo.ReplyToCommand($"{MessagePrefix}Map config not loaded for some reason...");
             return;
         }
         
         var didAddSpawn = _mapConfig.AddSpawn(spawn);
         
-        commandInfo.ReplyToCommand($"{LogPrefix}{(didAddSpawn ? "Spawn added" : "Error adding spawn")}");
+        commandInfo.ReplyToCommand($"{MessagePrefix}{(didAddSpawn ? "Spawn added" : "Error adding spawn")}");
     }
 
     [ConsoleCommand("css_removespawn", "Remove the closest visible spawn point.")]
