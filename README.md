@@ -23,8 +23,8 @@ If you appreciate the project then please take the time to star the repository ð
 - [x] Add autoplant
 - [x] Add a command to view the spawns for the current map
 - [x] Add a command to delete the nearest spawn
-- [ ] Implement better spawn management system
-- [ ] Add a release zip file without spawns too
+- [x] Implement better spawn management system
+- [x] Add a release zip file without spawns too
 
 ## Installation
 1. Download the zip file from the [latest release](https://github.com/B3none/cs2-retakes/releases), and extract the contents into your `counterstrikesharp/plugins` directory.
