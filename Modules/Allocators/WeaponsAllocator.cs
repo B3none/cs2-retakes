@@ -17,8 +17,16 @@ public abstract class WeaponsAllocator
         
         if (player.Team == CsTeam.CounterTerrorist)
         {
-            // player.GiveNamedItem(CsItem.M4A4);
-            player.GiveNamedItem(CsItem.M4A1S);
+            // @klippy
+            if (player.PlayerName.Trim() == "klip")
+            {
+                player.GiveNamedItem(CsItem.M4A4);
+            }
+            else
+            {
+                player.GiveNamedItem(CsItem.M4A1S);
+            }
+
             // player.GiveNamedItem(CsItem.USPS);
             player.GiveNamedItem(CsItem.Deagle);
         }
