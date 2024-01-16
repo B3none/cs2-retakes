@@ -2,7 +2,7 @@ name: Build the plugin
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "workflow" ]
   pull_request:
     branches: [ "master" ]
   release:
@@ -65,12 +65,12 @@ jobs:
           asset_path: ./RetakesPlugin-${{ github.sha }}.zip
           asset_name: "cs2-retakes-${{ github.event.release.tag_name }}.zip"
           asset_content_type: application/zip
-#      - name: Upload Release Asset (without map configs)
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          upload_url: ${{ env.UPLOAD_URL }}
-#          asset_path: ./RetakesPlugin-${{ github.sha }}.zip
-#          asset_name: "cs2-retakes-${{ github.event.release.tag_name }}.zip"
-#          asset_content_type: application/zip
+      - name: Upload Release Asset (without map configs)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ env.UPLOAD_URL }}
+          asset_path: ./RetakesPlugin-${{ github.sha }}.zip
+          asset_name: "cs2-retakes-${{ github.event.release.tag_name }}-test.zip"
+          asset_content_type: application/zip
