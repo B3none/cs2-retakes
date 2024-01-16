@@ -27,11 +27,20 @@ jobs:
           mv ./bin/Debug/net7.0/RetakesPlugin.dll output/RetakesPlugin/
           mv ./map_config output/RetakesPlugin/
           mv ./lang output/RetakesPlugin/
+      - name: Copy output (no map configs)
+        run: |
+          cp -r output/ output-no-map-configs/
+          rm -rf output-no-map-configs/RetakesPlugin/map_config
       - name: Publish Artifact
         uses: actions/upload-artifact@v4
         with:
           name: RetakesPlugin-${{ github.sha }}
           path: output
+      - name: Publish Artifact (no map configs)
+        uses: actions/upload-artifact@v4
+        with:
+          name: RetakesPlugin-${{ github.sha }}-no-map-configs
+          path: output-no-map-configs
   
   release:
     needs: build
@@ -44,13 +53,12 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: RetakesPlugin-${{ github.sha }}
+      - name: Download Build Artifact (without map configs)
+        uses: actions/download-artifact@v4
+        with:
+          name: RetakesPlugin-${{ github.sha }}-no-map-configs
       - name: Zip RetakesPlugin directory
         run: zip -r RetakesPlugin-${{ github.sha }}.zip ./RetakesPlugin
-#        TODO: Add a zip without map configs
-#      - name: Zip RetakesPlugin directory (without map configs)
-#        run: |
-#          rm -rf ./RetakesPlugin/map_config
-#          zip -r RetakesPlugin-${{ github.sha }}-no-map-configs.zip ./RetakesPlugin
       - name: Get Release Info
         run: |
           RELEASE_INFO=$(curl -sH 'Accept: application/vnd.github.v3+json' https://api.github.com/repos/${{ github.repository }}/releases)
