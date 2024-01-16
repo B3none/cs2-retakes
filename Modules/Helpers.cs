@@ -102,15 +102,6 @@ public static class Helpers
             {
                 continue;
             }
-            
-            // Don't remove a players knife
-            if (
-                weapon.Value.DesignerName == CsItem.KnifeCT.ToString() 
-                || weapon.Value.DesignerName == CsItem.KnifeT.ToString()
-            )
-            {
-                continue;
-            }
         
             player.PlayerPawn.Value.RemovePlayerItem(weapon.Value);
             weapon.Value.Remove();
@@ -266,10 +257,7 @@ public static class Helpers
 
     public static bool IsInRange(float range, Vector v1, Vector v2)
     {
-        var dx = v1.X - v2.X;
-        var dy = v1.Y - v2.Y;
-        
-        return Math.Sqrt(Math.Pow(dx, 2) + Math.Pow(dy, 2)) <= range;
+        return GetDistanceBetweenVectors(v1, v2) <= range;
     }
 
 	public static double GetDistanceBetweenVectors(Vector v1, Vector v2)

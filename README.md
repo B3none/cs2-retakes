@@ -24,6 +24,7 @@ If you appreciate the project then please take the time to star the repository ð
 - [x] Add a command to view the spawns for the current map
 - [x] Add a command to delete the nearest spawn
 - [ ] Implement better spawn management system
+- [ ] Add a release zip file without spawns too
 
 ## Installation
 1. Download the zip file from the [latest release](https://github.com/B3none/cs2-retakes/releases), and extract the contents into your `counterstrikesharp/plugins` directory.
@@ -39,7 +40,7 @@ This package comes with a weapon allocation system, however I recommend using **
 - NokkviReyr's Allocator: https://github.com/nokkvireyr/kps-allocator
 - Ravid's Allocator: https://github.com/Ravid-A/cs2-retakes-weapon-allocator
 
-## Plugin Configuration
+## Configuration
 When the plugin is first loaded it will create a `retakes_config.json` file in the plugin directory. This file contains all of the configuration options for the plugin:
 
 | Config                           | Description                                                                                                                         | Default    | Min        | Max        |
@@ -54,6 +55,14 @@ When the plugin is first loaded it will create a `retakes_config.json` file in t
 | EnableBombsiteAnnouncementCenter | Whether to display the bombsite in the center announcement box.                                                                     | true       | false      | true       |
 | ShouldBreakBreakables            | Whether to break all breakable props on round start                                                                                 | false      | false      | true       |
 | ShouldOpenDoors                  | Whether to open doors on round start                                                                                                | false      | false      | true       |
+
+## Commands
+| Command         | Arguments | Description                                                          | Permissions |
+|-----------------|-----------|----------------------------------------------------------------------|-------------|
+| !showspawns     | <A / B>   | Show the spawns for the specified bombsite.                          | @css/root   |
+| !addspawn       | <CT / T>  | Adds a retakes spawn point for the bombsite spawns currently shown.  | @css/root   |
+| !removespawn    |           | Removes the nearest spawn point for the bombsite currently shown.    | @css/root   |
+| css_debugqueues |           | **SERVER ONLY** Shows the current queue state in the server console. |             |
 
 ## Credits
 This was inspired by the [CS:GO Retakes project](https://github.com/splewis/csgo-retakes) written by [splewis](https://github.com/splewis).
