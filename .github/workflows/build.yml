@@ -2,7 +2,7 @@ name: Build the plugin
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "master", "workflow" ]
   pull_request:
     branches: [ "master" ]
   release:
@@ -27,11 +27,20 @@ jobs:
           mv ./bin/Debug/net7.0/RetakesPlugin.dll output/RetakesPlugin/
           mv ./map_config output/RetakesPlugin/
           mv ./lang output/RetakesPlugin/
-      - name: Publish Artifact
+      - name: Copy output (no map configs)
+        run: |
+          cp -r output/ output-no-map-configs/
+          rm -rf output-no-map-configs/RetakesPlugin/map_config
+      - name: Publish artifact
         uses: actions/upload-artifact@v4
         with:
           name: RetakesPlugin-${{ github.sha }}
           path: output
+      - name: Publish artifact (no map configs)
+        uses: actions/upload-artifact@v4
+        with:
+          name: RetakesPlugin-${{ github.sha }}-no-map-configs
+          path: output-no-map-configs
   
   release:
     needs: build
@@ -40,23 +49,21 @@ jobs:
     if: github.event_name == 'release'
     
     steps:
-      - name: Download Build Artifact
+      - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
           name: RetakesPlugin-${{ github.sha }}
-      - name: Zip RetakesPlugin directory
-        run: zip -r RetakesPlugin-${{ github.sha }}.zip ./RetakesPlugin
-#        TODO: Add a zip without map configs
-#      - name: Zip RetakesPlugin directory (without map configs)
-#        run: |
-#          rm -rf ./RetakesPlugin/map_config
-#          zip -r RetakesPlugin-${{ github.sha }}-no-map-configs.zip ./RetakesPlugin
-      - name: Get Release Info
+      - name: Create release assets
+        run: |
+          zip -r RetakesPlugin-${{ github.sha }}.zip ./RetakesPlugin
+          rm -rf ./RetakesPlugin/map_config
+          zip -r RetakesPlugin-${{ github.sha }}-no-map-configs.zip ./RetakesPlugin
+      - name: Get release info
         run: |
           RELEASE_INFO=$(curl -sH 'Accept: application/vnd.github.v3+json' https://api.github.com/repos/${{ github.repository }}/releases)
           export UPLOAD_URL=$(echo $RELEASE_INFO | jq -r ".[] | select(.tag_name == \"${{ github.event.release.tag_name }}\").upload_url")
           echo "UPLOAD_URL=$UPLOAD_URL" >> $GITHUB_ENV
-      - name: Upload Release Asset
+      - name: Upload release asset
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -65,12 +72,12 @@ jobs:
           asset_path: ./RetakesPlugin-${{ github.sha }}.zip
           asset_name: "cs2-retakes-${{ github.event.release.tag_name }}.zip"
           asset_content_type: application/zip
-#      - name: Upload Release Asset (without map configs)
-#        uses: actions/upload-release-asset@v1
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-#        with:
-#          upload_url: ${{ env.UPLOAD_URL }}
-#          asset_path: ./RetakesPlugin-${{ github.sha }}.zip
-#          asset_name: "cs2-retakes-${{ github.event.release.tag_name }}.zip"
-#          asset_content_type: application/zip
+      - name: Upload release asset (no map configs)
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ env.UPLOAD_URL }}
+          asset_path: ./RetakesPlugin-${{ github.sha }}-no-map-configs.zip
+          asset_name: "cs2-retakes-${{ github.event.release.tag_name }}-no-map-configs.zip"
+          asset_content_type: application/zip
