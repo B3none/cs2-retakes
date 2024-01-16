@@ -48,7 +48,7 @@ public class RetakesPlugin : BasePlugin
     private Bombsite _currentBombsite = Bombsite.A;
     private CCSPlayerController? _planter;
     private CsTeam _lastRoundWinner;
-	private Bombsite? _showingSpawnsForBombsite = null;
+	private Bombsite? _showingSpawnsForBombsite;
     #endregion
     
     public RetakesPlugin()
