@@ -77,7 +77,12 @@ public class QueueManager
                 Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] player is not in round list for {toTeam}, switching to spectator.");
                 ActivePlayers.Remove(player);
                 QueuePlayers.Add(player);
-                player.CommitSuicide(false, true);
+
+                if (player.PawnIsAlive)
+                {
+                    player.CommitSuicide(false, true);
+                }
+
                 player.ChangeTeam(CsTeam.Spectator);
                 return;
             }
@@ -186,6 +191,12 @@ public class QueueManager
             // loop players to add, and set their team to CT
             foreach (var player in playersToAddList)
             {
+                // If the player is no longer valid, skip them
+                if (!Helpers.IsValidPlayer(player))
+                {
+                    continue;
+                }
+                
                 ActivePlayers.Add(player);
                 
                 if (player.Team != CsTeam.CounterTerrorist)

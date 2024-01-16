@@ -18,7 +18,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(147)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.3.5";
+    private const string Version = "1.3.6";
     
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -315,12 +315,13 @@ public class RetakesPlugin : BasePlugin
         player.TeamNum = (int)CsTeam.Spectator;
         player.ForceTeamTime = 3600.0f;
         
-        Console.WriteLine($"{LogPrefix}OnPlayerConnectFull event fired. {Utilities.GetPlayers().ToList().Count} players connected.");
-        if (Utilities.GetPlayers().Where(Helpers.IsPlayerConnected).ToList().Count <= 2)
-        {
-            Console.WriteLine($"{LogPrefix}First or second player connected, resetting game.");
-            Helpers.RestartGame();
-        }
+        // TODO: Remove this once we know it's working.
+        // Console.WriteLine($"{LogPrefix}OnPlayerConnectFull event fired. {Utilities.GetPlayers().ToList().Count} players connected.");
+        // if (Utilities.GetPlayers().Where(Helpers.IsPlayerConnected).ToList().Count <= 2)
+        // {
+        //     Console.WriteLine($"{LogPrefix}First or second player connected, resetting game.");
+        //     Helpers.RestartGame();
+        // }
 
         return HookResult.Continue;
     }
@@ -475,8 +476,12 @@ public class RetakesPlugin : BasePlugin
             Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
             return HookResult.Continue;
         }
+       
+        if (Helpers.GetCurrentNumPlayers(CsTeam.Terrorist) > 0)
+        {
+            HandleAutoPlant();
+        }
         
-        HandleAutoPlant();
         return HookResult.Continue;
     }
     
@@ -632,12 +637,12 @@ public class RetakesPlugin : BasePlugin
         return HookResult.Continue;
     }
     
-    [GameEventHandler]
+    [GameEventHandler(HookMode.Pre)]
     public HookResult OnPlayerDisconnect(EventPlayerDisconnect @event, GameEventInfo info)
     {
         var player = @event.Userid;
         
-        if (!Helpers.IsValidPlayer(player))
+        if (player == null)
         {
             return HookResult.Continue;
         }
