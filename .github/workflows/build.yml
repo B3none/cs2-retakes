@@ -53,7 +53,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: RetakesPlugin-${{ github.sha }}
-      - name: Download Build Artifact (without map configs)
+      - name: Download Build Artifact (no map configs)
         uses: actions/download-artifact@v4
         with:
           name: RetakesPlugin-${{ github.sha }}-no-map-configs
@@ -73,12 +73,12 @@ jobs:
           asset_path: ./RetakesPlugin-${{ github.sha }}.zip
           asset_name: "cs2-retakes-${{ github.event.release.tag_name }}.zip"
           asset_content_type: application/zip
-      - name: Upload Release Asset (without map configs)
+      - name: Upload Release Asset (no map configs)
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ env.UPLOAD_URL }}
-          asset_path: ./RetakesPlugin-${{ github.sha }}.zip
-          asset_name: "cs2-retakes-${{ github.event.release.tag_name }}-test.zip"
+          asset_path: ./RetakesPlugin-${{ github.sha }}-no-map-configs.zip
+          asset_name: "cs2-retakes-${{ github.event.release.tag_name }}-no-map-configs.zip"
           asset_content_type: application/zip
