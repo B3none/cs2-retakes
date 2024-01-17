@@ -18,7 +18,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(147)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.3.7";
+    private const string Version = "1.3.8";
     
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -129,14 +129,48 @@ public class RetakesPlugin : BasePlugin
             return;
         }
         
+        if (_spawnManager == null)
+        {
+            commandInfo.ReplyToCommand($"{MessagePrefix}Spawn manager not loaded for some reason...");
+            return;
+        }
+        
         var team = commandInfo.GetArg(1).ToUpper();
         if (team != "T" && team != "CT")
         {
             commandInfo.ReplyToCommand($"{MessagePrefix}You must specify a team [T / CT] - [Value: {team}].");
             return;
         }
+        
+        var spawns = _spawnManager.GetSpawns((Bombsite)_showingSpawnsForBombsite);
+        
+        if (spawns.Count == 0)
+        {
+            commandInfo.ReplyToCommand($"{MessagePrefix}No spawns found.");
+            return;
+        }
+        
+        var closestDistance = 9999.9;
 
-        var spawn = new Spawn(
+        foreach (var spawn in spawns)
+        {
+            var distance = Helpers.GetDistanceBetweenVectors(spawn.Vector, player!.PlayerPawn.Value!.AbsOrigin!);
+
+            if (distance > 128.0 || distance > closestDistance)
+            {
+                continue;
+            }
+
+            closestDistance = distance;
+        }
+        
+        if (closestDistance <= 72)
+        {
+            commandInfo.ReplyToCommand($"{MessagePrefix}You are too close to another spawn, move away and try again.");
+            return;
+        }
+
+        var newSpawn = new Spawn(
             vector: player!.PlayerPawn.Value!.AbsOrigin!,
             qAngle: player!.PlayerPawn.Value!.AbsRotation!
         )
@@ -145,7 +179,7 @@ public class RetakesPlugin : BasePlugin
             CanBePlanter = team == "T" && player.PlayerPawn.Value.InBombZone,
             Bombsite = (Bombsite)_showingSpawnsForBombsite
         };
-        Helpers.ShowSpawn(spawn);
+        Helpers.ShowSpawn(newSpawn);
 
         if (_mapConfig == null)
         {
@@ -153,7 +187,7 @@ public class RetakesPlugin : BasePlugin
             return;
         }
         
-        var didAddSpawn = _mapConfig.AddSpawn(spawn);
+        var didAddSpawn = _mapConfig.AddSpawn(newSpawn);
         
         commandInfo.ReplyToCommand($"{MessagePrefix}{(didAddSpawn ? "Spawn added" : "Error adding spawn")}");
     }
