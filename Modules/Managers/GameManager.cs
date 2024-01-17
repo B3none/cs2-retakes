@@ -189,7 +189,7 @@ public class GameManager
         terrorists ??= new List<CCSPlayerController>();
         counterTerrorists ??= new List<CCSPlayerController>();
         
-        foreach (var player in QueueManager.ActivePlayers)
+        foreach (var player in QueueManager.ActivePlayers.Where(Helpers.IsValidPlayer))
         {
             if (terrorists.Contains(player))
             {
