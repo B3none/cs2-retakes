@@ -39,20 +39,15 @@ public class QueueManager
     public void PlayerJoinedTeam(CCSPlayerController player, CsTeam fromTeam, CsTeam toTeam)
     {
         Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] PlayerTriedToJoinTeam called.");
-
-        if (fromTeam == toTeam && toTeam == CsTeam.None)
-        {
-            // This is called when a player presses auto select.
-            Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] None -> None.");
-            return;
-        }
+        
         if (
             fromTeam == CsTeam.None && toTeam == CsTeam.Spectator 
             || fromTeam == CsTeam.Spectator && toTeam == CsTeam.None
+            || fromTeam == toTeam && toTeam == CsTeam.None
         )
         {
             // This is called when a player first joins.
-            Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] None -> Spectator.");
+            Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] {fromTeam.ToString()} -> {toTeam.ToString()}.");
             return;
         }
         
