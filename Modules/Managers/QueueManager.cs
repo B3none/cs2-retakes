@@ -46,7 +46,10 @@ public class QueueManager
             Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] None -> None.");
             return;
         }
-        if (fromTeam == CsTeam.None && toTeam == CsTeam.Spectator)
+        if (
+            fromTeam == CsTeam.None && toTeam == CsTeam.Spectator 
+            || fromTeam == CsTeam.Spectator && toTeam == CsTeam.None
+        )
         {
             // This is called when a player first joins.
             Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] None -> Spectator.");
