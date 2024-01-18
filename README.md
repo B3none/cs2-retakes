@@ -35,7 +35,8 @@ I also recommend installing these plugins for an improved player experience
 - Instadefuse: https://github.com/B3none/cs2-instadefuse
 - Clutch Announce: https://github.com/B3none/cs2-clutch-announce
 
-This package comes with a weapon allocation system, however I recommend using **one** of the following plugins for a better experience
+## Allocators
+Although this plugin comes with it's own weapon allocation system, I would recommend using **one** of the following plugins for a better experience:
 - Yoni's Allocator: https://github.com/yonilerner/cs2-retakes-allocator
 - NokkviReyr's Allocator: https://github.com/nokkvireyr/kps-allocator
 - Ravid's Allocator: https://github.com/Ravid-A/cs2-retakes-weapon-allocator
