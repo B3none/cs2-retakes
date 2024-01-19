@@ -25,6 +25,7 @@ jobs:
         run: |
           mkdir -p output/RetakesPlugin
           mv ./bin/Debug/net7.0/RetakesPlugin.dll output/RetakesPlugin/
+          mv ./bin/Debug/net7.0/RetakesPlugin.pdb output/RetakesPlugin/
           mv ./map_config output/RetakesPlugin/
           mv ./lang output/RetakesPlugin/
       - name: Copy output (no map configs)
