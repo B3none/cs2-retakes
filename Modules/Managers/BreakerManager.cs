@@ -71,24 +71,49 @@ public class BreakerManager
                 {
                     case "func_breakable":
                     case "func_breakable_surf":
-                        new PointerTo<CBreakable>(pEntity.Handle).Value.AcceptInput(action);
+                        var breakableEntity = new PointerTo<CBreakable>(pEntity.Handle).Value;
+
+                        if (breakableEntity.IsValid)
+                        {
+                            breakableEntity.AcceptInput(action);
+                        }
                         break;
                         
                     case "prop.breakable.01":
                     case "prop.breakable.02":
-                        new PointerTo<CBreakableProp>(pEntity.Handle).Value.AcceptInput(action);
+                        var breakableProp = new PointerTo<CBreakableProp>(pEntity.Handle).Value;
+                        
+                        if (breakableProp.IsValid)
+                        {
+                            breakableProp.AcceptInput(action);
+                        }
                         break;
                         
                     case "prop_dynamic":
-                        new PointerTo<CDynamicProp>(pEntity.Handle).Value.AcceptInput(action);
+                        var dynamicProp = new PointerTo<CDynamicProp>(pEntity.Handle).Value;
+                        
+                        if (dynamicProp.IsValid)
+                        {
+                            dynamicProp.AcceptInput(action);
+                        }
                         break;
                         
                     case "func_button":
-                        new PointerTo<CBaseButton>(pEntity.Handle).Value.AcceptInput(action);
+                        var button = new PointerTo<CBaseButton>(pEntity.Handle).Value;
+                        
+                        if (button.IsValid)
+                        {
+                            button.AcceptInput(action);
+                        }
                         break;
                         
                     case "prop_door_rotating":
-                        new PointerTo<CPropDoorRotating>(pEntity.Handle).Value.AcceptInput(action);
+                        var propDoorRotating = new PointerTo<CPropDoorRotating>(pEntity.Handle).Value;
+                        
+                        if (propDoorRotating.IsValid)
+                        {
+                            propDoorRotating.AcceptInput(action);
+                        }
                         break;
                 }
                 break;
