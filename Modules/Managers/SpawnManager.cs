@@ -85,6 +85,11 @@ public class SpawnManager
 			}
 
 			var team = player.Team;
+			if (team != CsTeam.Terrorist && team != CsTeam.CounterTerrorist)
+			{
+				continue;
+			}
+
 			if (planter == null && team == CsTeam.Terrorist)
 			{
 				planter = player;
