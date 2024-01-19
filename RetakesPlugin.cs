@@ -668,7 +668,7 @@ public class RetakesPlugin : BasePlugin
             Helpers.RestartGame();
         }
 
-        return HookResult.Continue;
+        return HookResult.Handled;
     }
     
     [GameEventHandler(HookMode.Pre)]
