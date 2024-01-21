@@ -63,6 +63,8 @@ public class RetakesPlugin : BasePlugin
         Console.WriteLine($"{LogPrefix}Plugin loaded!");
         
         RegisterListener<Listeners.OnMapStart>(OnMapStart);
+        
+        AddCommandListener("jointeam", OnCommandJoinTeam);
 
         if (hotReload)
         {
@@ -629,28 +631,35 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler(HookMode.Pre)]
     public HookResult OnPlayerTeam(EventPlayerTeam @event, GameEventInfo info)
     {
-        Console.WriteLine($"{LogPrefix}OnPlayerTeam event fired.");
-        
         // Ensure all team join events are silent.
         @event.Silent = true;
         
+        return HookResult.Continue;
+    }
+    
+    private HookResult OnCommandJoinTeam(CCSPlayerController? player, CommandInfo commandInfo)
+    {
         if (_gameManager == null)
         {
             Console.WriteLine($"{LogPrefix}Game manager not loaded.");
             return HookResult.Continue;
         }
         
-        var player = @event.Userid;
-
-        if (!Helpers.IsValidPlayer(player))
+        if (
+            !Helpers.IsValidPlayer(player)
+            || commandInfo.ArgCount < 2
+            || !Enum.TryParse<CsTeam>(commandInfo.GetArg(1), out var toTeam)
+        )
         {
-            return HookResult.Continue;
+            return HookResult.Handled;
         }
+
+        var fromTeam = player!.Team;
         
-        Console.WriteLine($"{LogPrefix}[{player.PlayerName}] {(CsTeam)@event.Oldteam} -> {(CsTeam)@event.Team}");
+        Console.WriteLine($"{LogPrefix}[{player.PlayerName}] {fromTeam} -> {toTeam}");
         
         _gameManager.QueueManager.DebugQueues(true);
-        _gameManager.QueueManager.PlayerJoinedTeam(player, (CsTeam)@event.Oldteam, (CsTeam)@event.Team);
+        var response = _gameManager.QueueManager.PlayerJoinedTeam(player, fromTeam, toTeam);
         _gameManager.QueueManager.DebugQueues(false);
         
         Console.WriteLine($"{LogPrefix}[{player.PlayerName}] checking to ensure we have active players");
@@ -667,8 +676,8 @@ public class RetakesPlugin : BasePlugin
             
             Helpers.RestartGame();
         }
-
-        return HookResult.Continue;
+        
+        return response;
     }
     
     [GameEventHandler(HookMode.Pre)]
