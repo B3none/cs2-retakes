@@ -645,6 +645,12 @@ public class RetakesPlugin : BasePlugin
             return HookResult.Continue;
         }
         
+        if (Helpers.GetGameRules().WarmupPeriod)
+        {
+            Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
+            return HookResult.Continue;
+        }
+        
         if (
             !Helpers.IsValidPlayer(player)
             || commandInfo.ArgCount < 2
