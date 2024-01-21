@@ -541,7 +541,7 @@ public class RetakesPlugin : BasePlugin
         
         var player = @event.Userid;
 
-        if (!Helpers.IsValidPlayer(player) || !Helpers.IsPlayerConnected(player))
+        if (!Helpers.IsValidPlayer(player) || !Helpers.IsPlayerConnected(player) || Helpers.GetGameRules().WarmupPeriod)
         {
             return HookResult.Continue;
         }

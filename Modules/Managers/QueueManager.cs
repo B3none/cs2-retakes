@@ -39,11 +39,10 @@ public class QueueManager
     public HookResult PlayerJoinedTeam(CCSPlayerController player, CsTeam fromTeam, CsTeam toTeam)
     {
         Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] PlayerTriedToJoinTeam called.");
-
+        
         if (
             fromTeam == CsTeam.None && toTeam == CsTeam.Spectator
             || fromTeam == CsTeam.Spectator && toTeam == CsTeam.None
-            || fromTeam == toTeam && toTeam == CsTeam.None
         )
         {
             // This is called when a player first joins.
@@ -87,6 +86,7 @@ public class QueueManager
             }
 
             Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] The player tried joining the team they're already on, or, there were not enough players so we don't care. Do nothing.");
+            Helpers.CheckRoundDone();
             return HookResult.Handled;
         }
 
