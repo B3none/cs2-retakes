@@ -654,18 +654,13 @@ public class RetakesPlugin : BasePlugin
             return HookResult.Continue;
         }
         
-        if (Helpers.GetGameRules().WarmupPeriod)
-        {
-            Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
-            return HookResult.Continue;
-        }
-        
         if (
             !Helpers.IsValidPlayer(player)
             || commandInfo.ArgCount < 2
             || !Enum.TryParse<CsTeam>(commandInfo.GetArg(1), out var toTeam)
         )
         {
+            Console.WriteLine("RETURNING EARLY, NOT VALID OR NOT ENOUGH ARGS");
             return HookResult.Handled;
         }
 

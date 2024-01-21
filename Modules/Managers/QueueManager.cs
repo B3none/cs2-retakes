@@ -40,10 +40,7 @@ public class QueueManager
     {
         Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] PlayerTriedToJoinTeam called.");
         
-        if (
-            fromTeam == CsTeam.None && toTeam == CsTeam.Spectator
-            || fromTeam == CsTeam.Spectator && toTeam == CsTeam.None
-        )
+        if (fromTeam == CsTeam.None && toTeam == CsTeam.Spectator)
         {
             // This is called when a player first joins.
             Console.WriteLine(
