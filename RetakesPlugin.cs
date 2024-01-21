@@ -8,7 +8,6 @@ using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules;
 using RetakesPlugin.Modules.Enums;
-using RetakesPlugin.Modules.Allocators;
 using RetakesPlugin.Modules.Configs;
 using RetakesPlugin.Modules.Managers;
 using Helpers = RetakesPlugin.Modules.Helpers;
@@ -498,9 +497,7 @@ public class RetakesPlugin : BasePlugin
                 if (!RetakesConfig.IsLoaded(_retakesConfig) || _retakesConfig!.RetakesConfigData!.EnableFallbackAllocation)
                 {
                     Console.WriteLine($"{LogPrefix}Allocating...");
-                    WeaponsAllocator.Allocate(player);
-                    EquipmentAllocator.Allocate(player);
-                    GrenadeAllocator.Allocate(player);
+                    AllocationManager.Allocate(player);
                 }
                 else
                 {
