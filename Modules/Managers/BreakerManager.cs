@@ -71,6 +71,9 @@ public class BreakerManager
                 {
                     case "func_breakable":
                     case "func_breakable_surf":
+                    case "prop_dynamic":
+                    case "prop.breakable.01":
+                    case "prop.breakable.02":
                         var breakableEntity = new PointerTo<CBreakable>(pEntity.Handle).Value;
 
                         if (breakableEntity.IsValid)
@@ -78,26 +81,7 @@ public class BreakerManager
                             breakableEntity.AcceptInput(action);
                         }
                         break;
-                        
-                    case "prop.breakable.01":
-                    case "prop.breakable.02":
-                        var breakableProp = new PointerTo<CBreakableProp>(pEntity.Handle).Value;
-                        
-                        if (breakableProp.IsValid)
-                        {
-                            breakableProp.AcceptInput(action);
-                        }
-                        break;
-                        
-                    case "prop_dynamic":
-                        var dynamicProp = new PointerTo<CDynamicProp>(pEntity.Handle).Value;
-                        
-                        if (dynamicProp.IsValid)
-                        {
-                            dynamicProp.AcceptInput(action);
-                        }
-                        break;
-                        
+
                     case "func_button":
                         var button = new PointerTo<CBaseButton>(pEntity.Handle).Value;
                         
