@@ -77,7 +77,6 @@ public class QueueManager
                 ActivePlayers.Remove(player);
                 QueuePlayers.Add(player);
 
-                // TODO: This might not be needed
                 if (player.PawnIsAlive)
                 {
                     player.CommitSuicide(false, true);
