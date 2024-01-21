@@ -17,20 +17,27 @@ public class SpawnManager
         _translator = translator;
 		_mapConfig = mapConfig;
 
-		foreach (var spawn in _mapConfig.GetSpawnsClone())
-		{
-			if (!_spawns.ContainsKey(spawn.Bombsite))
-			{
-				_spawns.Add(spawn.Bombsite, new Dictionary<CsTeam, List<Spawn>>());
-			}
+		CalculateMapSpawns();
+    }
 
-			if (!_spawns[spawn.Bombsite].ContainsKey(spawn.Team))
-			{
-				_spawns[spawn.Bombsite].Add(spawn.Team, new List<Spawn>());
-			}
+    public void CalculateMapSpawns()
+    {
+	    _spawns.Clear();
+	    
+	    foreach (var spawn in _mapConfig.GetSpawnsClone())
+	    {
+		    if (!_spawns.ContainsKey(spawn.Bombsite))
+		    {
+			    _spawns.Add(spawn.Bombsite, new Dictionary<CsTeam, List<Spawn>>());
+		    }
 
-			_spawns[spawn.Bombsite][spawn.Team].Add(spawn);
-		}
+		    if (!_spawns[spawn.Bombsite].ContainsKey(spawn.Team))
+		    {
+			    _spawns[spawn.Bombsite].Add(spawn.Team, new List<Spawn>());
+		    }
+
+		    _spawns[spawn.Bombsite][spawn.Team].Add(spawn);
+	    }
     }
 
 	public List<Spawn> GetSpawns(Bombsite bombsite, CsTeam? team = null)

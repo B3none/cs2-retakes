@@ -190,6 +190,10 @@ public class RetakesPlugin : BasePlugin
         }
         
         var didAddSpawn = _mapConfig.AddSpawn(newSpawn);
+        if (didAddSpawn)
+        {
+            _spawnManager.CalculateMapSpawns();
+        }
         
         commandInfo.ReplyToCommand($"{MessagePrefix}{(didAddSpawn ? "Spawn added" : "Error adding spawn")}");
     }
@@ -271,8 +275,13 @@ public class RetakesPlugin : BasePlugin
             }
         }
 
-		_mapConfig.RemoveSpawn(closestSpawn);
-		commandInfo.ReplyToCommand($"{MessagePrefix}Removed spawn.");
+		var didRemoveSpawn = _mapConfig.RemoveSpawn(closestSpawn);
+        if (didRemoveSpawn)
+        {
+            _spawnManager.CalculateMapSpawns();
+        }
+        
+		commandInfo.ReplyToCommand($"{MessagePrefix}{(didRemoveSpawn ? "Spawn removed" : "Error removing spawn")}");
     }
     
     [ConsoleCommand("css_debugqueues", "Prints the state of the queues to the console.")]
