@@ -660,7 +660,6 @@ public class RetakesPlugin : BasePlugin
             || !Enum.TryParse<CsTeam>(commandInfo.GetArg(1), out var toTeam)
         )
         {
-            Console.WriteLine("RETURNING EARLY, NOT VALID OR NOT ENOUGH ARGS");
             return HookResult.Handled;
         }
 
