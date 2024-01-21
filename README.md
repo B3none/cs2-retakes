@@ -1,3 +1,5 @@
+[![GitHub Downloads](https://img.shields.io/github/downloads/b3none/cs2-retakes/total.svg?style=flat-square&label=Downloads)](https://github.com/b3none/cs2-retakes/releases/latest)
+
 # CS2 Retakes
 CS2 implementation of retakes written in C# for CounterStrikeSharp. Based on the version for CS:GO by Splewis.
 
