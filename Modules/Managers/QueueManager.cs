@@ -276,9 +276,9 @@ public class QueueManager
 
     public void SetRoundTeams()
     {
-        _roundTerrorists = Utilities.GetPlayers()
+        _roundTerrorists = ActivePlayers
             .Where(player => Helpers.IsValidPlayer(player) && player.Team == CsTeam.Terrorist).ToList();
-        _roundCounterTerrorists = Utilities.GetPlayers()
+        _roundCounterTerrorists = ActivePlayers
             .Where(player => Helpers.IsValidPlayer(player) && player.Team == CsTeam.CounterTerrorist).ToList();
     }
 }
