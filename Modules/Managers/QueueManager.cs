@@ -136,50 +136,75 @@ public class QueueManager
 
     private void HandleQueuePriority()
     {
-        var vipsInQueue = QueuePlayers.Where(player => AdminManager.PlayerHasPermissions(player, "@css/vip")).ToList()
-            .Count;
+        var vipQueuePlayers = QueuePlayers.Where(player => AdminManager.PlayerHasPermissions(player, "@css/vip")).ToList();
 
-        if (vipsInQueue > 0)
+        if (vipQueuePlayers.Count <= 0)
         {
-            Helpers.Shuffle(
-                    ActivePlayers
-                        .Where(player => !AdminManager.PlayerHasPermissions(player, "@css/vip"))
-                        .ToList()
-                )
-                .ForEach(player =>
-                {
-                    if (vipsInQueue <= 0)
-                    {
-                        return;
-                    }
+            return;
+        }
+        
+        // loop through vipQueuePlayers and add them to ActivePlayers
+        foreach (var vipQueuePlayer in vipQueuePlayers)
+        {
+            // If the player is no longer valid, skip them
+            if (!Helpers.IsValidPlayer(vipQueuePlayer))
+            {
+                continue;
+            }
+            
+            // TODO: We shouldn't really shuffle here, implement a last in first out queue instead.
+            var nonVipActivePlayers = Helpers.Shuffle(
+                ActivePlayers
+                    .Where(player => !AdminManager.PlayerHasPermissions(player, "@css/vip"))
+                    .ToList()
+            );
+            
+            if (nonVipActivePlayers.Count == 0)
+            {
+                break;
+            }
+            
+            var nonVipActivePlayer = nonVipActivePlayers.First();
+            
+            // Switching them to spectator will automatically remove them from the queue
+            nonVipActivePlayer.SwitchTeam(CsTeam.Spectator);
+            
+            // TODO: Add a message to say that they were replaced by a VIP player.
+            
+            // Put them back in the queue on the next frame.
+            Server.NextFrame(() =>
+            {
+                nonVipActivePlayer.SwitchTeam(CsTeam.CounterTerrorist);
+            });
 
-                    ActivePlayers.Remove(player);
-                    QueuePlayers.Add(player);
-                    vipsInQueue--;
-                });
+            // Add the new VIP player to ActivePlayers and remove them from QueuePlayers
+            ActivePlayers.Add(vipQueuePlayer);
+            QueuePlayers.Remove(vipQueuePlayer);
+            vipQueuePlayer.SwitchTeam(CsTeam.CounterTerrorist);
         }
     }
 
     public void Update()
     {
         RemoveDisconnectedPlayers();
-        HandleQueuePriority();
 
         var playersToAdd = _maxRetakesPlayers - ActivePlayers.Count;
 
-        if (playersToAdd > 0 && QueuePlayers.Count > 0)
+        if (ActivePlayers.Count == _maxRetakesPlayers)
+        {
+            HandleQueuePriority();
+        }
+        else if (playersToAdd > 0 && QueuePlayers.Count > 0)
         {
             // Take players from QueuePlayers and add them to ActivePlayers
-            // Ordered by players with @retakes/queue group first since they
+            // Ordered by players with @css/vip group first since they
             // have queue priority.
             var playersToAddList = QueuePlayers
-                .OrderBy(player => AdminManager.PlayerHasPermissions(player, "@css/vip"))
+                .OrderBy(player => AdminManager.PlayerHasPermissions(player, "@css/vip") ? 1 : 0)
                 .Take(playersToAdd)
                 .ToList();
 
             QueuePlayers.RemoveWhere(playersToAddList.Contains);
-
-            // loop players to add, and set their team to CT
             foreach (var player in playersToAddList)
             {
                 // If the player is no longer valid, skip them
@@ -187,13 +212,9 @@ public class QueueManager
                 {
                     continue;
                 }
-
+                
                 ActivePlayers.Add(player);
-
-                if (player.Team != CsTeam.CounterTerrorist)
-                {
-                    player.SwitchTeam(CsTeam.CounterTerrorist);
-                }
+                player.SwitchTeam(CsTeam.CounterTerrorist);
             }
         }
 
