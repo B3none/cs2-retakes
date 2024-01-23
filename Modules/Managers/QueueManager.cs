@@ -136,6 +136,11 @@ public class QueueManager
 
     private void HandleQueuePriority()
     {
+        if (ActivePlayers.Count != _maxRetakesPlayers)
+        {
+            return;
+        }
+        
         var vipQueuePlayers = QueuePlayers.Where(player => AdminManager.PlayerHasPermissions(player, "@css/vip")).ToList();
 
         if (vipQueuePlayers.Count <= 0)
@@ -187,14 +192,10 @@ public class QueueManager
     public void Update()
     {
         RemoveDisconnectedPlayers();
-
+        
         var playersToAdd = _maxRetakesPlayers - ActivePlayers.Count;
 
-        if (ActivePlayers.Count == _maxRetakesPlayers)
-        {
-            HandleQueuePriority();
-        }
-        else if (playersToAdd > 0 && QueuePlayers.Count > 0)
+        if (playersToAdd > 0 && QueuePlayers.Count > 0)
         {
             // Take players from QueuePlayers and add them to ActivePlayers
             // Ordered by players with @css/vip group first since they
@@ -217,6 +218,8 @@ public class QueueManager
                 player.SwitchTeam(CsTeam.CounterTerrorist);
             }
         }
+        
+        HandleQueuePriority();
 
         if (ActivePlayers.Count == _maxRetakesPlayers && QueuePlayers.Count > 0)
         {
