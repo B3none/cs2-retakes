@@ -373,14 +373,7 @@ public class RetakesPlugin : BasePlugin
         
         player.TeamNum = (int)CsTeam.Spectator;
         player.ForceTeamTime = 3600.0f;
-        
-        // TODO: Remove this once we know it's working.
-        // Console.WriteLine($"{LogPrefix}OnPlayerConnectFull event fired. {Utilities.GetPlayers().ToList().Count} players connected.");
-        // if (Utilities.GetPlayers().Where(Helpers.IsPlayerConnected).ToList().Count <= 2)
-        // {
-        //     Console.WriteLine($"{LogPrefix}First or second player connected, resetting game.");
-        //     Helpers.RestartGame();
-        // }
+        player.ExecuteClientCommand("teammenu");
 
         return HookResult.Continue;
     }
