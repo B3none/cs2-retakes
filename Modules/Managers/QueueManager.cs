@@ -100,7 +100,6 @@ public class QueueManager
             Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Not found, adding to QueuePlayers.");
             player.PrintToChat($"{RetakesPlugin.MessagePrefix}{_translator["queue.joined"]}");
             QueuePlayers.Add(player);
-            return HookResult.Handled;
         }
         else
         {
