@@ -375,7 +375,7 @@ public class RetakesPlugin : BasePlugin
         player.ForceTeamTime = 3600.0f;
 
         // Create a timer to do this as it would occasionally fire too early.
-        AddTimer(1f, () => player.ExecuteClientCommand("teammenu"));
+        AddTimer(1.0f, () => player.ExecuteClientCommand("teammenu"));
 
         return HookResult.Continue;
     }
