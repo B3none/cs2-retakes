@@ -14,7 +14,7 @@ using Helpers = RetakesPlugin.Modules.Helpers;
 
 namespace RetakesPlugin;
 
-[MinimumApiVersion(147)]
+[MinimumApiVersion(154)]
 public class RetakesPlugin : BasePlugin
 {
     private const string Version = "1.3.14";
@@ -483,7 +483,7 @@ public class RetakesPlugin : BasePlugin
             
             // Strip the player of all of their weapons and the bomb before any spawn / allocation occurs.
             Helpers.RemoveHelmetAndHeavyArmour(player);
-            Helpers.RemoveAllWeaponsAndEntities(player);
+            player.RemoveWeapons();
 
             // Create a timer to do this as it would occasionally fire too early.
             AddTimer(0.05f, () =>
