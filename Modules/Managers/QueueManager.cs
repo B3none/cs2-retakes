@@ -136,8 +136,10 @@ public class QueueManager
 
     private void HandleQueuePriority()
     {
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}handling queue priority.");
         if (ActivePlayers.Count != _maxRetakesPlayers)
         {
+            Console.WriteLine($"{RetakesPlugin.LogPrefix}ActivePlayers.Count != _maxRetakesPlayers, returning.");
             return;
         }
         
@@ -145,6 +147,7 @@ public class QueueManager
 
         if (vipQueuePlayers.Count <= 0)
         {
+            Console.WriteLine($"{RetakesPlugin.LogPrefix}No VIP players found in queue, returning.");
             return;
         }
         
@@ -166,6 +169,7 @@ public class QueueManager
             
             if (nonVipActivePlayers.Count == 0)
             {
+                Console.WriteLine($"{RetakesPlugin.LogPrefix}No non-VIP players found in ActivePlayers, returning.");
                 break;
             }
             
@@ -173,19 +177,17 @@ public class QueueManager
             
             // Switching them to spectator will automatically remove them from the queue
             nonVipActivePlayer.ChangeTeam(CsTeam.Spectator);
+            ActivePlayers.Remove(nonVipActivePlayer);
+            QueuePlayers.Add(nonVipActivePlayer);
             
-            // TODO: Add a message to say that they were replaced by a VIP player.
-            
-            // Put them back in the queue on the next frame.
-            Server.NextFrame(() =>
-            {
-                nonVipActivePlayer.ChangeTeam(CsTeam.CounterTerrorist);
-            });
+            // TODO: Translate this message.
+            nonVipActivePlayer.PrintToChat($"{RetakesPlugin.MessagePrefix}You were replaced by a VIP player.");
 
             // Add the new VIP player to ActivePlayers and remove them from QueuePlayers
             ActivePlayers.Add(vipQueuePlayer);
             QueuePlayers.Remove(vipQueuePlayer);
             vipQueuePlayer.ChangeTeam(CsTeam.CounterTerrorist);
+            vipQueuePlayer.PrintToChat($"{RetakesPlugin.MessagePrefix}You took {nonVipActivePlayer.PlayerName}'s place in the game.");
         }
     }
 
@@ -193,10 +195,13 @@ public class QueueManager
     {
         RemoveDisconnectedPlayers();
         
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}{_maxRetakesPlayers} max players, {ActivePlayers.Count} active players, {QueuePlayers.Count} players in queue.");
+        Console.WriteLine($"{RetakesPlugin.LogPrefix}players to add: {_maxRetakesPlayers - ActivePlayers.Count}");
         var playersToAdd = _maxRetakesPlayers - ActivePlayers.Count;
 
         if (playersToAdd > 0 && QueuePlayers.Count > 0)
         {
+            Console.WriteLine($"{RetakesPlugin.LogPrefix} inside if - this means the game has players to add and players in the queue.");
             // Take players from QueuePlayers and add them to ActivePlayers
             // Ordered by players with @css/vip group first since they
             // have queue priority.
@@ -215,7 +220,7 @@ public class QueueManager
                 }
                 
                 ActivePlayers.Add(player);
-                player.SwitchTeam(CsTeam.CounterTerrorist);
+                player.ChangeTeam(CsTeam.CounterTerrorist);
             }
         }
         
