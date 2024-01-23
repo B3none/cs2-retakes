@@ -442,6 +442,8 @@ public class RetakesPlugin : BasePlugin
         var weirdAliveSpectators = Utilities.GetPlayers().Where(x => x is { TeamNum: < (int)CsTeam.Terrorist, PawnIsAlive: true });
         foreach (var weirdAliveSpectator in weirdAliveSpectators)
         {
+            // I **think** it's caused by auto team balance being on, so turn it off
+            Server.ExecuteCommand("mp_autoteambalance 0");
             weirdAliveSpectator.CommitSuicide(false, true);
         }
         
