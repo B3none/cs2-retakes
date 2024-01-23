@@ -23,6 +23,13 @@ public class GameManager
         _consecutiveRoundWinsToScramble = roundsToScramble ?? 5;
         _isScrambleEnabled = isScrambleEnabled ?? true;
     }
+
+    private bool _scrambleNextRound;
+    public void ScrambleNextRound(CCSPlayerController? admin = null)
+    {
+        _scrambleNextRound = true;
+        Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["teams.admin_scramble", admin?.PlayerName ?? "The server owner"]}");
+    }
     
     private void ScrambleTeams()
     {
@@ -78,6 +85,11 @@ public class GameManager
             {
                 Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["teams.win_streak", _consecutiveRoundsWon]}");
             }
+        } else if (_scrambleNextRound)
+        {
+            _scrambleNextRound = false;
+            _consecutiveRoundsWon = 0;
+            ScrambleTeams();
         }
     }
     
