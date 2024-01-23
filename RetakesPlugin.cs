@@ -305,7 +305,7 @@ public class RetakesPlugin : BasePlugin
         Console.WriteLine($"{LogPrefix}OnMapStart listener triggered!");
         
         // Execute the retakes configuration.
-        Helpers.ExecuteRetakesConfiguration();
+        Helpers.ExecuteRetakesConfiguration(ModuleDirectory);
         
         // If we don't have a map config loaded, load it.
         if (!MapConfig.IsLoaded(_mapConfig, Server.MapName))

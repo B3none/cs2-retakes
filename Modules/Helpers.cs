@@ -113,10 +113,10 @@ public static class Helpers
         return player.Connected == PlayerConnectedState.PlayerConnected;
     }
     
-    private const string RetakesCfgPath = "../../csgo/cfg/cs2-retakes/retakes.cfg";
-    public static void ExecuteRetakesConfiguration()
+    private const string RetakesCfgPath = "/../../../../cfg/cs2-retakes/retakes.cfg";
+    public static void ExecuteRetakesConfiguration(string moduleDirectory)
     {
-        if (!File.Exists(RetakesCfgPath))
+        if (!File.Exists(moduleDirectory + RetakesCfgPath))
         {
             throw new Exception($"{RetakesPlugin.LogPrefix}You must add game/cfg/cs2-retakes/retakes.cfg to run this plugin!");
         }
