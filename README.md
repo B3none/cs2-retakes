@@ -56,8 +56,8 @@ When the plugin is first loaded it will create a `retakes_config.json` file in t
 | EnableFallbackAllocation         | Whether to enable the fallback weapon allocation. You should set this value to false if you're using a standalone weapon allocator. | true       | false      | true       |
 | EnableBombsiteAnnouncementVoices | Whether to play the bombsite announcement voices. The volume for these values is client sided `snd_toolvolume`.                     | true       | false      | true       |
 | EnableBombsiteAnnouncementCenter | Whether to display the bombsite in the center announcement box.                                                                     | true       | false      | true       |
-| ShouldBreakBreakables            | Whether to break all breakable props on round start                                                                                 | false      | false      | true       |
-| ShouldOpenDoors                  | Whether to open doors on round start                                                                                                | false      | false      | true       |
+| ShouldBreakBreakables            | Whether to break all breakable props on round start (People are noticing rare crashes when this is enabled)                         | false      | false      | true       |
+| ShouldOpenDoors                  | Whether to open doors on round start (People are noticing rare crashes when this is enabled)                                        | false      | false      | true       |
 
 ## Commands
 | Command         | Arguments                         | Description                                                          | Permissions |
