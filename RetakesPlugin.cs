@@ -198,20 +198,6 @@ public class RetakesPlugin : BasePlugin
         commandInfo.ReplyToCommand($"{MessagePrefix}{(didAddSpawn ? "Spawn added" : "Error adding spawn")}");
     }
 
-    [ConsoleCommand("css_scramble", "This will scramble the teams next round.")]
-    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
-    [RequiresPermissions("@css/admin")]
-    public void OnCommandScramble(CCSPlayerController? player, CommandInfo commandInfo)
-    {
-        if (_gameManager == null)
-        {
-            commandInfo.ReplyToCommand($"{MessagePrefix}Game manager not loaded.");
-            return;
-        }
-        
-        _gameManager.ScrambleNextRound(player);
-    }
-
     [ConsoleCommand("css_removespawn", "Remove the closest visible spawn point.")]
     [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
     [RequiresPermissions("@css/root")]
@@ -296,6 +282,20 @@ public class RetakesPlugin : BasePlugin
         }
         
 		commandInfo.ReplyToCommand($"{MessagePrefix}{(didRemoveSpawn ? "Spawn removed" : "Error removing spawn")}");
+    }
+    
+    [ConsoleCommand("css_scramble", "This will scramble the teams next round.")]
+    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    [RequiresPermissions("@css/admin")]
+    public void OnCommandScramble(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        if (_gameManager == null)
+        {
+            commandInfo.ReplyToCommand($"{MessagePrefix}Game manager not loaded.");
+            return;
+        }
+        
+        _gameManager.ScrambleNextRound(player);
     }
     
     [ConsoleCommand("css_debugqueues", "Prints the state of the queues to the console.")]
