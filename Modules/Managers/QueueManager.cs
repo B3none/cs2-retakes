@@ -73,10 +73,11 @@ public class QueueManager
                 ActivePlayers.Remove(player);
                 QueuePlayers.Add(player);
 
-                if (player.PawnIsAlive)
-                {
-                    player.CommitSuicide(false, true);
-                }
+                // TODO: Figure out if this is needed
+                // if (player.PawnIsAlive)
+                // {
+                //     player.CommitSuicide(false, true);
+                // }
                 
                 player.ChangeTeam(CsTeam.Spectator);
                 return HookResult.Handled;
@@ -171,20 +172,20 @@ public class QueueManager
             var nonVipActivePlayer = nonVipActivePlayers.First();
             
             // Switching them to spectator will automatically remove them from the queue
-            nonVipActivePlayer.SwitchTeam(CsTeam.Spectator);
+            nonVipActivePlayer.ChangeTeam(CsTeam.Spectator);
             
             // TODO: Add a message to say that they were replaced by a VIP player.
             
             // Put them back in the queue on the next frame.
             Server.NextFrame(() =>
             {
-                nonVipActivePlayer.SwitchTeam(CsTeam.CounterTerrorist);
+                nonVipActivePlayer.ChangeTeam(CsTeam.CounterTerrorist);
             });
 
             // Add the new VIP player to ActivePlayers and remove them from QueuePlayers
             ActivePlayers.Add(vipQueuePlayer);
             QueuePlayers.Remove(vipQueuePlayer);
-            vipQueuePlayer.SwitchTeam(CsTeam.CounterTerrorist);
+            vipQueuePlayer.ChangeTeam(CsTeam.CounterTerrorist);
         }
     }
 
