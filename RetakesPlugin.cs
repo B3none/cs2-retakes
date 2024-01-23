@@ -373,14 +373,7 @@ public class RetakesPlugin : BasePlugin
         
         player.TeamNum = (int)CsTeam.Spectator;
         player.ForceTeamTime = 3600.0f;
-        
-        // TODO: Remove this once we know it's working.
-        // Console.WriteLine($"{LogPrefix}OnPlayerConnectFull event fired. {Utilities.GetPlayers().ToList().Count} players connected.");
-        // if (Utilities.GetPlayers().Where(Helpers.IsPlayerConnected).ToList().Count <= 2)
-        // {
-        //     Console.WriteLine($"{LogPrefix}First or second player connected, resetting game.");
-        //     Helpers.RestartGame();
-        // }
+        player.ExecuteClientCommand("teammenu");
 
         return HookResult.Continue;
     }
@@ -438,6 +431,15 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
     {
+        // TODO: FIGURE OUT WHY THE FUCK I NEED TO DO THIS
+        var weirdAliveSpectators = Utilities.GetPlayers().Where(x => x is { TeamNum: < (int)CsTeam.Terrorist, PawnIsAlive: true });
+        foreach (var weirdAliveSpectator in weirdAliveSpectators)
+        {
+            // I **think** it's caused by auto team balance being on, so turn it off
+            Server.ExecuteCommand("mp_autoteambalance 0");
+            weirdAliveSpectator.CommitSuicide(false, true);
+        }
+        
         // If we are in warmup, skip.
         if (Helpers.GetGameRules().WarmupPeriod)
         {
@@ -553,7 +555,7 @@ public class RetakesPlugin : BasePlugin
         
         var player = @event.Userid;
 
-        if (!Helpers.IsValidPlayer(player) || !Helpers.IsPlayerConnected(player) || Helpers.GetGameRules().WarmupPeriod)
+        if (!Helpers.IsValidPlayer(player) || !Helpers.IsPlayerConnected(player))
         {
             return HookResult.Continue;
         }

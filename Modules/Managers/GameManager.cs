@@ -205,17 +205,11 @@ public class GameManager
         {
             if (terrorists.Contains(player))
             {
-                if (player.Team != CsTeam.Terrorist)
-                {
-                    player.SwitchTeam(CsTeam.Terrorist);
-                }
+                player.SwitchTeam(CsTeam.Terrorist);
             }
             else if (counterTerrorists.Contains(player))
             {
-                if (player.Team != CsTeam.CounterTerrorist)
-                {
-                    player.SwitchTeam(CsTeam.CounterTerrorist);
-                }
+                player.SwitchTeam(CsTeam.CounterTerrorist);
             }
         }
     }
