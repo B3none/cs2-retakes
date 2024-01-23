@@ -14,10 +14,10 @@ using Helpers = RetakesPlugin.Modules.Helpers;
 
 namespace RetakesPlugin;
 
-[MinimumApiVersion(147)]
+[MinimumApiVersion(154)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.3.13";
+    private const string Version = "1.3.15";
     
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -114,7 +114,7 @@ public class RetakesPlugin : BasePlugin
     }
     
     [ConsoleCommand("css_addspawn", "Adds a retakes spawn point to the map for the bombsite currently shown.")]
-    [CommandHelper(minArgs: 1, usage: "[T/CT]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
+    [CommandHelper(minArgs: 1, usage: "[T/CT] [Y/N can be planter]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
     [RequiresPermissions("@css/root")]
     public void OnCommandAddSpawn(CCSPlayerController? player, CommandInfo commandInfo)
     {
@@ -143,13 +143,14 @@ public class RetakesPlugin : BasePlugin
             return;
         }
         
-        var spawns = _spawnManager.GetSpawns((Bombsite)_showingSpawnsForBombsite);
-        
-        if (spawns.Count == 0)
+        var canBePlanterInput = commandInfo.GetArg(2).ToUpper();
+        if (!string.IsNullOrWhiteSpace(canBePlanterInput) && canBePlanterInput != "Y" && canBePlanterInput != "N")
         {
-            commandInfo.ReplyToCommand($"{MessagePrefix}No spawns found.");
+            commandInfo.ReplyToCommand($"{MessagePrefix}Incorrect value passed for can be a planter [Y / N] - [Value: {canBePlanterInput}].");
             return;
         }
+        
+        var spawns = _spawnManager.GetSpawns((Bombsite)_showingSpawnsForBombsite);
         
         var closestDistance = 9999.9;
 
@@ -173,11 +174,11 @@ public class RetakesPlugin : BasePlugin
 
         var newSpawn = new Spawn(
             vector: player!.PlayerPawn.Value!.AbsOrigin!,
-            qAngle: player!.PlayerPawn.Value!.AbsRotation!
+            qAngle: player!.PlayerPawn.Value!.EyeAngles
         )
         {
             Team = team == "T" ? CsTeam.Terrorist : CsTeam.CounterTerrorist,
-            CanBePlanter = team == "T" && player.PlayerPawn.Value.InBombZone,
+            CanBePlanter = team == "T" && !string.IsNullOrWhiteSpace(canBePlanterInput) ? canBePlanterInput == "Y" : player.PlayerPawn.Value.InBombZone,
             Bombsite = (Bombsite)_showingSpawnsForBombsite
         };
         Helpers.ShowSpawn(newSpawn);
@@ -304,7 +305,7 @@ public class RetakesPlugin : BasePlugin
         Console.WriteLine($"{LogPrefix}OnMapStart listener triggered!");
         
         // Execute the retakes configuration.
-        Helpers.ExecuteRetakesConfiguration();
+        Helpers.ExecuteRetakesConfiguration(ModuleDirectory);
         
         // If we don't have a map config loaded, load it.
         if (!MapConfig.IsLoaded(_mapConfig, Server.MapName))
@@ -483,7 +484,7 @@ public class RetakesPlugin : BasePlugin
             
             // Strip the player of all of their weapons and the bomb before any spawn / allocation occurs.
             Helpers.RemoveHelmetAndHeavyArmour(player);
-            Helpers.RemoveAllWeaponsAndEntities(player);
+            player.RemoveWeapons();
 
             // Create a timer to do this as it would occasionally fire too early.
             AddTimer(0.05f, () =>

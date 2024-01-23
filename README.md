@@ -23,7 +23,7 @@ If you appreciate the project then please take the time to star the repository ð
 - [x] Improve bombsite announcement
 - [x] Queue priority for VIPs
 - [x] Add autoplant
-- [x] Add a command to view the spawns for the current map
+- [x] Add a command to view the spawns for the current bombsite
 - [x] Add a command to delete the nearest spawn
 - [x] Implement better spawn management system
 - [x] Add a release zip file without spawns too
@@ -56,16 +56,16 @@ When the plugin is first loaded it will create a `retakes_config.json` file in t
 | EnableFallbackAllocation         | Whether to enable the fallback weapon allocation. You should set this value to false if you're using a standalone weapon allocator. | true       | false      | true       |
 | EnableBombsiteAnnouncementVoices | Whether to play the bombsite announcement voices. The volume for these values is client sided `snd_toolvolume`.                     | true       | false      | true       |
 | EnableBombsiteAnnouncementCenter | Whether to display the bombsite in the center announcement box.                                                                     | true       | false      | true       |
-| ShouldBreakBreakables            | Whether to break all breakable props on round start                                                                                 | false      | false      | true       |
-| ShouldOpenDoors                  | Whether to open doors on round start                                                                                                | false      | false      | true       |
+| ShouldBreakBreakables            | Whether to break all breakable props on round start (People are noticing rare crashes when this is enabled)                         | false      | false      | true       |
+| ShouldOpenDoors                  | Whether to open doors on round start (People are noticing rare crashes when this is enabled)                                        | false      | false      | true       |
 
 ## Commands
-| Command         | Arguments | Description                                                          | Permissions |
-|-----------------|-----------|----------------------------------------------------------------------|-------------|
-| !showspawns     | <A / B>   | Show the spawns for the specified bombsite.                          | @css/root   |
-| !addspawn       | <CT / T>  | Adds a retakes spawn point for the bombsite spawns currently shown.  | @css/root   |
-| !removespawn    |           | Removes the nearest spawn point for the bombsite currently shown.    | @css/root   |
-| css_debugqueues |           | **SERVER ONLY** Shows the current queue state in the server console. |             |
+| Command         | Arguments                         | Description                                                          | Permissions |
+|-----------------|-----------------------------------|----------------------------------------------------------------------|-------------|
+| !showspawns     | <A / B>                           | Show the spawns for the specified bombsite.                          | @css/root   |
+| !addspawn       | <CT / T> <Y / N (can be planter)> | Adds a retakes spawn point for the bombsite spawns currently shown.  | @css/root   |
+| !removespawn    |                                   | Removes the nearest spawn point for the bombsite currently shown.    | @css/root   |
+| css_debugqueues |                                   | **SERVER ONLY** Shows the current queue state in the server console. |             |
 
 ## Credits
 This was inspired by the [CS:GO Retakes project](https://github.com/splewis/csgo-retakes) written by [splewis](https://github.com/splewis).
