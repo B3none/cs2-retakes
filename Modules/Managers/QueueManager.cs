@@ -72,12 +72,11 @@ public class QueueManager
                 Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] player is not in round list for {toTeam}, switching to spectator.");
                 ActivePlayers.Remove(player);
                 QueuePlayers.Add(player);
-
-                // TODO: Figure out if this is needed
-                // if (player.PawnIsAlive)
-                // {
-                //     player.CommitSuicide(false, true);
-                // }
+                
+                if (player.PawnIsAlive)
+                {
+                    player.CommitSuicide(false, true);
+                }
                 
                 player.ChangeTeam(CsTeam.Spectator);
                 return HookResult.Handled;

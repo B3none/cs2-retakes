@@ -438,6 +438,13 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler]
     public HookResult OnRoundStart(EventRoundStart @event, GameEventInfo info)
     {
+        // TODO: FIGURE OUT WHY THE FUCK I NEED TO DO THIS
+        var weirdAliveSpectators = Utilities.GetPlayers().Where(x => x is { TeamNum: < (int)CsTeam.Terrorist, PawnIsAlive: true });
+        foreach (var weirdAliveSpectator in weirdAliveSpectators)
+        {
+            weirdAliveSpectator.CommitSuicide(false, true);
+        }
+        
         // If we are in warmup, skip.
         if (Helpers.GetGameRules().WarmupPeriod)
         {
@@ -553,7 +560,7 @@ public class RetakesPlugin : BasePlugin
         
         var player = @event.Userid;
 
-        if (!Helpers.IsValidPlayer(player) || !Helpers.IsPlayerConnected(player) || Helpers.GetGameRules().WarmupPeriod)
+        if (!Helpers.IsValidPlayer(player) || !Helpers.IsPlayerConnected(player))
         {
             return HookResult.Continue;
         }
