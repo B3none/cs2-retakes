@@ -113,9 +113,15 @@ public static class Helpers
         return player.Connected == PlayerConnectedState.PlayerConnected;
     }
     
+    private const string RetakesCfgPath = "../../csgo/cfg/cs2-retakes/retakes.cfg";
     public static void ExecuteRetakesConfiguration()
     {
-        Server.ExecuteCommand("execifexists cs2-retakes/retakes.cfg");
+        if (!File.Exists(RetakesCfgPath))
+        {
+            throw new Exception($"{RetakesPlugin.LogPrefix}You must add game/cfg/cs2-retakes/retakes.cfg to run this plugin!");
+        }
+        
+        Server.ExecuteCommand("exec cs2-retakes/retakes.cfg");
     }
     
     public static int GetCurrentNumPlayers(CsTeam csTeam)
