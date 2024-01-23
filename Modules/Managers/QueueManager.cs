@@ -57,6 +57,7 @@ public class QueueManager
             {
                 Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Switching to spectator.");
                 RemovePlayerFromQueues(player);
+                Helpers.CheckRoundDone();
                 return HookResult.Continue;
             }
 
