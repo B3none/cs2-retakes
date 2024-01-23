@@ -114,7 +114,7 @@ public class RetakesPlugin : BasePlugin
     }
     
     [ConsoleCommand("css_addspawn", "Adds a retakes spawn point to the map for the bombsite currently shown.")]
-    [CommandHelper(minArgs: 1, usage: "[T/CT]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
+    [CommandHelper(minArgs: 1, usage: "[T/CT] [Y/N can be planter]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
     [RequiresPermissions("@css/root")]
     public void OnCommandAddSpawn(CCSPlayerController? player, CommandInfo commandInfo)
     {
@@ -143,13 +143,14 @@ public class RetakesPlugin : BasePlugin
             return;
         }
         
-        var spawns = _spawnManager.GetSpawns((Bombsite)_showingSpawnsForBombsite);
-        
-        if (spawns.Count == 0)
+        var canBePlanterInput = commandInfo.GetArg(2).ToUpper();
+        if (!string.IsNullOrWhiteSpace(canBePlanterInput) && canBePlanterInput != "Y" && canBePlanterInput != "N")
         {
-            commandInfo.ReplyToCommand($"{MessagePrefix}No spawns found.");
+            commandInfo.ReplyToCommand($"{MessagePrefix}Incorrect value passed for can be a planter [Y / N] - [Value: {canBePlanterInput}].");
             return;
         }
+        
+        var spawns = _spawnManager.GetSpawns((Bombsite)_showingSpawnsForBombsite);
         
         var closestDistance = 9999.9;
 
@@ -173,11 +174,11 @@ public class RetakesPlugin : BasePlugin
 
         var newSpawn = new Spawn(
             vector: player!.PlayerPawn.Value!.AbsOrigin!,
-            qAngle: player!.PlayerPawn.Value!.AbsRotation!
+            qAngle: player!.PlayerPawn.Value!.EyeAngles
         )
         {
             Team = team == "T" ? CsTeam.Terrorist : CsTeam.CounterTerrorist,
-            CanBePlanter = team == "T" && player.PlayerPawn.Value.InBombZone,
+            CanBePlanter = team == "T" && !string.IsNullOrWhiteSpace(canBePlanterInput) ? canBePlanterInput == "Y" : player.PlayerPawn.Value.InBombZone,
             Bombsite = (Bombsite)_showingSpawnsForBombsite
         };
         Helpers.ShowSpawn(newSpawn);
