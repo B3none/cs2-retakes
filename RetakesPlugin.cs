@@ -373,7 +373,9 @@ public class RetakesPlugin : BasePlugin
         
         player.TeamNum = (int)CsTeam.Spectator;
         player.ForceTeamTime = 3600.0f;
-        player.ExecuteClientCommand("teammenu");
+
+        // Create a timer to do this as it would occasionally fire too early.
+        AddTimer(1f, () => player.ExecuteClientCommand("teammenu"));
 
         return HookResult.Continue;
     }
