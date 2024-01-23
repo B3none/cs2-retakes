@@ -173,7 +173,7 @@ public class RetakesPlugin : BasePlugin
 
         var newSpawn = new Spawn(
             vector: player!.PlayerPawn.Value!.AbsOrigin!,
-            qAngle: player!.PlayerPawn.Value!.AbsRotation!
+            qAngle: player!.PlayerPawn.Value!.EyeAngles
         )
         {
             Team = team == "T" ? CsTeam.Terrorist : CsTeam.CounterTerrorist,
