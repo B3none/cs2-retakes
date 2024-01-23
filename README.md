@@ -8,11 +8,6 @@ If you appreciate the project then please take the time to star the repository ð
 
 ![Star us](https://github.com/b3none/gdprconsent/raw/development/.github/README_ASSETS/star_us.png)
 
-## Stay up to date
-Subscribe to **release** notifications and stay up to date with the latest features and patches:
-
-![image](https://github.com/B3none/cs2-retakes/assets/24966460/e288a882-0f1f-4e8c-b67f-e4c066af34ea)
-
 ## Features / Roadmap
 - [x] Bombsite selection
 - [x] Per map configurations
@@ -72,6 +67,11 @@ When the plugin is first loaded it will create a `retakes_config.json` file in t
 | !removespawn    |                                   | Removes the nearest spawn point for the bombsite currently shown.    | @css/root   |
 | !scramble       |                                   | Scrambles the teams next round.                                      | @css/admin  |
 | css_debugqueues |                                   | **SERVER ONLY** Shows the current queue state in the server console. |             |
+
+## Stay up to date
+Subscribe to **release** notifications and stay up to date with the latest features and patches:
+
+![image](https://github.com/B3none/cs2-retakes/assets/24966460/e288a882-0f1f-4e8c-b67f-e4c066af34ea)
 
 ## Credits
 This was inspired by the [CS:GO Retakes project](https://github.com/splewis/csgo-retakes) written by [splewis](https://github.com/splewis).
