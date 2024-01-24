@@ -520,7 +520,7 @@ public class RetakesPlugin : BasePlugin
                 }
                 else
                 {
-                    if (player == _planter && RetakesConfig.IsLoaded(_retakesConfig) && _retakesConfig!.RetakesConfigData!.IsAutoPlantEnabled)
+                    if (player == _planter && RetakesConfig.IsLoaded(_retakesConfig) && !_retakesConfig!.RetakesConfigData!.IsAutoPlantEnabled)
                     {
                         player.GiveNamedItem(CsItem.C4);
                     }
@@ -789,8 +789,8 @@ public class RetakesPlugin : BasePlugin
     {
         // Ensure the round time for defuse is always set to 1.92
         Server.ExecuteCommand("mp_roundtime_defuse 1.92");
-        
-        if (!RetakesConfig.IsLoaded(_retakesConfig) || !_retakesConfig!.RetakesConfigData!.isAutoPlantEnabled)
+
+	if (RetakesConfig.IsLoaded(_retakesConfig) && !_retakesConfig!.RetakesConfigData!.IsAutoPlantEnabled)
         {
             return;
         }
