@@ -1,4 +1,5 @@
 using System.Drawing;
+using System.Text;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
@@ -113,12 +114,64 @@ public static class Helpers
         return player.Connected == PlayerConnectedState.PlayerConnected;
     }
     
-    private const string RetakesCfgPath = "/../../../../cfg/cs2-retakes/retakes.cfg";
+    private const string RetakesCfgDirectory = "/../../../../cfg/cs2-retakes";
+    private const string RetakesCfgPath = $"{RetakesCfgDirectory}/retakes.cfg";
     public static void ExecuteRetakesConfiguration(string moduleDirectory)
     {
         if (!File.Exists(moduleDirectory + RetakesCfgPath))
         {
-            throw new Exception($"{RetakesPlugin.LogPrefix}You must add game/cfg/cs2-retakes/retakes.cfg to run this plugin!");
+            // make any directories required too
+            Directory.CreateDirectory(moduleDirectory + RetakesCfgDirectory);
+            
+            var retakesCfg = File.Create(moduleDirectory + RetakesCfgPath);
+            
+            var retakesCfgContents = @"
+                // Things you shouldn't change:
+                bot_kick
+                bot_quota 0
+                mp_autoteambalance 0
+                mp_forcecamera 1
+                mp_give_player_c4 0
+                mp_halftime 0
+                mp_ignore_round_win_conditions 0
+                mp_join_grace_time 0
+                mp_match_can_clinch 0
+                mp_maxmoney 0
+                mp_playercashawards 0
+                mp_respawn_on_death_ct 0
+                mp_respawn_on_death_t 0
+                mp_solid_teammates 1
+                mp_teamcashawards 0
+                mp_warmup_pausetimer 0
+                sv_skirmish_id 0
+
+                // Things you can change, and may want to:
+                mp_roundtime_defuse 0.25
+                mp_autokick 0
+                mp_c4timer 40
+                mp_freezetime 1
+                mp_friendlyfire 0
+                mp_round_restart_delay 2
+                sv_talk_enemy_dead 0
+                sv_talk_enemy_living 0
+                sv_deadtalk 1
+                spec_replay_enable 0
+                mp_maxrounds 30
+                mp_match_end_restart 0
+                mp_timelimit 0
+                mp_match_restart_delay 10
+                mp_death_drop_gun 1
+                mp_death_drop_defuser 1
+                mp_death_drop_grenade 1
+                mp_warmuptime 15
+
+                echo [Retakes] Config loaded!
+            ";
+            
+            var retakesCfgBytes = Encoding.UTF8.GetBytes(retakesCfgContents);
+            retakesCfg.Write(retakesCfgBytes, 0, retakesCfgBytes.Length);
+            
+            retakesCfg.Close();
         }
         
         Server.ExecuteCommand("exec cs2-retakes/retakes.cfg");
