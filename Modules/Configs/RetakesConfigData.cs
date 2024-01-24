@@ -8,7 +8,7 @@ public class RetakesConfigData
     public int MaxPlayers { get; set; } = 9;
     public float TerroristRatio { get; set; } = 0.45f;
     public int RoundsToScramble { get; set; } = 5;
-    public bool isAutoPlantEnabled { get; set; } = true;
+    public bool IsAutoPlantEnabled { get; set; } = true;
     public bool IsScrambleEnabled { get; set; } = true;
     public bool EnableFallbackAllocation { get; set; } = true;
     public bool EnableBombsiteAnnouncementVoices { get; set; } = true;
