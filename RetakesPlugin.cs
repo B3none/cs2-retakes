@@ -520,8 +520,7 @@ public class RetakesPlugin : BasePlugin
                 }
                 else
                 {
-                    //give bomb if auto plant is disabled
-                    if(_retakesConfig?.RetakesConfigData?.isAutoPlantEnabled == false && player.UserId == _planter?.UserId)
+                    if (player == _planter && RetakesConfig.IsLoaded(_retakesConfig) && _retakesConfig!.RetakesConfigData!.IsAutoPlantEnabled)
                     {
                         player.GiveNamedItem(CsItem.C4);
                     }
