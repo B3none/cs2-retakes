@@ -30,8 +30,7 @@ If you appreciate the project then please take the time to star the repository ð
 - [x] Add a release zip file without spawns too
 
 ## Installation
-1. Download the zip file from the [latest release](https://github.com/B3none/cs2-retakes/releases), and extract the contents into your `counterstrikesharp/plugins` directory.
-2. Copy `cfg/cs2-retakes/retakes.cfg` to `/game/csgo/cfg/cs2-retakes/retakes.cfg`
+- Download the zip file from the [latest release](https://github.com/B3none/cs2-retakes/releases), and extract the contents into your `counterstrikesharp/plugins` directory.
 
 ## Recommendations
 I also recommend installing these plugins for an improved player experience
