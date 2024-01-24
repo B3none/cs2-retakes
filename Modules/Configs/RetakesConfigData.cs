@@ -2,7 +2,7 @@
 
 public class RetakesConfigData
 {
-    public static int CurrentVersion = 4;
+    public static int CurrentVersion = 5;
 
     public int Version { get; set; } = CurrentVersion;
     public int MaxPlayers { get; set; } = 9;
@@ -14,4 +14,5 @@ public class RetakesConfigData
     public bool EnableBombsiteAnnouncementCenter { get; set; } = true;
     public bool ShouldBreakBreakables { get; set; } = false;
     public bool ShouldOpenDoors { get; set; } = false;
+    public bool IsAutoPlantEnabled { get; set; } = true;
 }

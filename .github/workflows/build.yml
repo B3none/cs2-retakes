@@ -3,8 +3,14 @@ name: Build the plugin
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - '**.cs'
+      - '**.csproj'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - '**.cs'
+      - '**.csproj'
   release:
     types:
       - created

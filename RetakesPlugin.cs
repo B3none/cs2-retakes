@@ -17,7 +17,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(154)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.3.15";
+    private const string Version = "1.3.17";
     
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -373,7 +373,9 @@ public class RetakesPlugin : BasePlugin
         
         player.TeamNum = (int)CsTeam.Spectator;
         player.ForceTeamTime = 3600.0f;
-        player.ExecuteClientCommand("teammenu");
+
+        // Create a timer to do this as it would occasionally fire too early.
+        AddTimer(1.0f, () => player.ExecuteClientCommand("teammenu"));
 
         return HookResult.Continue;
     }
@@ -518,6 +520,10 @@ public class RetakesPlugin : BasePlugin
                 }
                 else
                 {
+                    if (player == _planter && RetakesConfig.IsLoaded(_retakesConfig) && !_retakesConfig!.RetakesConfigData!.IsAutoPlantEnabled)
+                    {
+                        player.GiveNamedItem(CsItem.C4);
+                    }
                     Console.WriteLine($"{LogPrefix}Fallback allocation disabled, skipping.");
                 }
             });
@@ -783,7 +789,12 @@ public class RetakesPlugin : BasePlugin
     {
         // Ensure the round time for defuse is always set to 1.92
         Server.ExecuteCommand("mp_roundtime_defuse 1.92");
-        
+
+	if (RetakesConfig.IsLoaded(_retakesConfig) && !_retakesConfig!.RetakesConfigData!.IsAutoPlantEnabled)
+        {
+            return;
+        }
+
         if (_planter != null && Helpers.IsValidPlayer(_planter))
         {
             Helpers.PlantTickingBomb(_planter, _currentBombsite);

@@ -1,4 +1,5 @@
 [![GitHub Downloads](https://img.shields.io/github/downloads/b3none/cs2-retakes/total.svg?style=flat-square&label=Downloads)](https://github.com/b3none/cs2-retakes/releases/latest)
+![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/b3none/cs2-retakes/build.yml?branch=master&style=flat-square&label=Latest%20Build)
 
 # CS2 Retakes
 CS2 implementation of retakes written in C# for CounterStrikeSharp. Based on the version for CS:GO by Splewis.
@@ -56,8 +57,9 @@ When the plugin is first loaded it will create a `retakes_config.json` file in t
 | EnableFallbackAllocation         | Whether to enable the fallback weapon allocation. You should set this value to false if you're using a standalone weapon allocator. | true       | false      | true       |
 | EnableBombsiteAnnouncementVoices | Whether to play the bombsite announcement voices. The volume for these values is client sided `snd_toolvolume`.                     | true       | false      | true       |
 | EnableBombsiteAnnouncementCenter | Whether to display the bombsite in the center announcement box.                                                                     | true       | false      | true       |
-| ShouldBreakBreakables            | Whether to break all breakable props on round start (People are noticing rare crashes when this is enabled)                         | false      | false      | true       |
-| ShouldOpenDoors                  | Whether to open doors on round start (People are noticing rare crashes when this is enabled)                                        | false      | false      | true       |
+| ShouldBreakBreakables            | Whether to break all breakable props on round start (People are noticing rare crashes when this is enabled).                        | false      | false      | true       |
+| ShouldOpenDoors                  | Whether to open doors on round start (People are noticing rare crashes when this is enabled).                                       | false      | false      | true       |
+| IsAutoPlantEnabled               | Whether to enable auto bomb planting at the start of the round or not.                                                              | true       | false      | true       |
 
 ## Commands
 | Command         | Arguments                         | Description                                                          | Permissions |
@@ -67,6 +69,11 @@ When the plugin is first loaded it will create a `retakes_config.json` file in t
 | !removespawn    |                                   | Removes the nearest spawn point for the bombsite currently shown.    | @css/root   |
 | !scramble       |                                   | Scrambles the teams next round.                                      | @css/admin  |
 | css_debugqueues |                                   | **SERVER ONLY** Shows the current queue state in the server console. |             |
+
+## Stay up to date
+Subscribe to **release** notifications and stay up to date with the latest features and patches:
+
+![image](https://github.com/B3none/cs2-retakes/assets/24966460/e288a882-0f1f-4e8c-b67f-e4c066af34ea)
 
 ## Credits
 This was inspired by the [CS:GO Retakes project](https://github.com/splewis/csgo-retakes) written by [splewis](https://github.com/splewis).
