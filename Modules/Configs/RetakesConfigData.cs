@@ -2,17 +2,17 @@
 
 public class RetakesConfigData
 {
-    public static int CurrentVersion = 4;
+    public static int CurrentVersion = 5;
 
     public int Version { get; set; } = CurrentVersion;
     public int MaxPlayers { get; set; } = 9;
     public float TerroristRatio { get; set; } = 0.45f;
     public int RoundsToScramble { get; set; } = 5;
-    public bool IsAutoPlantEnabled { get; set; } = true;
     public bool IsScrambleEnabled { get; set; } = true;
     public bool EnableFallbackAllocation { get; set; } = true;
     public bool EnableBombsiteAnnouncementVoices { get; set; } = true;
     public bool EnableBombsiteAnnouncementCenter { get; set; } = true;
     public bool ShouldBreakBreakables { get; set; } = false;
     public bool ShouldOpenDoors { get; set; } = false;
+    public bool IsAutoPlantEnabled { get; set; } = true;
 }
