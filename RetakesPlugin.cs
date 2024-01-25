@@ -17,7 +17,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(154)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.3.18";
+    private const string Version = "1.3.19";
     
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -95,22 +95,20 @@ public class RetakesPlugin : BasePlugin
             commandInfo.ReplyToCommand($"{MessagePrefix}Map config not loaded for some reason...");
             return;
         }
-        
-        var spawns = _mapConfig.GetSpawnsClone().Where(spawn => spawn.Bombsite == (bombsite == "A" ? Bombsite.A : Bombsite.B)).ToList();
-        
-        if (spawns.Count == 0)
-        {
-            commandInfo.ReplyToCommand($"{MessagePrefix}No spawns found for bombsite {bombsite}.");
-            return;
-        }
-        
-        foreach (var spawn in spawns)
-        {
-			Helpers.ShowSpawn(spawn);
-        }
 
 		_showingSpawnsForBombsite = bombsite == "A" ? Bombsite.A : Bombsite.B;
-		commandInfo.ReplyToCommand($"{MessagePrefix}Showing {spawns.Count} spawns for bombsite {bombsite}.");
+        
+        // Start warmup if we aren't already in it, init.
+        if (!Helpers.GetGameRules().WarmupPeriod)
+        {
+            Server.ExecuteCommand("mp_warmup_start");
+            Server.ExecuteCommand("mp_warmuptime 120");
+            Server.ExecuteCommand("mp_warmup_pausetimer 1");
+        }
+        else
+        {
+            Helpers.ShowSpawns(_mapConfig.GetSpawnsClone(), _showingSpawnsForBombsite);
+        }
     }
     
     [ConsoleCommand("css_addspawn", "Adds a retakes spawn point to the map for the bombsite currently shown.")]
@@ -446,6 +444,12 @@ public class RetakesPlugin : BasePlugin
         if (Helpers.GetGameRules().WarmupPeriod)
         {
             Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
+
+            if (_mapConfig != null)
+            {
+                Helpers.ShowSpawns(_mapConfig.GetSpawnsClone(), _showingSpawnsForBombsite);
+            }
+
             return HookResult.Continue;
         }
         
@@ -465,6 +469,8 @@ public class RetakesPlugin : BasePlugin
         _breakerManager?.Handle();
         _currentBombsite = Helpers.Random.Next(0, 2) == 0 ? Bombsite.A : Bombsite.B;
         _gameManager.ResetPlayerScores();
+        
+        Console.WriteLine("Clearing _showingSpawnsForBombsite");
 		_showingSpawnsForBombsite = null;
         
 		_planter = _spawnManager.HandleRoundSpawns(_currentBombsite, _gameManager.QueueManager.ActivePlayers);

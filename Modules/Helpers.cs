@@ -177,13 +177,13 @@ public static class Helpers
         Server.ExecuteCommand("exec cs2-retakes/retakes.cfg");
     }
     
-    public static int GetCurrentNumPlayers(CsTeam csTeam)
+    public static int GetCurrentNumPlayers(CsTeam? csTeam = null)
     {
         var players = 0;
 
         foreach (var player in Utilities.GetPlayers().Where(player => IsValidPlayer(player) && IsPlayerConnected(player)))
         {
-            if (player.Team == csTeam)
+            if (csTeam == null || player.Team == csTeam)
             {
                 players++;
             }
@@ -249,31 +249,6 @@ public static class Helpers
         }
 
         Server.ExecuteCommand("mp_restartgame 1");
-    }
-    
-    public static void ShowSpawn(Spawn spawn)
-    {
-		var beam = Utilities.CreateEntityByName<CBeam>("beam") ?? throw new Exception("Failed to create beam entity.");
-		beam.StartFrame = 0;
-		beam.FrameRate = 0;
-		beam.LifeState = 1;
-		beam.Width = 5;
-		beam.EndWidth = 5;
-		beam.Amplitude = 0;
-		beam.Speed = 50;
-		beam.Flags = 0;
-		beam.BeamType = BeamType_t.BEAM_HOSE;
-		beam.FadeLength = 10.0f;
-
-		var color = spawn.Team == CsTeam.Terrorist ? (spawn.CanBePlanter ? Color.Orange : Color.Red) : Color.Blue;
-		beam.Render = Color.FromArgb(255, color);
-
-		beam.EndPos.X = spawn.Vector.X;
-		beam.EndPos.Y = spawn.Vector.Y;
-		beam.EndPos.Z = spawn.Vector.Z + 100.0f;
-
-		beam.Teleport(spawn.Vector, new QAngle(IntPtr.Zero), new Vector(IntPtr.Zero, IntPtr.Zero, IntPtr.Zero));
-		beam.DispatchSpawn();
     }
     
     public static void CheckRoundDone()
@@ -399,5 +374,48 @@ public static class Helpers
         NativeAPI.SetEventInt(eventPtr, "site", (int)bombsite);
 
         NativeAPI.FireEvent(eventPtr, false);
+    }
+    
+    public static int ShowSpawns(List<Spawn> spawns, Bombsite? bombsite)
+    {
+        if (bombsite == null)
+        {
+            return -1;
+        }
+        
+        spawns = spawns.Where(spawn => spawn.Bombsite == bombsite).ToList();
+        
+        foreach (var spawn in spawns)
+        {
+            ShowSpawn(spawn);
+        }
+        
+        Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}Showing {spawns.Count} spawns for bombsite {bombsite}.");
+        return spawns.Count;
+    }
+    
+    public static void ShowSpawn(Spawn spawn)
+    {
+        var beam = Utilities.CreateEntityByName<CBeam>("beam") ?? throw new Exception("Failed to create beam entity.");
+        beam.StartFrame = 0;
+        beam.FrameRate = 0;
+        beam.LifeState = 1;
+        beam.Width = 5;
+        beam.EndWidth = 5;
+        beam.Amplitude = 0;
+        beam.Speed = 50;
+        beam.Flags = 0;
+        beam.BeamType = BeamType_t.BEAM_HOSE;
+        beam.FadeLength = 10.0f;
+
+        var color = spawn.Team == CsTeam.Terrorist ? (spawn.CanBePlanter ? Color.Orange : Color.Red) : Color.Blue;
+        beam.Render = Color.FromArgb(255, color);
+
+        beam.EndPos.X = spawn.Vector.X;
+        beam.EndPos.Y = spawn.Vector.Y;
+        beam.EndPos.Z = spawn.Vector.Z + 100.0f;
+
+        beam.Teleport(spawn.Vector, new QAngle(IntPtr.Zero), new Vector(IntPtr.Zero, IntPtr.Zero, IntPtr.Zero));
+        beam.DispatchSpawn();
     }
 }
