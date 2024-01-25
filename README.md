@@ -66,6 +66,7 @@ When the plugin is first loaded it will create a `retakes_config.json` file in t
 | !showspawns     | <A / B>                           | Show the spawns for the specified bombsite.                          | @css/root   |
 | !addspawn       | <CT / T> <Y / N (can be planter)> | Adds a retakes spawn point for the bombsite spawns currently shown.  | @css/root   |
 | !removespawn    |                                   | Removes the nearest spawn point for the bombsite currently shown.    | @css/root   |
+| !nearestspawn   |                                   | Teleports the player to the nearest spawn.                           | @css/root   |
 | !scramble       |                                   | Scrambles the teams next round.                                      | @css/admin  |
 | css_debugqueues |                                   | **SERVER ONLY** Shows the current queue state in the server console. |             |
 
