@@ -48,6 +48,17 @@ public class RetakesPlugin : BasePlugin
     private CCSPlayerController? _planter;
     private CsTeam _lastRoundWinner;
 	private Bombsite? _showingSpawnsForBombsite;
+    
+    private void ResetState()
+    {
+        _currentBombsite = Bombsite.A;
+        _planter = null;
+        _lastRoundWinner = CsTeam.None;
+        _showingSpawnsForBombsite = null;
+        
+        var onTick = new Listeners.OnTick(OnTick);
+        RemoveListener("OnTick", onTick);
+    }
     #endregion
     
     public RetakesPlugin()
@@ -62,18 +73,23 @@ public class RetakesPlugin : BasePlugin
         Console.WriteLine($"{LogPrefix}Plugin loaded!");
         
         RegisterListener<Listeners.OnMapStart>(OnMapStart);
+        RegisterListener<Listeners.OnTick>(OnTick);
         
         AddCommandListener("jointeam", OnCommandJoinTeam);
 
         if (hotReload)
         {
-            // If a hot reload is detected restart the current map.
-            Server.ExecuteCommand($"map {Server.MapName}");
+            ResetState();
+            Helpers.RestartGame();
+            
+            OnMapStart(Server.MapName);
         }
     }
-    
+
     #region Commands
     [ConsoleCommand("css_showspawns", "Show the spawns for the specified bombsite.")]
+    [ConsoleCommand("css_spawns", "Show the spawns for the specified bombsite.")]
+    [ConsoleCommand("css_edit", "Show the spawns for the specified bombsite.")]
     [CommandHelper(minArgs: 1, usage: "[A/B]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
     [RequiresPermissions("@css/root")]
     public void OnCommandShowSpawns(CCSPlayerController? player, CommandInfo commandInfo)
@@ -98,30 +114,20 @@ public class RetakesPlugin : BasePlugin
 
 		_showingSpawnsForBombsite = bombsite == "A" ? Bombsite.A : Bombsite.B;
         
-        // Start warmup if we aren't already in it, init.
-        if (!Helpers.GetGameRules().WarmupPeriod)
-        {
-            Server.ExecuteCommand("mp_warmup_start");
-            Server.ExecuteCommand("mp_warmuptime 120");
-            Server.ExecuteCommand("mp_warmup_pausetimer 1");
-        }
-        else
-        {
-            Helpers.ShowSpawns(_mapConfig.GetSpawnsClone(), _showingSpawnsForBombsite);
-        }
+        // This will fire the OnRoundStart event listener
+        Server.ExecuteCommand("mp_warmup_start");
+        Server.ExecuteCommand("mp_warmuptime 120");
+        Server.ExecuteCommand("mp_warmup_pausetimer 1");
     }
     
-    [ConsoleCommand("css_addspawn", "Adds a retakes spawn point to the map for the bombsite currently shown.")]
+    [ConsoleCommand("css_add", "Creates a new retakes spawn for the bombsite currently shown.")]
+    [ConsoleCommand("css_addspawn", "Creates a new retakes spawn for the bombsite currently shown.")]
+    [ConsoleCommand("css_new", "Creates a new retakes spawn for the bombsite currently shown.")]
+    [ConsoleCommand("css_newspawn", "Creates a new retakes spawn for the bombsite currently shown.")]
     [CommandHelper(minArgs: 1, usage: "[T/CT] [Y/N can be planter]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
     [RequiresPermissions("@css/root")]
     public void OnCommandAddSpawn(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (!Helpers.DoesPlayerHavePawn(player))
-        {
-            commandInfo.ReplyToCommand($"{MessagePrefix}You must be a player.");
-            return;
-        }
-        
         if (_showingSpawnsForBombsite == null)
         {
             commandInfo.ReplyToCommand($"{MessagePrefix}You can't add a spawn if you're not showing the spawns.");
@@ -131,6 +137,12 @@ public class RetakesPlugin : BasePlugin
         if (_spawnManager == null)
         {
             commandInfo.ReplyToCommand($"{MessagePrefix}Spawn manager not loaded for some reason...");
+            return;
+        }
+        
+        if (!Helpers.DoesPlayerHavePawn(player))
+        {
+            commandInfo.ReplyToCommand($"{MessagePrefix}You must be a player.");
             return;
         }
         
@@ -172,7 +184,7 @@ public class RetakesPlugin : BasePlugin
 
         var newSpawn = new Spawn(
             vector: player!.PlayerPawn.Value!.AbsOrigin!,
-            qAngle: player!.PlayerPawn.Value!.EyeAngles
+            qAngle: player!.PlayerPawn.Value!.AbsRotation!
         )
         {
             Team = team == "T" ? CsTeam.Terrorist : CsTeam.CounterTerrorist,
@@ -196,16 +208,14 @@ public class RetakesPlugin : BasePlugin
         commandInfo.ReplyToCommand($"{MessagePrefix}{(didAddSpawn ? "Spawn added" : "Error adding spawn")}");
     }
 
-    [ConsoleCommand("css_removespawn", "Remove the closest visible spawn point.")]
+    [ConsoleCommand("css_remove", "Deletes the nearest retakes spawn.")]
+    [ConsoleCommand("css_removespawn", "Deletes the nearest retakes spawn.")]
+    [ConsoleCommand("css_delete", "Deletes the nearest retakes spawn.")]
+    [ConsoleCommand("css_deletespawn", "Deletes the nearest retakes spawn.")]
     [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
     [RequiresPermissions("@css/root")]
     public void OnCommandRemoveSpawn(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (!Helpers.DoesPlayerHavePawn(player))
-        {
-            return;
-        }
-        
         if (_showingSpawnsForBombsite == null)
         {
             commandInfo.ReplyToCommand($"{MessagePrefix}You can't remove a spawn if you're not showing the spawns.");
@@ -221,6 +231,11 @@ public class RetakesPlugin : BasePlugin
         if (_mapConfig == null)
         {
             commandInfo.ReplyToCommand($"{MessagePrefix}Map config not loaded for some reason...");
+            return;
+        }
+        
+        if (!Helpers.DoesPlayerHavePawn(player))
+        {
             return;
         }
 
@@ -281,8 +296,72 @@ public class RetakesPlugin : BasePlugin
         
 		commandInfo.ReplyToCommand($"{MessagePrefix}{(didRemoveSpawn ? "Spawn removed" : "Error removing spawn")}");
     }
+
+    [ConsoleCommand("css_nearestspawn", "Goes to nearest retakes spawn.")]
+    [ConsoleCommand("css_nearest", "Goes to nearest retakes spawn.")]
+    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
+    [RequiresPermissions("@css/root")]
+    public void OnCommandNearestSpawn(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        if (_showingSpawnsForBombsite == null)
+        {
+            commandInfo.ReplyToCommand($"{MessagePrefix}You can't remove a spawn if you're not showing the spawns.");
+            return;
+        }
+        
+        if (_spawnManager == null)
+        {
+            commandInfo.ReplyToCommand($"{MessagePrefix}Spawn manager not loaded for some reason...");
+            return;
+        }
+
+        if (_mapConfig == null)
+        {
+            commandInfo.ReplyToCommand($"{MessagePrefix}Map config not loaded for some reason...");
+            return;
+        }
+        
+        if (!Helpers.DoesPlayerHavePawn(player))
+        {
+            return;
+        }
+
+		var spawns = _spawnManager.GetSpawns((Bombsite)_showingSpawnsForBombsite);
+        
+        if (spawns.Count == 0)
+        {
+            commandInfo.ReplyToCommand($"{MessagePrefix}No spawns found.");
+            return;
+        }
+
+		var closestDistance = 9999.9;
+		Spawn? closestSpawn = null;
+
+        foreach (var spawn in spawns)
+        {
+			var distance = Helpers.GetDistanceBetweenVectors(spawn.Vector, player!.PlayerPawn.Value!.AbsOrigin!);
+
+			if (distance > 128.0 || distance > closestDistance)
+			{
+				continue;
+			}
+
+            closestDistance = distance;
+            closestSpawn = spawn;
+        }
+        
+		if (closestSpawn == null)
+		{
+			commandInfo.ReplyToCommand($"{MessagePrefix}No spawns found within 128 units.");
+			return;
+		}
+        
+        player!.PlayerPawn.Value!.Teleport(closestSpawn.Vector, closestSpawn.QAngle, new Vector());
+		commandInfo.ReplyToCommand($"{MessagePrefix}Teleported to nearest spawn");
+    }
     
-    [ConsoleCommand("css_scramble", "This will scramble the teams next round.")]
+    [ConsoleCommand("css_scramble", "Sets teams to scramble on the next round.")]
+    [ConsoleCommand("css_scrambleteams", "Sets teams to scramble on the next round.")]
     [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     [RequiresPermissions("@css/admin")]
     public void OnCommandScramble(CCSPlayerController? player, CommandInfo commandInfo)
@@ -312,6 +391,19 @@ public class RetakesPlugin : BasePlugin
     #endregion
     
     #region Listeners
+    private void OnTick()
+    {
+        if (_showingSpawnsForBombsite == null)
+        {
+            return;
+        }
+        
+        foreach (var player in Utilities.GetPlayers())
+        {
+            player.PrintToCenterHtml($"Editing spawns for bombsite {_showingSpawnsForBombsite}");
+        }
+    }
+    
     private void OnMapStart(string mapName)
     {
         Console.WriteLine($"{LogPrefix}OnMapStart listener triggered!");
