@@ -46,7 +46,7 @@ public class RetakesPlugin : BasePlugin
     #region State
     private Bombsite _currentBombsite = Bombsite.A;
     private CCSPlayerController? _planter;
-    private CsTeam _lastRoundWinner;
+    private CsTeam _lastRoundWinner = CsTeam.None;
 	private Bombsite? _showingSpawnsForBombsite;
     
     private void ResetState()
@@ -55,9 +55,6 @@ public class RetakesPlugin : BasePlugin
         _planter = null;
         _lastRoundWinner = CsTeam.None;
         _showingSpawnsForBombsite = null;
-        
-        var onTick = new Listeners.OnTick(OnTick);
-        RemoveListener("OnTick", onTick);
     }
     #endregion
     
@@ -73,13 +70,11 @@ public class RetakesPlugin : BasePlugin
         Console.WriteLine($"{LogPrefix}Plugin loaded!");
         
         RegisterListener<Listeners.OnMapStart>(OnMapStart);
-        RegisterListener<Listeners.OnTick>(OnTick);
         
         AddCommandListener("jointeam", OnCommandJoinTeam);
 
         if (hotReload)
         {
-            ResetState();
             Helpers.RestartGame();
             
             OnMapStart(Server.MapName);
@@ -391,22 +386,11 @@ public class RetakesPlugin : BasePlugin
     #endregion
     
     #region Listeners
-    private void OnTick()
-    {
-        if (_showingSpawnsForBombsite == null)
-        {
-            return;
-        }
-        
-        foreach (var player in Utilities.GetPlayers())
-        {
-            player.PrintToCenterHtml($"Editing spawns for bombsite {_showingSpawnsForBombsite}");
-        }
-    }
-    
     private void OnMapStart(string mapName)
     {
         Console.WriteLine($"{LogPrefix}OnMapStart listener triggered!");
+
+        ResetState();
         
         // Execute the retakes configuration.
         Helpers.ExecuteRetakesConfiguration(ModuleDirectory);
