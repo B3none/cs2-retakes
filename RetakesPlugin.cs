@@ -75,9 +75,8 @@ public class RetakesPlugin : BasePlugin
 
         if (hotReload)
         {
-            Helpers.RestartGame();
-            
-            OnMapStart(Server.MapName);
+            Server.PrintToChatAll($"{LogPrefix}Update detected, restarting map...");
+            Server.ExecuteCommand($"map {Server.MapName}");
         }
     }
 
