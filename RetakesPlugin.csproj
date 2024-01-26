@@ -12,5 +12,6 @@
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(CopyPath)' != '' ">
     <Exec Command="copy &quot;$(TargetPath)&quot; &quot;$(CopyPath)&quot; " />
+    <Exec Command="copy &quot;$(TargetDir)$(TargetName).pdb&quot; &quot;$(CopyPath)&quot; " />
   </Target>
 </Project>
