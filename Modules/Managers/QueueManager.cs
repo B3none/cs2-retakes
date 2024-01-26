@@ -186,14 +186,14 @@ public class QueueManager
             ActivePlayers.Remove(nonVipActivePlayer);
             QueuePlayers.Add(nonVipActivePlayer);
             nonVipActivePlayer.PrintToChat(
-                $"{RetakesPlugin.MessagePrefix}{_translator["queue.replaced_by_vip", vipQueuePlayer.PlayerName]}");
+                $"{RetakesPlugin.MessagePrefix}{_translator["retakes.queue.replaced_by_vip", vipQueuePlayer.PlayerName]}");
 
             // Add the new VIP player to ActivePlayers and remove them from QueuePlayers
             ActivePlayers.Add(vipQueuePlayer);
             QueuePlayers.Remove(vipQueuePlayer);
             vipQueuePlayer.ChangeTeam(CsTeam.CounterTerrorist);
             vipQueuePlayer.PrintToChat(
-                $"{RetakesPlugin.MessagePrefix}{_translator["queue.vip_took_place", nonVipActivePlayer.PlayerName]}");
+                $"{RetakesPlugin.MessagePrefix}{_translator["retakes.queue.vip_took_place", nonVipActivePlayer.PlayerName]}");
         }
     }
 

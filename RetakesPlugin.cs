@@ -431,10 +431,7 @@ public class RetakesPlugin : BasePlugin
             throw new Exception("Map config is null");
         }
 
-        _spawnManager = new SpawnManager(
-            _translator,
-            _mapConfig
-        );
+        _spawnManager = new SpawnManager(_mapConfig);
 
         _gameManager = new GameManager(
             _translator,

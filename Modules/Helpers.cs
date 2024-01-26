@@ -77,7 +77,7 @@ public static class Helpers
 
     private const string RetakesCfgDirectory = "/../../../../cfg/cs2-retakes";
     private const string RetakesCfgPath = $"{RetakesCfgDirectory}/retakes.cfg";
-
+    
     public static void ExecuteRetakesConfiguration(string moduleDirectory)
     {
         if (!File.Exists(moduleDirectory + RetakesCfgPath))

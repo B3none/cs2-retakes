@@ -7,13 +7,11 @@ namespace RetakesPlugin.Modules.Managers;
 
 public class SpawnManager
 {
-    private readonly Translator _translator;
     private readonly MapConfig _mapConfig;
     private readonly Dictionary<Bombsite, Dictionary<CsTeam, List<Spawn>>> _spawns = new();
 
-    public SpawnManager(Translator translator, MapConfig mapConfig)
+    public SpawnManager(MapConfig mapConfig)
     {
-        _translator = translator;
         _mapConfig = mapConfig;
 
         CalculateMapSpawns();
@@ -22,25 +20,31 @@ public class SpawnManager
     public void CalculateMapSpawns()
     {
         _spawns.Clear();
+        
+        _spawns.Add(Bombsite.A, new Dictionary<CsTeam, List<Spawn>>()
+        {
+            { CsTeam.Terrorist, new List<Spawn>()},
+            { CsTeam.CounterTerrorist, new List<Spawn>()}
+        });
+        _spawns.Add(Bombsite.B, new Dictionary<CsTeam, List<Spawn>>()
+        {
+            { CsTeam.Terrorist, new List<Spawn>()},
+            { CsTeam.CounterTerrorist, new List<Spawn>()}
+        });
 
         foreach (var spawn in _mapConfig.GetSpawnsClone())
         {
-            if (!_spawns.ContainsKey(spawn.Bombsite))
-            {
-                _spawns.Add(spawn.Bombsite, new Dictionary<CsTeam, List<Spawn>>());
-            }
-
-            if (!_spawns[spawn.Bombsite].ContainsKey(spawn.Team))
-            {
-                _spawns[spawn.Bombsite].Add(spawn.Team, new List<Spawn>());
-            }
-
             _spawns[spawn.Bombsite][spawn.Team].Add(spawn);
         }
     }
 
     public List<Spawn> GetSpawns(Bombsite bombsite, CsTeam? team = null)
     {
+        if (_spawns[bombsite][CsTeam.Terrorist].Count == 0 && _spawns[bombsite][CsTeam.CounterTerrorist].Count == 0)
+        {
+            return new List<Spawn>();
+        }
+        
         if (team == null)
         {
             return _spawns[bombsite].SelectMany(entry => entry.Value).ToList();
