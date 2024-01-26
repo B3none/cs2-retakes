@@ -32,7 +32,7 @@ public class BreakerManager
                 ("prop.breakable.01", "Break"),
                 ("prop.breakable.02", "Break")
             });
-            
+
             if (MapsWithPropDynamic.Contains(Server.MapName))
             {
                 _entityActions.Add(("prop_dynamic", "Break"));
@@ -56,7 +56,7 @@ public class BreakerManager
         {
             return;
         }
-        
+
         var pEntity = new CEntityIdentity(EntitySystem.FirstActiveEntity);
         for (; pEntity != null && pEntity.Handle != IntPtr.Zero; pEntity = pEntity.Next)
         {
@@ -66,7 +66,7 @@ public class BreakerManager
                 {
                     continue;
                 }
-                
+
                 switch (pEntity.DesignerName)
                 {
                     case "func_breakable":
@@ -80,26 +80,30 @@ public class BreakerManager
                         {
                             breakableEntity.AcceptInput(action);
                         }
+
                         break;
 
                     case "func_button":
                         var button = new PointerTo<CBaseButton>(pEntity.Handle).Value;
-                        
+
                         if (button.IsValid)
                         {
                             button.AcceptInput(action);
                         }
+
                         break;
-                        
+
                     case "prop_door_rotating":
                         var propDoorRotating = new PointerTo<CPropDoorRotating>(pEntity.Handle).Value;
-                        
+
                         if (propDoorRotating.IsValid)
                         {
                             propDoorRotating.AcceptInput(action);
                         }
+
                         break;
                 }
+
                 break;
             }
         }

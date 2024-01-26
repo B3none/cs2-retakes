@@ -25,19 +25,21 @@ public class GameManager
     }
 
     private bool _scrambleNextRound;
+
     public void ScrambleNextRound(CCSPlayerController? admin = null)
     {
         _scrambleNextRound = true;
-        Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["retakes.teams.admin_scramble", admin?.PlayerName ?? "The server owner"]}");
+        Server.PrintToChatAll(
+            $"{RetakesPlugin.MessagePrefix}{_translator["retakes.teams.admin_scramble", admin?.PlayerName ?? "The server owner"]}");
     }
-    
+
     private void ScrambleTeams()
     {
         var shuffledActivePlayers = Helpers.Shuffle(QueueManager.ActivePlayers);
-        
+
         var newTerrorists = shuffledActivePlayers.Take(QueueManager.GetTargetNumTerrorists()).ToList();
         var newCounterTerrorists = shuffledActivePlayers.Except(newTerrorists).ToList();
-        
+
         SetTeams(newTerrorists, newCounterTerrorists);
     }
 
@@ -45,14 +47,14 @@ public class GameManager
     {
         _playerRoundScores = new Dictionary<int, int>();
     }
-    
+
     public void AddScore(CCSPlayerController player, int score)
     {
         if (!Helpers.IsValidPlayer(player) || player.UserId == null)
         {
             return;
         }
-    
+
         var playerId = (int)player.UserId;
 
         if (!_playerRoundScores.TryAdd(playerId, score))
@@ -61,17 +63,18 @@ public class GameManager
             _playerRoundScores[playerId] += score;
         }
     }
-    
+
     private int _consecutiveRoundsWon;
 
     public void TerroristRoundWin()
     {
         _consecutiveRoundsWon++;
-        
+
         if (_consecutiveRoundsWon == _consecutiveRoundWinsToScramble)
         {
-            Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["retakes.teams.scramble", _consecutiveRoundWinsToScramble]}");
-         
+            Server.PrintToChatAll(
+                $"{RetakesPlugin.MessagePrefix}{_translator["retakes.teams.scramble", _consecutiveRoundWinsToScramble]}");
+
             _consecutiveRoundsWon = 0;
             ScrambleTeams();
         }
@@ -79,33 +82,39 @@ public class GameManager
         {
             if (_isScrambleEnabled)
             {
-                Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["retakes.teams.almost_scramble", _consecutiveRoundsWon, _consecutiveRoundWinsToScramble - _consecutiveRoundsWon]}");
+                Server.PrintToChatAll(
+                    $"{RetakesPlugin.MessagePrefix}{_translator["retakes.teams.almost_scramble", _consecutiveRoundsWon, _consecutiveRoundWinsToScramble - _consecutiveRoundsWon]}");
             }
             else
             {
-                Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["retakes.teams.win_streak", _consecutiveRoundsWon]}");
+                Server.PrintToChatAll(
+                    $"{RetakesPlugin.MessagePrefix}{_translator["retakes.teams.win_streak", _consecutiveRoundsWon]}");
             }
-        } else if (_scrambleNextRound)
+        }
+        else if (_scrambleNextRound)
         {
             _scrambleNextRound = false;
             _consecutiveRoundsWon = 0;
             ScrambleTeams();
         }
     }
-    
+
     public void CounterTerroristRoundWin()
     {
         if (_consecutiveRoundsWon >= 3)
         {
-            Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["retakes.teams.win_streak_over", _consecutiveRoundsWon]}");
+            Server.PrintToChatAll(
+                $"{RetakesPlugin.MessagePrefix}{_translator["retakes.teams.win_streak_over", _consecutiveRoundsWon]}");
         }
+
         _consecutiveRoundsWon = 0;
-        
+
         var targetNumTerrorists = QueueManager.GetTargetNumTerrorists();
         var sortedCounterTerroristPlayers = GetSortedActivePlayers(CsTeam.CounterTerrorist);
-        
+
         // Ensure that the players with the scores are set as new terrorists first.
-        var newTerrorists = sortedCounterTerroristPlayers.Where(player => player.Score > 0).Take(targetNumTerrorists).ToList();
+        var newTerrorists = sortedCounterTerroristPlayers.Where(player => player.Score > 0).Take(targetNumTerrorists)
+            .ToList();
 
         if (newTerrorists.Count < targetNumTerrorists)
         {
@@ -113,20 +122,21 @@ public class GameManager
             var playersLeft = Helpers.Shuffle(sortedCounterTerroristPlayers.Except(newTerrorists).ToList());
             newTerrorists.AddRange(playersLeft.Take(targetNumTerrorists - newTerrorists.Count));
         }
-        
+
         if (newTerrorists.Count < targetNumTerrorists)
         {
             // If we still don't have enough terrorists
             newTerrorists.AddRange(
                 GetSortedActivePlayers(CsTeam.Terrorist)
                     .Take(targetNumTerrorists - newTerrorists.Count)
-                );
+            );
         }
-        
-        newTerrorists.AddRange(sortedCounterTerroristPlayers.Where(player => player.Score > 0).Take(targetNumTerrorists - newTerrorists.Count).ToList());
+
+        newTerrorists.AddRange(sortedCounterTerroristPlayers.Where(player => player.Score > 0)
+            .Take(targetNumTerrorists - newTerrorists.Count).ToList());
 
         var newCounterTerrorists = QueueManager.ActivePlayers.Except(newTerrorists).ToList();
-        
+
         SetTeams(newTerrorists, newCounterTerrorists);
     }
 
@@ -134,10 +144,10 @@ public class GameManager
     {
         List<CCSPlayerController> newTerrorists = new();
         List<CCSPlayerController> newCounterTerrorists = new();
-     
+
         var currentNumTerrorist = Helpers.GetCurrentNumPlayers(CsTeam.Terrorist);
         var numTerroristsNeeded = QueueManager.GetTargetNumTerrorists() - currentNumTerrorist;
-        
+
         if (numTerroristsNeeded > 0)
         {
             var sortedCounterTerroristPlayers = GetSortedActivePlayers(CsTeam.CounterTerrorist);
@@ -151,14 +161,15 @@ public class GameManager
                 newTerrorists.AddRange(playersLeft.Take(numTerroristsNeeded - newTerrorists.Count));
             }
         }
-        
+
         var currentNumCounterTerroristAfterBalance = Helpers.GetCurrentNumPlayers(CsTeam.CounterTerrorist);
-        var numCounterTerroristsNeeded = QueueManager.GetTargetNumCounterTerrorists() - currentNumCounterTerroristAfterBalance;
-        
+        var numCounterTerroristsNeeded =
+            QueueManager.GetTargetNumCounterTerrorists() - currentNumCounterTerroristAfterBalance;
+
         if (numCounterTerroristsNeeded > 0)
         {
             var terroristsWithZeroScore = QueueManager.ActivePlayers
-                .Where(player =>  
+                .Where(player =>
                     Helpers.IsValidPlayer(player)
                     && player.Team == CsTeam.Terrorist
                     && _playerRoundScores.GetValueOrDefault((int)player.UserId!, 0) == 0
@@ -183,7 +194,7 @@ public class GameManager
                 );
             }
         }
-        
+
         SetTeams(newTerrorists, newCounterTerrorists);
     }
 
@@ -200,7 +211,7 @@ public class GameManager
     {
         terrorists ??= new List<CCSPlayerController>();
         counterTerrorists ??= new List<CCSPlayerController>();
-        
+
         foreach (var player in QueueManager.ActivePlayers.Where(Helpers.IsValidPlayer))
         {
             if (terrorists.Contains(player))

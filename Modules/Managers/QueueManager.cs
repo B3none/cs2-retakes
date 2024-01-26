@@ -14,7 +14,8 @@ public class QueueManager
     public HashSet<CCSPlayerController> QueuePlayers = new();
     public HashSet<CCSPlayerController> ActivePlayers = new();
 
-    public QueueManager(Translator translator, int? retakesMaxPlayers, float? retakesTerroristRatio, string? queuePriorityFlag)
+    public QueueManager(Translator translator, int? retakesMaxPlayers, float? retakesTerroristRatio,
+        string? queuePriorityFlag)
     {
         _translator = translator;
         _maxRetakesPlayers = retakesMaxPlayers ?? 9;
@@ -40,7 +41,7 @@ public class QueueManager
     public HookResult PlayerJoinedTeam(CCSPlayerController player, CsTeam fromTeam, CsTeam toTeam)
     {
         Helpers.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] PlayerTriedToJoinTeam called.");
-        
+
         if (fromTeam == CsTeam.None && toTeam == CsTeam.Spectator)
         {
             // This is called when a player first joins.
@@ -71,20 +72,22 @@ public class QueueManager
                 )
             )
             {
-                Helpers.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] player is not in round list for {toTeam}, switching to spectator.");
+                Helpers.WriteLine(
+                    $"{RetakesPlugin.LogPrefix}[{player.PlayerName}] player is not in round list for {toTeam}, switching to spectator.");
                 ActivePlayers.Remove(player);
                 QueuePlayers.Add(player);
-                
+
                 if (player.PawnIsAlive)
                 {
                     player.CommitSuicide(false, true);
                 }
-                
+
                 player.ChangeTeam(CsTeam.Spectator);
                 return HookResult.Handled;
             }
 
-            Helpers.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] The player tried joining the team they're already on, or, there were not enough players so we don't care. Do nothing.");
+            Helpers.WriteLine(
+                $"{RetakesPlugin.LogPrefix}[{player.PlayerName}] The player tried joining the team they're already on, or, there were not enough players so we don't care. Do nothing.");
             Helpers.CheckRoundDone();
             return HookResult.Handled;
         }
@@ -94,7 +97,8 @@ public class QueueManager
         {
             if (Helpers.GetGameRules().WarmupPeriod && ActivePlayers.Count < _maxRetakesPlayers)
             {
-                Helpers.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Not found, adding to ActivePlayers (because in warmup).");
+                Helpers.WriteLine(
+                    $"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Not found, adding to ActivePlayers (because in warmup).");
                 ActivePlayers.Add(player);
                 return HookResult.Continue;
             }
@@ -143,15 +147,16 @@ public class QueueManager
             Helpers.WriteLine($"{RetakesPlugin.LogPrefix}ActivePlayers.Count != _maxRetakesPlayers, returning.");
             return;
         }
-        
-        var vipQueuePlayers = QueuePlayers.Where(player => AdminManager.PlayerHasPermissions(player, _queuePriorityFlag)).ToList();
+
+        var vipQueuePlayers = QueuePlayers
+            .Where(player => AdminManager.PlayerHasPermissions(player, _queuePriorityFlag)).ToList();
 
         if (vipQueuePlayers.Count <= 0)
         {
             Helpers.WriteLine($"{RetakesPlugin.LogPrefix}No VIP players found in queue, returning.");
             return;
         }
-        
+
         // loop through vipQueuePlayers and add them to ActivePlayers
         foreach (var vipQueuePlayer in vipQueuePlayers)
         {
@@ -160,47 +165,51 @@ public class QueueManager
             {
                 continue;
             }
-            
+
             // TODO: We shouldn't really shuffle here, implement a last in first out queue instead.
             var nonVipActivePlayers = Helpers.Shuffle(
                 ActivePlayers
                     .Where(player => !AdminManager.PlayerHasPermissions(player, _queuePriorityFlag))
                     .ToList()
             );
-            
+
             if (nonVipActivePlayers.Count == 0)
             {
                 Helpers.WriteLine($"{RetakesPlugin.LogPrefix}No non-VIP players found in ActivePlayers, returning.");
                 break;
             }
-            
+
             var nonVipActivePlayer = nonVipActivePlayers.First();
-            
+
             // Switching them to spectator will automatically remove them from the queue
             nonVipActivePlayer.ChangeTeam(CsTeam.Spectator);
             ActivePlayers.Remove(nonVipActivePlayer);
             QueuePlayers.Add(nonVipActivePlayer);
-            nonVipActivePlayer.PrintToChat($"{RetakesPlugin.MessagePrefix}{_translator["queue.replaced_by_vip", vipQueuePlayer.PlayerName]}");
+            nonVipActivePlayer.PrintToChat(
+                $"{RetakesPlugin.MessagePrefix}{_translator["queue.replaced_by_vip", vipQueuePlayer.PlayerName]}");
 
             // Add the new VIP player to ActivePlayers and remove them from QueuePlayers
             ActivePlayers.Add(vipQueuePlayer);
             QueuePlayers.Remove(vipQueuePlayer);
             vipQueuePlayer.ChangeTeam(CsTeam.CounterTerrorist);
-            vipQueuePlayer.PrintToChat($"{RetakesPlugin.MessagePrefix}{_translator["queue.vip_took_place", nonVipActivePlayer.PlayerName]}");
+            vipQueuePlayer.PrintToChat(
+                $"{RetakesPlugin.MessagePrefix}{_translator["queue.vip_took_place", nonVipActivePlayer.PlayerName]}");
         }
     }
 
     public void Update()
     {
         RemoveDisconnectedPlayers();
-        
-        Helpers.WriteLine($"{RetakesPlugin.LogPrefix}{_maxRetakesPlayers} max players, {ActivePlayers.Count} active players, {QueuePlayers.Count} players in queue.");
+
+        Helpers.WriteLine(
+            $"{RetakesPlugin.LogPrefix}{_maxRetakesPlayers} max players, {ActivePlayers.Count} active players, {QueuePlayers.Count} players in queue.");
         Helpers.WriteLine($"{RetakesPlugin.LogPrefix}players to add: {_maxRetakesPlayers - ActivePlayers.Count}");
         var playersToAdd = _maxRetakesPlayers - ActivePlayers.Count;
 
         if (playersToAdd > 0 && QueuePlayers.Count > 0)
         {
-            Helpers.WriteLine($"{RetakesPlugin.LogPrefix} inside if - this means the game has players to add and players in the queue.");
+            Helpers.WriteLine(
+                $"{RetakesPlugin.LogPrefix} inside if - this means the game has players to add and players in the queue.");
             // Take players from QueuePlayers and add them to ActivePlayers
             // Ordered by players with queue priority flag first since they
             // have queue priority.
@@ -217,12 +226,12 @@ public class QueueManager
                 {
                     continue;
                 }
-                
+
                 ActivePlayers.Add(player);
                 player.ChangeTeam(CsTeam.CounterTerrorist);
             }
         }
-        
+
         HandleQueuePriority();
 
         if (ActivePlayers.Count == _maxRetakesPlayers && QueuePlayers.Count > 0)

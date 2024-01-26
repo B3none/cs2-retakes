@@ -12,26 +12,26 @@ namespace RetakesPlugin.Modules;
 public static class Helpers
 {
     internal static readonly Random Random = new();
-    
+
     public static bool IsValidPlayer(CCSPlayerController? player)
     {
         return player != null && player.IsValid;
     }
-    
+
     public static bool DoesPlayerHavePawn(CCSPlayerController? player, bool shouldBeAlive = true)
     {
         if (!IsValidPlayer(player))
         {
             return false;
         }
-        
+
         var playerPawn = player!.PlayerPawn.Value;
 
         if (playerPawn == null || playerPawn is { AbsOrigin: null, AbsRotation: null })
         {
             return false;
         }
-        
+
         if (shouldBeAlive && !(playerPawn.Health > 0))
         {
             return false;
@@ -56,36 +56,37 @@ public static class Helpers
 
         return shuffledList;
     }
-    
+
     public static CCSGameRules GetGameRules()
     {
         var gameRulesEntities = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules");
         var gameRules = gameRulesEntities.First().GameRules;
-        
+
         if (gameRules == null)
         {
             throw new Exception($"{RetakesPlugin.LogPrefix}Game rules not found!");
         }
-        
+
         return gameRules;
     }
-    
+
     public static bool IsPlayerConnected(CCSPlayerController player)
     {
         return player.Connected == PlayerConnectedState.PlayerConnected;
     }
-    
+
     private const string RetakesCfgDirectory = "/../../../../cfg/cs2-retakes";
     private const string RetakesCfgPath = $"{RetakesCfgDirectory}/retakes.cfg";
+
     public static void ExecuteRetakesConfiguration(string moduleDirectory)
     {
         if (!File.Exists(moduleDirectory + RetakesCfgPath))
         {
             // make any directories required too
             Directory.CreateDirectory(moduleDirectory + RetakesCfgDirectory);
-            
+
             var retakesCfg = File.Create(moduleDirectory + RetakesCfgPath);
-            
+
             var retakesCfgContents = @"
                 // Things you shouldn't change:
                 bot_kick
@@ -128,13 +129,13 @@ public static class Helpers
 
                 echo [Retakes] Config loaded!
             ";
-            
+
             var retakesCfgBytes = Encoding.UTF8.GetBytes(retakesCfgContents);
             retakesCfg.Write(retakesCfgBytes, 0, retakesCfgBytes.Length);
-            
+
             retakesCfg.Close();
         }
-        
+
         Server.ExecuteCommand("exec cs2-retakes/retakes.cfg");
     }
 
@@ -145,12 +146,13 @@ public static class Helpers
             Console.WriteLine($"{RetakesPlugin.LogPrefix}{message}");
         }
     }
-    
+
     public static int GetCurrentNumPlayers(CsTeam? csTeam = null)
     {
         var players = 0;
 
-        foreach (var player in Utilities.GetPlayers().Where(player => IsValidPlayer(player) && IsPlayerConnected(player)))
+        foreach (var player in Utilities.GetPlayers()
+                     .Where(player => IsValidPlayer(player) && IsPlayerConnected(player)))
         {
             if (csTeam == null || player.Team == csTeam)
             {
@@ -173,7 +175,7 @@ public static class Helpers
         {
             return;
         }
-        
+
         var itemServices = new CCSPlayer_ItemServices(player.PlayerPawn.Value.ItemServices.Handle);
         itemServices.HasHelmet = false;
         itemServices.HasHeavyArmor = false;
@@ -188,13 +190,13 @@ public static class Helpers
 
         Server.ExecuteCommand("mp_restartgame 1");
     }
-    
+
     public static void CheckRoundDone()
     {
         var tHumanCount = GetCurrentNumPlayers(CsTeam.Terrorist);
-        var ctHumanCount= GetCurrentNumPlayers(CsTeam.CounterTerrorist);
-        
-        if (tHumanCount == 0 || ctHumanCount == 0) 
+        var ctHumanCount = GetCurrentNumPlayers(CsTeam.CounterTerrorist);
+
+        if (tHumanCount == 0 || ctHumanCount == 0)
         {
             TerminateRound(RoundEndReason.TerroristsWin);
         }
@@ -209,7 +211,8 @@ public static class Helpers
         }
         else
         {
-            Helpers.WriteLine($"{RetakesPlugin.LogPrefix}Windows server detected (Can't use TerminateRound) trying to kill all alive players instead.");
+            Helpers.WriteLine(
+                $"{RetakesPlugin.LogPrefix}Windows server detected (Can't use TerminateRound) trying to kill all alive players instead.");
             var alivePlayers = Utilities.GetPlayers()
                 .Where(IsValidPlayer)
                 .Where(player => player.PawnIsAlive)
@@ -222,14 +225,14 @@ public static class Helpers
         }
     }
 
-	public static double GetDistanceBetweenVectors(Vector v1, Vector v2)
-	{
-		var dx = v1.X - v2.X;
+    public static double GetDistanceBetweenVectors(Vector v1, Vector v2)
+    {
+        var dx = v1.X - v2.X;
         var dy = v1.Y - v2.Y;
 
-		return Math.Sqrt(Math.Pow(dx, 2) + Math.Pow(dy, 2));
-	}
-    
+        return Math.Sqrt(Math.Pow(dx, 2) + Math.Pow(dy, 2));
+    }
+
     public static void PlantTickingBomb(CCSPlayerController? player, Bombsite bombsite)
     {
         if (player == null || !player.IsValid)
@@ -238,22 +241,22 @@ public static class Helpers
         }
 
         var playerPawn = player.PlayerPawn.Value;
-        
+
         if (playerPawn == null || !playerPawn.IsValid)
         {
             throw new Exception("Player pawn is not valid");
         }
-        
+
         if (playerPawn.AbsOrigin == null)
         {
             throw new Exception("Player pawn abs origin is null");
         }
-        
+
         if (playerPawn.AbsRotation == null)
         {
             throw new Exception("Player pawn abs rotation is null");
         }
-        
+
         var plantedC4 = Utilities.CreateEntityByName<CPlantedC4>("planted_c4");
 
         if (plantedC4 == null)
@@ -265,7 +268,7 @@ public static class Helpers
         {
             throw new Exception("c4.AbsOrigin is null");
         }
-        
+
         plantedC4.AbsOrigin.X = playerPawn.AbsOrigin.X;
         plantedC4.AbsOrigin.Y = playerPawn.AbsOrigin.Y;
         plantedC4.AbsOrigin.Z = playerPawn.AbsOrigin.Z;
@@ -298,25 +301,25 @@ public static class Helpers
 
         NativeAPI.FireEvent(eventPtr, false);
     }
-    
+
     public static int ShowSpawns(List<Spawn> spawns, Bombsite? bombsite)
     {
         if (bombsite == null)
         {
             return -1;
         }
-        
+
         spawns = spawns.Where(spawn => spawn.Bombsite == bombsite).ToList();
-        
+
         foreach (var spawn in spawns)
         {
             ShowSpawn(spawn);
         }
-        
+
         Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}Showing {spawns.Count} spawns for bombsite {bombsite}.");
         return spawns.Count;
     }
-    
+
     public static void ShowSpawn(Spawn spawn)
     {
         var beam = Utilities.CreateEntityByName<CBeam>("beam") ?? throw new Exception("Failed to create beam entity.");

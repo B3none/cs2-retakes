@@ -6,7 +6,7 @@ public class RetakesConfig
 {
     private readonly string _retakesConfigPath;
     public RetakesConfigData? RetakesConfigData;
-    
+
     public RetakesConfig(string moduleDirectory)
     {
         _retakesConfigPath = Path.Combine(moduleDirectory, "retakes_config.json");
@@ -16,7 +16,7 @@ public class RetakesConfig
     public void Load()
     {
         Helpers.WriteLine($"{RetakesPlugin.LogPrefix}Attempting to load data from {_retakesConfigPath}");
-        
+
         try
         {
             if (!File.Exists(_retakesConfigPath))
@@ -31,13 +31,13 @@ public class RetakesConfig
             {
                 throw new Exception("Retakes config is null after deserialization");
             }
-            
+
             if (RetakesConfigData.Version != RetakesConfigData.CurrentVersion)
             {
                 UpdateVersion();
                 throw new Exception("Config is outdated");
             }
-            
+
             Helpers.WriteLine($"{RetakesPlugin.LogPrefix}Data loaded from {_retakesConfigPath}");
         }
         catch (FileNotFoundException)
@@ -78,23 +78,23 @@ public class RetakesConfig
             Helpers.WriteLine($"{RetakesPlugin.LogPrefix}Retakes config is null");
             return false;
         }
-        
+
         if (retakesConfig.RetakesConfigData == null)
         {
             Helpers.WriteLine($"{RetakesPlugin.LogPrefix}Retakes config data is null");
             return false;
         }
-        
+
         return true;
     }
-    
+
     private bool UpdateVersion()
     {
         if (RetakesConfigData == null)
         {
             return false;
         }
-        
+
         if (RetakesConfigData.Version == RetakesConfigData.CurrentVersion)
         {
             return true;
@@ -102,7 +102,7 @@ public class RetakesConfig
 
         RetakesConfigData.Version = RetakesConfigData.CurrentVersion;
         Save();
-        
+
         return true;
     }
 }

@@ -23,7 +23,8 @@ public static class AllocationManager
             && player.PlayerPawn.Value != null
             && player.PlayerPawn.Value.IsValid
             && player.PlayerPawn.Value.ItemServices != null
-        ) {
+        )
+        {
             var itemServices = new CCSPlayer_ItemServices(player.PlayerPawn.Value.ItemServices.Handle);
             itemServices.HasDefuser = true;
         }
@@ -37,7 +38,7 @@ public static class AllocationManager
             // player.GiveNamedItem(CsItem.Glock);
             player.GiveNamedItem(CsItem.Deagle);
         }
-        
+
         if (player.Team == CsTeam.CounterTerrorist)
         {
             // @klippy
@@ -62,7 +63,7 @@ public static class AllocationManager
         switch (Helpers.Random.Next(4))
         {
             case 0:
-                player.GiveNamedItem(CsItem.SmokeGrenade);   
+                player.GiveNamedItem(CsItem.SmokeGrenade);
                 break;
             case 1:
                 player.GiveNamedItem(CsItem.Flashbang);

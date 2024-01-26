@@ -11,7 +11,7 @@ public class Translator
     {
         _stringLocalizerImplementation = localizer;
     }
-    
+
     public IEnumerable<LocalizedString> GetAllStrings(bool includeParentCultures)
     {
         return _stringLocalizerImplementation.GetAllStrings(includeParentCultures);
@@ -24,14 +24,14 @@ public class Translator
     private string Translate(string key, params object[] arguments)
     {
         var localizedString = _stringLocalizerImplementation[key, arguments];
-        
+
         if (localizedString == null || localizedString.ResourceNotFound)
         {
             return key;
         }
 
         var translation = localizedString.Value;
-        
+
         // Handle translation colours
         return translation
             .Replace("[GREEN]", ChatColors.Green.ToString())
