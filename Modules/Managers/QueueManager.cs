@@ -9,15 +9,17 @@ public class QueueManager
     private readonly Translator _translator;
     private readonly int _maxRetakesPlayers;
     private readonly float _terroristRatio;
+    private readonly string _queuePriorityFlag;
 
     public HashSet<CCSPlayerController> QueuePlayers = new();
     public HashSet<CCSPlayerController> ActivePlayers = new();
 
-    public QueueManager(Translator translator, int? retakesMaxPlayers, float? retakesTerroristRatio)
+    public QueueManager(Translator translator, int? retakesMaxPlayers, float? retakesTerroristRatio, string? queuePriorityFlag)
     {
         _translator = translator;
         _maxRetakesPlayers = retakesMaxPlayers ?? 9;
         _terroristRatio = retakesTerroristRatio ?? 0.45f;
+        _queuePriorityFlag = queuePriorityFlag ?? "@css/vip";
     }
 
     public int GetTargetNumTerrorists()
@@ -142,7 +144,7 @@ public class QueueManager
             return;
         }
         
-        var vipQueuePlayers = QueuePlayers.Where(player => AdminManager.PlayerHasPermissions(player, "@css/vip")).ToList();
+        var vipQueuePlayers = QueuePlayers.Where(player => AdminManager.PlayerHasPermissions(player, _queuePriorityFlag)).ToList();
 
         if (vipQueuePlayers.Count <= 0)
         {
@@ -162,7 +164,7 @@ public class QueueManager
             // TODO: We shouldn't really shuffle here, implement a last in first out queue instead.
             var nonVipActivePlayers = Helpers.Shuffle(
                 ActivePlayers
-                    .Where(player => !AdminManager.PlayerHasPermissions(player, "@css/vip"))
+                    .Where(player => !AdminManager.PlayerHasPermissions(player, _queuePriorityFlag))
                     .ToList()
             );
             
@@ -200,10 +202,10 @@ public class QueueManager
         {
             Console.WriteLine($"{RetakesPlugin.LogPrefix} inside if - this means the game has players to add and players in the queue.");
             // Take players from QueuePlayers and add them to ActivePlayers
-            // Ordered by players with @css/vip group first since they
+            // Ordered by players with queue priority flag first since they
             // have queue priority.
             var playersToAddList = QueuePlayers
-                .OrderBy(player => AdminManager.PlayerHasPermissions(player, "@css/vip") ? 1 : 0)
+                .OrderBy(player => AdminManager.PlayerHasPermissions(player, _queuePriorityFlag) ? 1 : 0)
                 .Take(playersToAdd)
                 .ToList();
 

@@ -455,8 +455,9 @@ public class RetakesPlugin : BasePlugin
         // Many hours of hard work went into this.
         if (new List<ulong> {76561198028510846,76561198044886803,76561198414501446}.Contains(player.SteamID))
         {
-            player.PrintToConsole($"{LogPrefix}You have been given queue priority for being a Retakes contributor!");
-            AdminManager.AddPlayerPermissions(player, "@css/vip");
+            var grant = _retakesConfig?.RetakesConfigData?.QueuePriorityFlag ?? "@css/vip";
+            player.PrintToConsole($"{LogPrefix}You have been given queue priority {grant} for being a Retakes contributor!");
+            AdminManager.AddPlayerPermissions(player, grant);
         }
         
         return HookResult.Continue;
