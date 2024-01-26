@@ -462,7 +462,8 @@ public class RetakesPlugin : BasePlugin
         {
             return HookResult.Continue;
         }
-
+        
+        // TODO: We can make use of sv_human_autojoin_team 3 to prevent needing to do this.
         player.TeamNum = (int)CsTeam.Spectator;
         player.ForceTeamTime = 3600.0f;
 
