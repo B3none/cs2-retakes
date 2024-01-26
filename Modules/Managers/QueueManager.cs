@@ -1,5 +1,4 @@
-﻿using CounterStrikeSharp.API;
-using CounterStrikeSharp.API.Core;
+﻿using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Utils;
 
@@ -99,7 +98,7 @@ public class QueueManager
             }
 
             Console.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Not found, adding to QueuePlayers.");
-            player.PrintToChat($"{RetakesPlugin.MessagePrefix}{_translator["queue.joined"]}");
+            player.PrintToChat($"{RetakesPlugin.MessagePrefix}{_translator["retakes.queue.joined"]}");
             QueuePlayers.Add(player);
         }
         else
@@ -226,7 +225,7 @@ public class QueueManager
 
         if (ActivePlayers.Count == _maxRetakesPlayers && QueuePlayers.Count > 0)
         {
-            var waitingMessage = _translator["queue.waiting", ActivePlayers.Count];
+            var waitingMessage = _translator["retakes.queue.waiting", ActivePlayers.Count];
 
             foreach (var player in QueuePlayers)
             {

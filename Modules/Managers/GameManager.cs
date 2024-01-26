@@ -28,7 +28,7 @@ public class GameManager
     public void ScrambleNextRound(CCSPlayerController? admin = null)
     {
         _scrambleNextRound = true;
-        Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["teams.admin_scramble", admin?.PlayerName ?? "The server owner"]}");
+        Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["retakes.teams.admin_scramble", admin?.PlayerName ?? "The server owner"]}");
     }
     
     private void ScrambleTeams()
@@ -70,7 +70,7 @@ public class GameManager
         
         if (_consecutiveRoundsWon == _consecutiveRoundWinsToScramble)
         {
-            Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["teams.scramble", _consecutiveRoundWinsToScramble]}");
+            Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["retakes.teams.scramble", _consecutiveRoundWinsToScramble]}");
          
             _consecutiveRoundsWon = 0;
             ScrambleTeams();
@@ -79,11 +79,11 @@ public class GameManager
         {
             if (_isScrambleEnabled)
             {
-                Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["teams.almost_scramble", _consecutiveRoundsWon, _consecutiveRoundWinsToScramble - _consecutiveRoundsWon]}");
+                Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["retakes.teams.almost_scramble", _consecutiveRoundsWon, _consecutiveRoundWinsToScramble - _consecutiveRoundsWon]}");
             }
             else
             {
-                Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["teams.win_streak", _consecutiveRoundsWon]}");
+                Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["retakes.teams.win_streak", _consecutiveRoundsWon]}");
             }
         } else if (_scrambleNextRound)
         {
@@ -97,7 +97,7 @@ public class GameManager
     {
         if (_consecutiveRoundsWon >= 3)
         {
-            Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["teams.win_streak_over", _consecutiveRoundsWon]}");
+            Server.PrintToChatAll($"{RetakesPlugin.MessagePrefix}{_translator["retakes.teams.win_streak_over", _consecutiveRoundsWon]}");
         }
         _consecutiveRoundsWon = 0;
         

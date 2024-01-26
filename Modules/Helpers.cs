@@ -39,21 +39,6 @@ public static class Helpers
 
         return true;
     }
-    
-    public static T GetAndRemoveRandomItem<T>(List<T> list)
-    {
-        if (list == null || list.Count == 0)
-        {
-            throw new ArgumentException("List is null or empty");
-        }
-
-        var randomIndex = Random.Next(list.Count);
-        var randomItem = list[randomIndex];
-
-        list.RemoveAt(randomIndex);
-
-        return randomItem;
-    }
 
     public static List<T> Shuffle<T>(IEnumerable<T> list)
     {
@@ -83,30 +68,6 @@ public static class Helpers
         }
         
         return gameRules;
-    }
-    
-    public static void RemoveAllWeaponsAndEntities(CCSPlayerController player)
-    {
-        if (!IsValidPlayer(player))
-        {
-            return;
-        }
-        
-        if (player.PlayerPawn.Value == null || player.PlayerPawn.Value.WeaponServices == null)
-        {
-            return;
-        }
-        
-        foreach (var weapon in player.PlayerPawn.Value.WeaponServices.MyWeapons)
-        {
-            if (weapon is not { IsValid: true, Value.IsValid: true })
-            {
-                continue;
-            }
-        
-            player.PlayerPawn.Value.RemovePlayerItem(weapon.Value);
-            weapon.Value.Remove();
-        }
     }
     
     public static bool IsPlayerConnected(CCSPlayerController player)
@@ -192,37 +153,6 @@ public static class Helpers
         return players;
     }
 
-    public static bool HasBomb(CCSPlayerController player)
-    {
-        if (!IsValidPlayer(player))
-        {
-            return false;
-        }
-        
-        CHandle<CBasePlayerWeapon>? item = null;
-        if (player.PlayerPawn.Value == null || player.PlayerPawn.Value.WeaponServices == null)
-        {
-            return false;
-        }
-
-        foreach (var weapon in player.PlayerPawn.Value.WeaponServices.MyWeapons)
-        {
-            if (weapon is not { IsValid: true, Value.IsValid: true })
-            {
-                continue;
-            }
-
-            if (weapon.Value.DesignerName != "weapon_c4")
-            {
-                continue;
-            }
-
-            item = weapon;
-        }
-
-        return item != null && item.Value != null;
-    }
-
     public static void GiveAndSwitchToBomb(CCSPlayerController player)
     {
         player.GiveNamedItem(CsItem.Bomb);
@@ -284,16 +214,6 @@ public static class Helpers
         }
     }
 
-    public static CPlantedC4? GetPlantedC4()
-    {
-        return Utilities.FindAllEntitiesByDesignerName<CPlantedC4>("planted_c4").FirstOrDefault();
-    }
-
-    public static bool IsInRange(float range, Vector v1, Vector v2)
-    {
-        return GetDistanceBetweenVectors(v1, v2) <= range;
-    }
-
 	public static double GetDistanceBetweenVectors(Vector v1, Vector v2)
 	{
 		var dx = v1.X - v2.X;
@@ -301,11 +221,6 @@ public static class Helpers
 
 		return Math.Sqrt(Math.Pow(dx, 2) + Math.Pow(dy, 2));
 	}
-
-    public static bool IsOnGround(CCSPlayerController player)
-    {
-        return (player.PlayerPawn.Value!.Flags & (int)PlayerFlags.FL_ONGROUND) != 0;
-    }
     
     public static void PlantTickingBomb(CCSPlayerController? player, Bombsite bombsite)
     {
@@ -360,8 +275,8 @@ public static class Helpers
 
         SendBombPlantedEvent(player, bombsite);
     }
-    
-    public static void SendBombPlantedEvent(CCSPlayerController bombCarrier, Bombsite bombsite)
+
+    private static void SendBombPlantedEvent(CCSPlayerController bombCarrier, Bombsite bombsite)
     {
         if (!bombCarrier.IsValid || bombCarrier.PlayerPawn.Value == null)
         {
