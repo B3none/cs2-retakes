@@ -16,4 +16,5 @@ public class RetakesConfigData
     public bool ShouldOpenDoors { get; set; } = false;
     public bool IsAutoPlantEnabled { get; set; } = true;
     public string QueuePriorityFlag { get; set; } = "@css/vip";
+    public bool IsDebugMode { get; set; } = false;
 }

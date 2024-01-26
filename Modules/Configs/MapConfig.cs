@@ -19,7 +19,7 @@ public class MapConfig
 
     public void Load()
     {
-        Console.WriteLine($"{RetakesPlugin.LogPrefix}Attempting to load map data from {_mapConfigPath}");
+        Helpers.WriteLine($"{RetakesPlugin.LogPrefix}Attempting to load map data from {_mapConfigPath}");
         
         try
         {
@@ -37,17 +37,17 @@ public class MapConfig
             //     throw new Exception("No spawns found in config");
             // }
             
-            Console.WriteLine($"{RetakesPlugin.LogPrefix}Data loaded from {_mapConfigPath}");
+            Helpers.WriteLine($"{RetakesPlugin.LogPrefix}Data loaded from {_mapConfigPath}");
         }
         catch (FileNotFoundException)
         {
-            Console.WriteLine($"{RetakesPlugin.LogPrefix}No config for map {_mapName}");
+            Helpers.WriteLine($"{RetakesPlugin.LogPrefix}No config for map {_mapName}");
             _mapConfigData = new MapConfigData();
             Save();
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"{RetakesPlugin.LogPrefix}An error occurred while loading data: {ex.Message}");
+            Helpers.WriteLine($"{RetakesPlugin.LogPrefix}An error occurred while loading data: {ex.Message}");
         }
     }
 
@@ -132,11 +132,11 @@ public class MapConfig
             
             File.WriteAllText(_mapConfigPath, jsonString);
 
-            Console.WriteLine($"{RetakesPlugin.LogPrefix}Data has been written to {_mapConfigPath}");
+            Helpers.WriteLine($"{RetakesPlugin.LogPrefix}Data has been written to {_mapConfigPath}");
         }
         catch (IOException e)
         {
-            Console.WriteLine($"{RetakesPlugin.LogPrefix}An error occurred while writing to the file: {e.Message}");
+            Helpers.WriteLine($"{RetakesPlugin.LogPrefix}An error occurred while writing to the file: {e.Message}");
         }
     }
 

@@ -137,6 +137,14 @@ public static class Helpers
         
         Server.ExecuteCommand("exec cs2-retakes/retakes.cfg");
     }
+
+    public static void WriteLine(string message)
+    {
+        if (RetakesPlugin.IsDebugMode)
+        {
+            Console.WriteLine($"{RetakesPlugin.LogPrefix}{message}");
+        }
+    }
     
     public static int GetCurrentNumPlayers(CsTeam? csTeam = null)
     {
@@ -201,7 +209,7 @@ public static class Helpers
         }
         else
         {
-            Console.WriteLine($"{RetakesPlugin.LogPrefix}Windows server detected (Can't use TerminateRound) trying to kill all alive players instead.");
+            Helpers.WriteLine($"{RetakesPlugin.LogPrefix}Windows server detected (Can't use TerminateRound) trying to kill all alive players instead.");
             var alivePlayers = Utilities.GetPlayers()
                 .Where(IsValidPlayer)
                 .Where(player => player.PawnIsAlive)

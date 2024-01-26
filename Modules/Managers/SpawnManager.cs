@@ -55,7 +55,7 @@ public class SpawnManager
      */
 	public CCSPlayerController? HandleRoundSpawns(Bombsite bombsite, HashSet<CCSPlayerController> players)
 	{
-		Console.WriteLine($"{RetakesPlugin.LogPrefix}Moving players to spawns.");
+		Helpers.WriteLine($"{RetakesPlugin.LogPrefix}Moving players to spawns.");
 
 		// Clone the spawns so we can mutate them
 		var spawns = _spawns[bombsite].ToDictionary(
@@ -113,7 +113,7 @@ public class SpawnManager
 			player.PlayerPawn.Value!.Teleport(spawn.Vector, spawn.QAngle, new Vector());
 			spawns[team].Remove(spawn);
 		}
-		Console.WriteLine($"{RetakesPlugin.LogPrefix}Moving players to spawns COMPLETE.");
+		Helpers.WriteLine($"{RetakesPlugin.LogPrefix}Moving players to spawns COMPLETE.");
 
 		return planter;
 	}

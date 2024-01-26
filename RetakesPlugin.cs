@@ -29,6 +29,7 @@ public class RetakesPlugin : BasePlugin
     #region Constants
     public static readonly string LogPrefix = $"[Retakes {Version}] ";
     public static string MessagePrefix = $"[{ChatColors.Green}Retakes{ChatColors.White}] ";
+    public static bool IsDebugMode = false;
     #endregion
     
     #region Helpers
@@ -69,7 +70,7 @@ public class RetakesPlugin : BasePlugin
         
         MessagePrefix = _translator["retakes.prefix"];
         
-        Console.WriteLine($"{LogPrefix}Plugin loaded!");
+        Helpers.WriteLine($"{LogPrefix}Plugin loaded!");
         
         RegisterListener<Listeners.OnMapStart>(OnMapStart);
         
@@ -378,7 +379,7 @@ public class RetakesPlugin : BasePlugin
     {
         if (_gameManager == null)
         {
-            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
+            Helpers.WriteLine($"{LogPrefix}Game manager not loaded.");
             return;
         }
         
@@ -389,7 +390,7 @@ public class RetakesPlugin : BasePlugin
     #region Listeners
     private void OnMapStart(string mapName)
     {
-        Console.WriteLine($"{LogPrefix}OnMapStart listener triggered!");
+        Helpers.WriteLine($"{LogPrefix}OnMapStart listener triggered!");
 
         ResetState();
         
@@ -424,7 +425,8 @@ public class RetakesPlugin : BasePlugin
             new QueueManager(
                 _translator,
                 _retakesConfig?.RetakesConfigData?.MaxPlayers,
-                _retakesConfig?.RetakesConfigData?.TerroristRatio
+                _retakesConfig?.RetakesConfigData?.TerroristRatio,
+                _retakesConfig?.RetakesConfigData?.QueuePriorityFlag
             ),
             _retakesConfig?.RetakesConfigData?.RoundsToScramble,
             _retakesConfig?.RetakesConfigData?.IsScrambleEnabled
@@ -434,6 +436,8 @@ public class RetakesPlugin : BasePlugin
             _retakesConfig?.RetakesConfigData?.ShouldBreakBreakables,
             _retakesConfig?.RetakesConfigData?.ShouldOpenDoors
         );
+        
+        IsDebugMode = _retakesConfig?.RetakesConfigData?.IsDebugMode ?? false;
     }
 
     [GameEventHandler]
@@ -469,13 +473,13 @@ public class RetakesPlugin : BasePlugin
         // If we are in warmup, skip.
         if (Helpers.GetGameRules().WarmupPeriod)
         {
-            Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
+            Helpers.WriteLine($"{LogPrefix}Warmup round, skipping.");
             return HookResult.Continue;
         }
         
         if (_gameManager == null)
         {
-            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
+            Helpers.WriteLine($"{LogPrefix}Game manager not loaded.");
             return HookResult.Continue;
         }
         
@@ -483,25 +487,25 @@ public class RetakesPlugin : BasePlugin
         _gameManager.QueueManager.ClearRoundTeams();
         
         // Update Queue status
-        Console.WriteLine($"{LogPrefix}Updating queues...");
+        Helpers.WriteLine($"{LogPrefix}Updating queues...");
         _gameManager.QueueManager.DebugQueues(true);
         _gameManager.QueueManager.Update();
         _gameManager.QueueManager.DebugQueues(false);
-        Console.WriteLine($"{LogPrefix}Updated queues.");
+        Helpers.WriteLine($"{LogPrefix}Updated queues.");
         
         // Handle team swaps during round pre-start.
         switch (_lastRoundWinner)
         {
             case CsTeam.CounterTerrorist:
-                Console.WriteLine($"{LogPrefix}Calling CounterTerroristRoundWin()");
+                Helpers.WriteLine($"{LogPrefix}Calling CounterTerroristRoundWin()");
                 _gameManager.CounterTerroristRoundWin();
-                Console.WriteLine($"{LogPrefix}CounterTerroristRoundWin call complete");
+                Helpers.WriteLine($"{LogPrefix}CounterTerroristRoundWin call complete");
                 break;
             
             case CsTeam.Terrorist:
-                Console.WriteLine($"{LogPrefix}Calling TerroristRoundWin()");
+                Helpers.WriteLine($"{LogPrefix}Calling TerroristRoundWin()");
                 _gameManager.TerroristRoundWin();
-                Console.WriteLine($"{LogPrefix}TerroristRoundWin call complete");
+                Helpers.WriteLine($"{LogPrefix}TerroristRoundWin call complete");
                 break;
         }
 
@@ -528,7 +532,7 @@ public class RetakesPlugin : BasePlugin
         // If we are in warmup, skip.
         if (Helpers.GetGameRules().WarmupPeriod)
         {
-            Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
+            Helpers.WriteLine($"{LogPrefix}Warmup round, skipping.");
 
             if (_mapConfig != null)
             {
@@ -540,13 +544,13 @@ public class RetakesPlugin : BasePlugin
         
         if (_gameManager == null)
         {
-            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
+            Helpers.WriteLine($"{LogPrefix}Game manager not loaded.");
             return HookResult.Continue;
         }
 
         if (_spawnManager == null)
         {
-            Console.WriteLine($"{LogPrefix}Spawn manager not loaded.");
+            Helpers.WriteLine($"{LogPrefix}Spawn manager not loaded.");
             return HookResult.Continue;
         }
         
@@ -555,7 +559,7 @@ public class RetakesPlugin : BasePlugin
         _currentBombsite = Helpers.Random.Next(0, 2) == 0 ? Bombsite.A : Bombsite.B;
         _gameManager.ResetPlayerScores();
         
-        Console.WriteLine("Clearing _showingSpawnsForBombsite");
+        Helpers.WriteLine("Clearing _showingSpawnsForBombsite");
 		_showingSpawnsForBombsite = null;
         
 		_planter = _spawnManager.HandleRoundSpawns(_currentBombsite, _gameManager.QueueManager.ActivePlayers);
@@ -570,21 +574,21 @@ public class RetakesPlugin : BasePlugin
     {
         if (_gameManager == null)
         {
-            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
+            Helpers.WriteLine($"{LogPrefix}Game manager not loaded.");
             return HookResult.Continue;
         }
         
         // If we are in warmup, skip.
         if (Helpers.GetGameRules().WarmupPeriod)
         {
-            Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
+            Helpers.WriteLine($"{LogPrefix}Warmup round, skipping.");
             return HookResult.Continue;
         }
         
-        Console.WriteLine($"{LogPrefix}Trying to loop valid active players.");
+        Helpers.WriteLine($"{LogPrefix}Trying to loop valid active players.");
         foreach (var player in _gameManager.QueueManager.ActivePlayers.Where(Helpers.IsValidPlayer))
         {
-            Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Adding timer for allocation...");
+            Helpers.WriteLine($"{LogPrefix}[{player.PlayerName}] Adding timer for allocation...");
 
             if (!Helpers.IsValidPlayer(player))
             {
@@ -600,24 +604,24 @@ public class RetakesPlugin : BasePlugin
             {
                 if (!Helpers.IsValidPlayer(player))
                 {
-                    Console.WriteLine($"{LogPrefix}Allocating weapons: Player is not valid.");
+                    Helpers.WriteLine($"{LogPrefix}Allocating weapons: Player is not valid.");
                     return;
                 }
                 
                 if (player == _planter && RetakesConfig.IsLoaded(_retakesConfig) && !_retakesConfig!.RetakesConfigData!.IsAutoPlantEnabled)
                 {
-                    Console.WriteLine($"{LogPrefix}Player is planter and auto plant is disabled, allocating bomb.");
+                    Helpers.WriteLine($"{LogPrefix}Player is planter and auto plant is disabled, allocating bomb.");
                     Helpers.GiveAndSwitchToBomb(player);
                 }
                 
                 if (!RetakesConfig.IsLoaded(_retakesConfig) || _retakesConfig!.RetakesConfigData!.EnableFallbackAllocation)
                 {
-                    Console.WriteLine($"{LogPrefix}Allocating...");
+                    Helpers.WriteLine($"{LogPrefix}Allocating...");
                     AllocationManager.Allocate(player);
                 }
                 else
                 {
-                    Console.WriteLine($"{LogPrefix}Fallback allocation disabled, skipping.");
+                    Helpers.WriteLine($"{LogPrefix}Fallback allocation disabled, skipping.");
                 }
             });
         }
@@ -631,7 +635,7 @@ public class RetakesPlugin : BasePlugin
         // If we are in warmup, skip.
         if (Helpers.GetGameRules().WarmupPeriod)
         {
-            Console.WriteLine($"{LogPrefix}Warmup round, skipping.");
+            Helpers.WriteLine($"{LogPrefix}Warmup round, skipping.");
             return HookResult.Continue;
         }
        
@@ -648,7 +652,7 @@ public class RetakesPlugin : BasePlugin
     {
         if (_gameManager == null)
         {
-            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
+            Helpers.WriteLine($"{LogPrefix}Game manager not loaded.");
             return HookResult.Continue;
         }
         
@@ -660,21 +664,21 @@ public class RetakesPlugin : BasePlugin
         }
         
         // debug and check if the player is in the queue.
-        Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking ActivePlayers.");
+        Helpers.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking ActivePlayers.");
         if (!_gameManager.QueueManager.ActivePlayers.Contains(player))
         {
-            Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking player pawn {player.PlayerPawn.Value != null}.");
+            Helpers.WriteLine($"{LogPrefix}[{player.PlayerName}] Checking player pawn {player.PlayerPawn.Value != null}.");
             if (player.PlayerPawn.Value != null && player.PlayerPawn.IsValid && player.PlayerPawn.Value.IsValid)
             {
-                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] player pawn is valid {player.PlayerPawn.IsValid} && {player.PlayerPawn.Value.IsValid}.");
-                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] calling playerpawn.commitsuicide()");
+                Helpers.WriteLine($"{LogPrefix}[{player.PlayerName}] player pawn is valid {player.PlayerPawn.IsValid} && {player.PlayerPawn.Value.IsValid}.");
+                Helpers.WriteLine($"{LogPrefix}[{player.PlayerName}] calling playerpawn.commitsuicide()");
                 player.PlayerPawn.Value.CommitSuicide(false, true);
             }
             
-            Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Player not in ActivePlayers, moving to spectator.");
+            Helpers.WriteLine($"{LogPrefix}[{player.PlayerName}] Player not in ActivePlayers, moving to spectator.");
             if (!player.IsBot)
             {
-                Console.WriteLine($"{LogPrefix}[{player.PlayerName}] moving to spectator.");
+                Helpers.WriteLine($"{LogPrefix}[{player.PlayerName}] moving to spectator.");
                 player.ChangeTeam(CsTeam.Spectator);
             }
             
@@ -682,7 +686,7 @@ public class RetakesPlugin : BasePlugin
         }
         else
         {
-            Console.WriteLine($"{LogPrefix}[{player.PlayerName}] Player is in ActivePlayers.");
+            Helpers.WriteLine($"{LogPrefix}[{player.PlayerName}] Player is in ActivePlayers.");
         }
 
         return HookResult.Continue;
@@ -691,7 +695,7 @@ public class RetakesPlugin : BasePlugin
     [GameEventHandler(HookMode.Pre)]
     public HookResult OnBombPlanted(EventBombPlanted @event, GameEventInfo info)
     {
-        Console.WriteLine($"{LogPrefix}OnBombPlanted event fired");
+        Helpers.WriteLine($"{LogPrefix}OnBombPlanted event fired");
         
         AddTimer(4.1f, () => AnnounceBombsite(_currentBombsite, true));
         
@@ -703,7 +707,7 @@ public class RetakesPlugin : BasePlugin
     {
         if (_gameManager == null)
         {
-            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
+            Helpers.WriteLine($"{LogPrefix}Game manager not loaded.");
             return HookResult.Continue;
         }
 
@@ -728,7 +732,7 @@ public class RetakesPlugin : BasePlugin
     {
         if (_gameManager == null)
         {
-            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
+            Helpers.WriteLine($"{LogPrefix}Game manager not loaded.");
             return HookResult.Continue;
         }
         
@@ -763,7 +767,7 @@ public class RetakesPlugin : BasePlugin
     {
         if (_gameManager == null)
         {
-            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
+            Helpers.WriteLine($"{LogPrefix}Game manager not loaded.");
             return HookResult.Continue;
         }
         
@@ -778,20 +782,20 @@ public class RetakesPlugin : BasePlugin
 
         var fromTeam = player!.Team;
         
-        Console.WriteLine($"{LogPrefix}[{player.PlayerName}] {fromTeam} -> {toTeam}");
+        Helpers.WriteLine($"{LogPrefix}[{player.PlayerName}] {fromTeam} -> {toTeam}");
         
         _gameManager.QueueManager.DebugQueues(true);
         var response = _gameManager.QueueManager.PlayerJoinedTeam(player, fromTeam, toTeam);
         _gameManager.QueueManager.DebugQueues(false);
         
-        Console.WriteLine($"{LogPrefix}[{player.PlayerName}] checking to ensure we have active players");
+        Helpers.WriteLine($"{LogPrefix}[{player.PlayerName}] checking to ensure we have active players");
         // If we don't have any active players, setup the active players and restart the game.
         if (_gameManager.QueueManager.ActivePlayers.Count == 0)
         {
-            Console.WriteLine($"{LogPrefix}[{player.PlayerName}] clearing round teams to allow team changes");
+            Helpers.WriteLine($"{LogPrefix}[{player.PlayerName}] clearing round teams to allow team changes");
             _gameManager.QueueManager.ClearRoundTeams();
          
-            Console.WriteLine($"{LogPrefix}[{player.PlayerName}] no active players found, calling QueueManager.Update()");
+            Helpers.WriteLine($"{LogPrefix}[{player.PlayerName}] no active players found, calling QueueManager.Update()");
             _gameManager.QueueManager.DebugQueues(true);
             _gameManager.QueueManager.Update();
             _gameManager.QueueManager.DebugQueues(false);
@@ -814,7 +818,7 @@ public class RetakesPlugin : BasePlugin
         
         if (_gameManager == null)
         {
-            Console.WriteLine($"{LogPrefix}Game manager not loaded.");
+            Helpers.WriteLine($"{LogPrefix}Game manager not loaded.");
             return HookResult.Continue;
         }
         
