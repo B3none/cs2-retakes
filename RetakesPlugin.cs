@@ -20,45 +20,36 @@ public class RetakesPlugin : BasePlugin
     private const string Version = "1.3.21";
 
     #region Plugin info
-
     public override string ModuleName => "Retakes Plugin";
     public override string ModuleVersion => Version;
     public override string ModuleAuthor => "B3none";
     public override string ModuleDescription => "Community retakes for CS2.";
-
     #endregion
 
     #region Constants
-
     public static readonly string LogPrefix = $"[Retakes {Version}] ";
     public static string MessagePrefix = $"[{ChatColors.Green}Retakes{ChatColors.White}] ";
     public static bool IsDebugMode = false;
-
     #endregion
 
     #region Helpers
-
     private Translator _translator;
     private GameManager? _gameManager;
     private SpawnManager? _spawnManager;
     private BreakerManager? _breakerManager;
-
     #endregion
 
     #region Configs
-
     private MapConfig? _mapConfig;
     private RetakesConfig? _retakesConfig;
-
     #endregion
 
     #region State
-
     private Bombsite _currentBombsite = Bombsite.A;
     private CCSPlayerController? _planter;
     private CsTeam _lastRoundWinner = CsTeam.None;
     private Bombsite? _showingSpawnsForBombsite;
-
+    
     private void ResetState()
     {
         _currentBombsite = Bombsite.A;
@@ -66,7 +57,6 @@ public class RetakesPlugin : BasePlugin
         _lastRoundWinner = CsTeam.None;
         _showingSpawnsForBombsite = null;
     }
-
     #endregion
 
     public RetakesPlugin()
@@ -399,11 +389,9 @@ public class RetakesPlugin : BasePlugin
 
         _gameManager.QueueManager.DebugQueues(true);
     }
-
     #endregion
 
     #region Listeners
-
     private void OnMapStart(string mapName)
     {
         Helpers.WriteLine($"{LogPrefix}OnMapStart listener triggered!");
@@ -846,7 +834,6 @@ public class RetakesPlugin : BasePlugin
 
         return HookResult.Continue;
     }
-
     #endregion
 
     // Helpers (with localization so they must be in here until I can figure out how to use it nicely elsewhere)
