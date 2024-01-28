@@ -29,6 +29,8 @@ public class RetakesPlugin : BasePlugin
 
     #region Constants
     public static readonly string LogPrefix = $"[Retakes {Version}] ";
+    
+    // These two static variables are overwritten in the OnMapStart listener with config values.
     public static string MessagePrefix = $"[{ChatColors.Green}Retakes{ChatColors.White}] ";
     public static bool IsDebugMode = false;
     #endregion
