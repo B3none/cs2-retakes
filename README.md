@@ -68,6 +68,7 @@ When the plugin is first loaded it will create a `retakes_config.json` file in t
 | !removespawn    |                                   | Removes the nearest spawn point for the bombsite currently shown.    | @css/root   |
 | !nearestspawn   |                                   | Teleports the player to the nearest spawn.                           | @css/root   |
 | !scramble       |                                   | Scrambles the teams next round.                                      | @css/admin  |
+| !voices         |                                   | Toggles whether or not to hear the bombsite voice announcements.     |             |
 | css_debugqueues |                                   | **SERVER ONLY** Shows the current queue state in the server console. |             |
 
 ## Stay up to date

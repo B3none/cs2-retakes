@@ -1,4 +1,5 @@
-﻿using CounterStrikeSharp.API;
+﻿using System.Diagnostics;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
@@ -49,6 +50,7 @@ public class RetakesPlugin : BasePlugin
     private CCSPlayerController? _planter;
     private CsTeam _lastRoundWinner = CsTeam.None;
     private Bombsite? _showingSpawnsForBombsite;
+    private HashSet<CCSPlayerController> _hasMutedVoices = new();
     
     private void ResetState()
     {
@@ -84,7 +86,6 @@ public class RetakesPlugin : BasePlugin
     }
 
     #region Commands
-
     [ConsoleCommand("css_showspawns", "Show the spawns for the specified bombsite.")]
     [ConsoleCommand("css_spawns", "Show the spawns for the specified bombsite.")]
     [ConsoleCommand("css_edit", "Show the spawns for the specified bombsite.")]
@@ -388,6 +389,36 @@ public class RetakesPlugin : BasePlugin
         }
 
         _gameManager.QueueManager.DebugQueues(true);
+    }
+
+    [ConsoleCommand("css_voices", "Toggles whether or not you want to hear bombsite voice announcements.")]
+    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
+    public void OnCommandVoices(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        if (!Helpers.IsValidPlayer(player))
+        {
+            commandInfo.ReplyToCommand($"{MessagePrefix}You must be a valid player to use this command.");
+            return;
+        }
+
+        if (RetakesConfig.IsLoaded(_retakesConfig) && !_retakesConfig!.RetakesConfigData!.EnableBombsiteAnnouncementVoices)
+        {
+            commandInfo.ReplyToCommand($"{MessagePrefix}This command is disabled on this server.");
+            return;
+        }
+
+        var didAdd = false;
+        if (!_hasMutedVoices.Contains(player!))
+        {
+            didAdd = true;
+            _hasMutedVoices.Add(player!);
+        }
+        else
+        {
+            _hasMutedVoices.Remove(player!);
+        }
+        
+        commandInfo.ReplyToCommand($"{MessagePrefix}{_translator["retakes.voices.toggle", didAdd ? $"{ChatColors.Green}enabled{ChatColors.White}" : $"{ChatColors.Red}disabled{ChatColors.White}"]}");
     }
     #endregion
 
@@ -831,6 +862,7 @@ public class RetakesPlugin : BasePlugin
         }
 
         _gameManager.QueueManager.RemovePlayerFromQueues(player);
+        _hasMutedVoices.Remove(player);
 
         return HookResult.Continue;
     }
@@ -868,7 +900,10 @@ public class RetakesPlugin : BasePlugin
                 // Don't use Server.PrintToChat as it'll add another loop through the players.
                 player.PrintToChat($"{MessagePrefix}{announcementMessage}");
 
-                if (!isRetakesConfigLoaded || _retakesConfig!.RetakesConfigData!.EnableBombsiteAnnouncementVoices)
+                if (
+                    (!isRetakesConfigLoaded || _retakesConfig!.RetakesConfigData!.EnableBombsiteAnnouncementVoices)
+                    && !_hasMutedVoices.Contains(player)
+                )
                 {
                     // Do this here so every player hears a random announcer each round.
                     var bombsiteAnnouncer = bombsiteAnnouncers[Helpers.Random.Next(bombsiteAnnouncers.Length)];
