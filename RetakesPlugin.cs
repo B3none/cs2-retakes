@@ -30,7 +30,7 @@ public class RetakesPlugin : BasePlugin
     #region Constants
     public static readonly string LogPrefix = $"[Retakes {Version}] ";
     
-    // These two static variables are overwritten in the OnMapStart listener with config values.
+    // These two static variables are overwritten in the Load / OnMapStart with config values.
     public static string MessagePrefix = $"[{ChatColors.Green}Retakes{ChatColors.White}] ";
     public static bool IsDebugMode = false;
     #endregion
@@ -52,7 +52,9 @@ public class RetakesPlugin : BasePlugin
     private CCSPlayerController? _planter;
     private CsTeam _lastRoundWinner = CsTeam.None;
     private Bombsite? _showingSpawnsForBombsite;
-    private HashSet<CCSPlayerController> _hasMutedVoices = new();
+    
+    // TODO: We should really store this in SQLite, but for now we'll just store it in memory.
+    private readonly HashSet<CCSPlayerController> _hasMutedVoices = new();
     
     private void ResetState()
     {
