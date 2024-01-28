@@ -406,7 +406,7 @@ public class RetakesPlugin : BasePlugin
 
         if (RetakesConfig.IsLoaded(_retakesConfig) && !_retakesConfig!.RetakesConfigData!.EnableBombsiteAnnouncementVoices)
         {
-            commandInfo.ReplyToCommand($"{MessagePrefix}This command is disabled on this server.");
+            commandInfo.ReplyToCommand($"{MessagePrefix}Bombsite voice announcements are permanently disabled on this server.");
             return;
         }
 
