@@ -40,8 +40,10 @@ public class VectorJsonConverter : JsonConverter<Vector>
 
     public override void Write(Utf8JsonWriter writer, Vector value, JsonSerializerOptions options)
     {
-        // Convert Vector object to string representation (example assumes ToString() returns desired format)
-        var vectorString = value.ToString();
-        writer.WriteStringValue(vectorString);
+        var x = value.X.ToString(CultureInfo.InvariantCulture);
+        var y = value.Y.ToString(CultureInfo.InvariantCulture);
+        var z = value.Z.ToString(CultureInfo.InvariantCulture);
+        
+        writer.WriteStringValue($"{x} {y} {z}");
     }
 }

@@ -40,8 +40,10 @@ public class QAngleJsonConverter : JsonConverter<QAngle>
 
     public override void Write(Utf8JsonWriter writer, QAngle value, JsonSerializerOptions options)
     {
-        // Convert QAngle object to string representation (example assumes ToString() returns desired format)
-        var qAngleString = value.ToString();
-        writer.WriteStringValue(qAngleString);
+        var x = value.X.ToString(CultureInfo.InvariantCulture);
+        var y = value.Y.ToString(CultureInfo.InvariantCulture);
+        var z = value.Z.ToString(CultureInfo.InvariantCulture);
+        
+        writer.WriteStringValue($"{x} {y} {z}");
     }
 }
