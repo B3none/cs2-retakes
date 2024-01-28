@@ -7,6 +7,7 @@
   "retakes.queue.vip_took_place": "You have taken [GREEN]{0}[NORMAL]'s place in the game.",
 
   "retakes.bombsite.announcement": "Retake [GREEN]{0}[NORMAL]: [LIGHT_RED]{1} Ts[NORMAL] vs [PURPLE]{2} CTs",
+  "retakes.voices.toggle": "You have {0} voice announcements!",
   
   "retakes.teams.scramble": "The terrorists won [GREEN]{0}[NORMAL] rounds in a row. [PURPLE]Teams are being scrambled!",
   "retakes.teams.almost_scramble": "The terrorists have won [GREEN]{0}[NORMAL] rounds in a row - if they win [GREEN]{1} more, [PURPLE]teams will be scrambled.",
