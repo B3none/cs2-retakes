@@ -410,10 +410,10 @@ public class RetakesPlugin : BasePlugin
             return;
         }
 
-        var didAdd = false;
+        var didMute = false;
         if (!_hasMutedVoices.Contains(player!))
         {
-            didAdd = true;
+            didMute = true;
             _hasMutedVoices.Add(player!);
         }
         else
@@ -421,7 +421,7 @@ public class RetakesPlugin : BasePlugin
             _hasMutedVoices.Remove(player!);
         }
         
-        commandInfo.ReplyToCommand($"{MessagePrefix}{_translator["retakes.voices.toggle", didAdd ? $"{ChatColors.Green}enabled{ChatColors.White}" : $"{ChatColors.Red}disabled{ChatColors.White}"]}");
+        commandInfo.ReplyToCommand($"{MessagePrefix}{_translator["retakes.voices.toggle", didMute ? $"{ChatColors.Red}disabled{ChatColors.White}" : $"{ChatColors.Green}enabled{ChatColors.White}"]}");
     }
     #endregion
 
