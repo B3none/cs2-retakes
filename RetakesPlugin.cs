@@ -17,7 +17,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(154)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.3.23";
+    private const string Version = "1.3.24";
 
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -193,7 +193,7 @@ public class RetakesPlugin : BasePlugin
             Team = team == "T" ? CsTeam.Terrorist : CsTeam.CounterTerrorist,
             CanBePlanter = team == "T" && !string.IsNullOrWhiteSpace(canBePlanterInput)
                 ? canBePlanterInput == "Y"
-                : player.PlayerPawn.Value.InBombZone,
+                : player.PlayerPawn.Value.InBombZoneTrigger,
             Bombsite = (Bombsite)_showingSpawnsForBombsite
         };
         Helpers.ShowSpawn(newSpawn);
