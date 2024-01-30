@@ -7,6 +7,7 @@
   "retakes.queue.vip_took_place": "Você ocupou o lugar de [GREEN]{0}[NORMAL] no jogo.",
 
   "retakes.bombsite.announcement": "Retake [GREEN]{0}[NORMAL]: [LIGHT_RED]{1} Ts[NORMAL] vs [PURPLE]{2} CTs",
+  "retakes.voices.toggle": "Você tem {0} anúncios de voz!",
 
   "retakes.teams.scramble": "Terroristas venceram [GREEN]{0}[NORMAL] rodadas consecutivas. [PURPLE]Times estão sendo embaralhados!",
   "retakes.teams.almost_scramble": "Terroristas venceram [GREEN]{0}[NORMAL] rodadas consecutivas. - se ganharem mais [GREEN]{1} rodada, [PURPLE]os times serão embaralhados.",

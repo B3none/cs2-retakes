@@ -36,6 +36,7 @@ If you appreciate the project then please take the time to star the repository ð
 I also recommend installing these plugins for an improved player experience
 - Instadefuse: https://github.com/B3none/cs2-instadefuse
 - Clutch Announce: https://github.com/B3none/cs2-clutch-announce
+- Instaplant (if not using autoplant): https://github.com/B3none/cs2-instaplant
 
 ## Allocators
 Although this plugin comes with it's own weapon allocation system, I would recommend using **one** of the following plugins for a better experience:
