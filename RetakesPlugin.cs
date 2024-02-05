@@ -17,7 +17,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(154)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.3.24";
+    private const string Version = "1.3.25";
 
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -363,6 +363,17 @@ public class RetakesPlugin : BasePlugin
 
         player!.PlayerPawn.Value!.Teleport(closestSpawn.Vector, closestSpawn.QAngle, new Vector());
         commandInfo.ReplyToCommand($"{MessagePrefix}Teleported to nearest spawn");
+    }
+    
+    [ConsoleCommand("css_hidespawns", "Exits the spawn editing mode.")]
+    [ConsoleCommand("css_done", "Exits the spawn editing mode.")]
+    [ConsoleCommand("css_exitedit", "Exits the spawn editing mode.")]
+    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
+    [RequiresPermissions("@css/root")]
+    public void OnCommandHideSpawns(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        _showingSpawnsForBombsite = null;
+        Server.ExecuteCommand("mp_warmup_end");
     }
 
     [ConsoleCommand("css_scramble", "Sets teams to scramble on the next round.")]
