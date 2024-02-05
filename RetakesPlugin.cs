@@ -897,14 +897,13 @@ public class RetakesPlugin : BasePlugin
         };
 
         // Get translation message
-        var bombsiteLetter = bombsite == Bombsite.A ? "A" : "B";
         var numTerrorist = Helpers.GetCurrentNumPlayers(CsTeam.Terrorist);
         var numCounterTerrorist = Helpers.GetCurrentNumPlayers(CsTeam.CounterTerrorist);
 
         var isRetakesConfigLoaded = RetakesConfig.IsLoaded(_retakesConfig);
 
         // TODO: Once we implement per client translations this will need to be inside the loop
-        var announcementMessage = _translator["retakes.bombsite.announcement", bombsiteLetter, numTerrorist,
+        var announcementMessage = _translator["retakes.bombsite.announcement", bombsite.ToString(), numTerrorist,
             numCounterTerrorist];
 
         foreach (var player in Utilities.GetPlayers())

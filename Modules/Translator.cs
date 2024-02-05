@@ -23,6 +23,9 @@ public class Translator
 
     private string Translate(string key, params object[] arguments)
     {
+        var isHtml = key.StartsWith("html.");
+        key = key.Replace("html.", "");
+        
         var localizedString = _stringLocalizerImplementation[key, arguments];
 
         if (localizedString == null || localizedString.ResourceNotFound)
@@ -31,7 +34,7 @@ public class Translator
         }
 
         var translation = localizedString.Value;
-
+        
         // Handle translation colours
         return translation
             .Replace("[GREEN]", ChatColors.Green.ToString())
