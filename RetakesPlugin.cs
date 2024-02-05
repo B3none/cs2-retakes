@@ -905,6 +905,8 @@ public class RetakesPlugin : BasePlugin
         // TODO: Once we implement per client translations this will need to be inside the loop
         var announcementMessage = _translator["retakes.bombsite.announcement", bombsite.ToString(), numTerrorist,
             numCounterTerrorist];
+        var centerAnnouncementMessage = _translator["html.retakes.bombsite.announcement", bombsite.ToString(), numTerrorist,
+            numCounterTerrorist];
 
         foreach (var player in Utilities.GetPlayers())
         {
@@ -935,7 +937,7 @@ public class RetakesPlugin : BasePlugin
 
             if (player.Team == CsTeam.CounterTerrorist)
             {
-                player.PrintToCenter(announcementMessage);
+                player.PrintToCenter(centerAnnouncementMessage);
             }
         }
     }
