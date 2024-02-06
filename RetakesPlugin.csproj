@@ -6,7 +6,7 @@
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="CounterStrikeSharp.API" Version="1.0.159" />
+    <PackageReference Include="CounterStrikeSharp.API" Version="1.0.160" />
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="8.0.1" />
   </ItemGroup>
 
