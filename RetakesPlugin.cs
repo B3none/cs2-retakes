@@ -23,7 +23,7 @@ public class RetakesPlugin : BasePlugin
     public override string ModuleName => "Retakes Plugin";
     public override string ModuleVersion => Version;
     public override string ModuleAuthor => "B3none";
-    public override string ModuleDescription => "Community retakes for CS2.";
+    public override string ModuleDescription => "https://github.com/b3none/cs2-retakes";
     #endregion
 
     #region Constants
