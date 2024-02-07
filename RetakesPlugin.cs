@@ -31,7 +31,7 @@ public class RetakesPlugin : BasePlugin
     
     // These two static variables are overwritten in the Load / OnMapStart with config values.
     public static string MessagePrefix = $"[{ChatColors.Green}Retakes{ChatColors.White}] ";
-    public static bool IsDebugMode = false;
+    public static bool IsDebugMode;
     #endregion
 
     #region Helpers
