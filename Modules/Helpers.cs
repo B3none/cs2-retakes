@@ -204,15 +204,15 @@ public static class Helpers
 
     public static void TerminateRound(RoundEndReason roundEndReason)
     {
-        // TODO: once this stops crashing on windows use it there too
-        if (Environment.OSVersion.Platform == PlatformID.Unix)
+        // TODO: Once the signature is updated then this will be redundant
+        try
         {
             GetGameRules().TerminateRound(0.1f, roundEndReason);
         }
-        else
+        catch
         {
-            Helpers.WriteLine(
-                $"{RetakesPlugin.LogPrefix}Windows server detected (Can't use TerminateRound) trying to kill all alive players instead.");
+            WriteLine(
+                $"{RetakesPlugin.LogPrefix}Incorrect signature detected (Can't use TerminateRound) killing all alive players instead.");
             var alivePlayers = Utilities.GetPlayers()
                 .Where(IsValidPlayer)
                 .Where(player => player.PawnIsAlive)
