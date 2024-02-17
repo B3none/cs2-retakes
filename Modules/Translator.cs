@@ -23,8 +23,9 @@ public class Translator
 
     private string Translate(string key, params object[] arguments)
     {
-        var isCenter = key.StartsWith("center.");
-        key = key.Replace("center.", "");
+        var centerModifier = "center.";
+        var isCenter = key.StartsWith(centerModifier);
+        key = key.Substring(centerModifier.Length);
         
         var localizedString = _stringLocalizerImplementation[key, arguments];
 
