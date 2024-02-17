@@ -25,8 +25,11 @@ public class Translator
     {
         var centerModifier = "center.";
         var isCenter = key.StartsWith(centerModifier);
-        key = key.Substring(centerModifier.Length);
-        
+        if (isCenter)
+        {
+            key = key.Substring(centerModifier.Length);
+        }
+
         var localizedString = _stringLocalizerImplementation[key, arguments];
 
         if (localizedString == null || localizedString.ResourceNotFound)
