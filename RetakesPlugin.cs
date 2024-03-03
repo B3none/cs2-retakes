@@ -648,7 +648,7 @@ public class RetakesPlugin : BasePlugin
             player.RemoveWeapons();
 
             // Create a timer to do this as it would occasionally fire too early.
-            AddTimer(0.05f, () =>
+            Server.NextFrame(() =>
             {
                 if (!Helpers.IsValidPlayer(player))
                 {

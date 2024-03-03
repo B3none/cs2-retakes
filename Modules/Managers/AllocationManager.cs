@@ -35,7 +35,6 @@ public static class AllocationManager
         if (player.Team == CsTeam.Terrorist)
         {
             player.GiveNamedItem(CsItem.AK47);
-            // player.GiveNamedItem(CsItem.Glock);
             player.GiveNamedItem(CsItem.Deagle);
         }
 
@@ -51,7 +50,6 @@ public static class AllocationManager
                 player.GiveNamedItem(CsItem.M4A1S);
             }
 
-            // player.GiveNamedItem(CsItem.USPS);
             player.GiveNamedItem(CsItem.Deagle);
         }
 
