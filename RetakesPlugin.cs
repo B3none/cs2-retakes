@@ -663,6 +663,8 @@ public class RetakesPlugin : BasePlugin
             else
             {
                 Helpers.WriteLine($"{LogPrefix}Fallback allocation disabled, skipping.");
+                
+                // TODO: Once shared apis are implemented into CounterStrikeSharp then notify allocators to allocate.
             }
         }
 
