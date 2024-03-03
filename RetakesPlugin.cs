@@ -636,7 +636,7 @@ public class RetakesPlugin : BasePlugin
         Helpers.WriteLine($"{LogPrefix}Trying to loop valid active players.");
         foreach (var player in _gameManager.QueueManager.ActivePlayers.Where(Helpers.IsValidPlayer))
         {
-            Helpers.WriteLine($"{LogPrefix}[{player.PlayerName}] Adding timer for allocation...");
+            Helpers.WriteLine($"{LogPrefix}[{player.PlayerName}] Handling allocation...");
 
             if (!Helpers.IsValidPlayer(player))
             {
@@ -646,34 +646,24 @@ public class RetakesPlugin : BasePlugin
             // Strip the player of all of their weapons and the bomb before any spawn / allocation occurs.
             Helpers.RemoveHelmetAndHeavyArmour(player);
             player.RemoveWeapons();
-
-            // Create a timer to do this as it would occasionally fire too early.
-            Server.NextFrame(() =>
+            
+            if (player == _planter && RetakesConfig.IsLoaded(_retakesConfig) &&
+                !_retakesConfig!.RetakesConfigData!.IsAutoPlantEnabled)
             {
-                if (!Helpers.IsValidPlayer(player))
-                {
-                    Helpers.WriteLine($"{LogPrefix}Allocating weapons: Player is not valid.");
-                    return;
-                }
+                Helpers.WriteLine($"{LogPrefix}Player is planter and auto plant is disabled, allocating bomb.");
+                Helpers.GiveAndSwitchToBomb(player);
+            }
 
-                if (player == _planter && RetakesConfig.IsLoaded(_retakesConfig) &&
-                    !_retakesConfig!.RetakesConfigData!.IsAutoPlantEnabled)
-                {
-                    Helpers.WriteLine($"{LogPrefix}Player is planter and auto plant is disabled, allocating bomb.");
-                    Helpers.GiveAndSwitchToBomb(player);
-                }
-
-                if (!RetakesConfig.IsLoaded(_retakesConfig) ||
-                    _retakesConfig!.RetakesConfigData!.EnableFallbackAllocation)
-                {
-                    Helpers.WriteLine($"{LogPrefix}Allocating...");
-                    AllocationManager.Allocate(player);
-                }
-                else
-                {
-                    Helpers.WriteLine($"{LogPrefix}Fallback allocation disabled, skipping.");
-                }
-            });
+            if (!RetakesConfig.IsLoaded(_retakesConfig) ||
+                _retakesConfig!.RetakesConfigData!.EnableFallbackAllocation)
+            {
+                Helpers.WriteLine($"{LogPrefix}Allocating...");
+                AllocationManager.Allocate(player);
+            }
+            else
+            {
+                Helpers.WriteLine($"{LogPrefix}Fallback allocation disabled, skipping.");
+            }
         }
 
         return HookResult.Continue;
