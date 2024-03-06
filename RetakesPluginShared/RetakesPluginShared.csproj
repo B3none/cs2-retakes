@@ -12,5 +12,7 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>RetakesPluginShared</RootNamespace>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <Title>RetakesPluginShared</Title>
     </PropertyGroup>
 </Project>
