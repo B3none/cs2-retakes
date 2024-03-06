@@ -2,6 +2,7 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
+using CounterStrikeSharp.API.Core.Capabilities;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
@@ -10,14 +11,16 @@ using RetakesPlugin.Modules;
 using RetakesPlugin.Modules.Enums;
 using RetakesPlugin.Modules.Configs;
 using RetakesPlugin.Modules.Managers;
+using RetakesPluginShared;
+using RetakesPluginShared.Events;
 using Helpers = RetakesPlugin.Modules.Helpers;
 
 namespace RetakesPlugin;
 
-[MinimumApiVersion(154)]
+[MinimumApiVersion(180)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.3.30";
+    private const string Version = "1.4.0";
 
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -39,6 +42,8 @@ public class RetakesPlugin : BasePlugin
     private GameManager? _gameManager;
     private SpawnManager? _spawnManager;
     private BreakerManager? _breakerManager;
+    
+    public static PluginCapability<IRetakesPluginEventSender> RetakesPluginEventSenderCapability { get; } = new("retakes_plugin:event_sender");
     #endregion
 
     #region Configs
@@ -80,6 +85,9 @@ public class RetakesPlugin : BasePlugin
         RegisterListener<Listeners.OnMapStart>(OnMapStart);
 
         AddCommandListener("jointeam", OnCommandJoinTeam);
+        
+        var retakesPluginEventSender = new RetakesPluginEventSender();
+        Capabilities.RegisterPluginCapability(RetakesPluginEventSenderCapability, () => retakesPluginEventSender);
 
         if (hotReload)
         {
@@ -636,7 +644,7 @@ public class RetakesPlugin : BasePlugin
         Helpers.WriteLine($"{LogPrefix}Trying to loop valid active players.");
         foreach (var player in _gameManager.QueueManager.ActivePlayers.Where(Helpers.IsValidPlayer))
         {
-            Helpers.WriteLine($"{LogPrefix}[{player.PlayerName}] Adding timer for allocation...");
+            Helpers.WriteLine($"{LogPrefix}[{player.PlayerName}] Handling allocation...");
 
             if (!Helpers.IsValidPlayer(player))
             {
@@ -646,35 +654,27 @@ public class RetakesPlugin : BasePlugin
             // Strip the player of all of their weapons and the bomb before any spawn / allocation occurs.
             Helpers.RemoveHelmetAndHeavyArmour(player);
             player.RemoveWeapons();
-
-            // Create a timer to do this as it would occasionally fire too early.
-            AddTimer(0.05f, () =>
+            
+            if (player == _planter && RetakesConfig.IsLoaded(_retakesConfig) &&
+                !_retakesConfig!.RetakesConfigData!.IsAutoPlantEnabled)
             {
-                if (!Helpers.IsValidPlayer(player))
-                {
-                    Helpers.WriteLine($"{LogPrefix}Allocating weapons: Player is not valid.");
-                    return;
-                }
+                Helpers.WriteLine($"{LogPrefix}Player is planter and auto plant is disabled, allocating bomb.");
+                Helpers.GiveAndSwitchToBomb(player);
+            }
 
-                if (player == _planter && RetakesConfig.IsLoaded(_retakesConfig) &&
-                    !_retakesConfig!.RetakesConfigData!.IsAutoPlantEnabled)
-                {
-                    Helpers.WriteLine($"{LogPrefix}Player is planter and auto plant is disabled, allocating bomb.");
-                    Helpers.GiveAndSwitchToBomb(player);
-                }
-
-                if (!RetakesConfig.IsLoaded(_retakesConfig) ||
-                    _retakesConfig!.RetakesConfigData!.EnableFallbackAllocation)
-                {
-                    Helpers.WriteLine($"{LogPrefix}Allocating...");
-                    AllocationManager.Allocate(player);
-                }
-                else
-                {
-                    Helpers.WriteLine($"{LogPrefix}Fallback allocation disabled, skipping.");
-                }
-            });
+            if (!RetakesConfig.IsLoaded(_retakesConfig) ||
+                _retakesConfig!.RetakesConfigData!.EnableFallbackAllocation)
+            {
+                Helpers.WriteLine($"{LogPrefix}Allocating...");
+                AllocationManager.Allocate(player);
+            }
+            else
+            {
+                Helpers.WriteLine($"{LogPrefix}Fallback allocation disabled, skipping.");
+            }
         }
+        
+        RetakesPluginEventSenderCapability.Get()?.TriggerEvent(new AllocateEvent());
 
         return HookResult.Continue;
     }

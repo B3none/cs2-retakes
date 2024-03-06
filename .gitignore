@@ -1,15 +1,3 @@
 ﻿# Rider IDE
 /.idea
 *.DotSettings.user
-
-# Ignore obj directories in the root of each project
-**/obj/
-
-# Ignore NuGet cache in obj directories
-**/obj/**/*.nuget.cache
-
-# Ignore bin directories in the root of each project
-**/bin/
-
-# Ignore the SLN
-cs2-retakes.sln

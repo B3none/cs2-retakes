@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <PackageId>RetakesPluginShared</PackageId>
+        <Title>RetakesPluginShared</Title>
+        <Description>
+            This library is made to run alongside https://github.com/b3none/cs2-retakes
+        </Description>
+        <Authors>B3none</Authors>
+        
+        <Version>1.0.0</Version>
+        
+        <TargetFramework>net7.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <RootNamespace>RetakesPluginShared</RootNamespace>
+        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    </PropertyGroup>
+</Project>
