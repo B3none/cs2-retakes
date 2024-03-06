@@ -17,7 +17,7 @@ using Helpers = RetakesPlugin.Modules.Helpers;
 
 namespace RetakesPlugin;
 
-[MinimumApiVersion(154)]
+[MinimumApiVersion(180)]
 public class RetakesPlugin : BasePlugin
 {
     private const string Version = "1.3.31";
