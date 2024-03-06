@@ -671,10 +671,10 @@ public class RetakesPlugin : BasePlugin
             else
             {
                 Helpers.WriteLine($"{LogPrefix}Fallback allocation disabled, skipping.");
-                
-                RetakesPluginEventSenderCapability.Get()?.TriggerEvent(new AllocateEvent());
             }
         }
+        
+        RetakesPluginEventSenderCapability.Get()?.TriggerEvent(new AllocateEvent());
 
         return HookResult.Continue;
     }
