@@ -31,6 +31,7 @@ If you appreciate the project then please take the time to star the repository ð
 
 ## Installation
 - Download the zip file from the [latest release](https://github.com/B3none/cs2-retakes/releases), and extract the contents into your `counterstrikesharp/plugins` directory.
+- Download the [shared plugin zip file](https://github.com/B3none/cs2-retakes/files/14504528/cs2-retakes-plugin-shared-1.0.0.zip) and put it into your `shared/` directory.
 
 ## Recommendations
 I also recommend installing these plugins for an improved player experience
