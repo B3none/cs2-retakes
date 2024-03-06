@@ -1,4 +1,4 @@
-name: Build the plugin
+name: Build RetakesPlugin
 
 on:
   push:
@@ -25,6 +25,8 @@ jobs:
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: 7.0.x
+      - name: Change directory
+        run: cd RetakesPlugin
       - name: Build
         run: dotnet build
       - name: Create output directory

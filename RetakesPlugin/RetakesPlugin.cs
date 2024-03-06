@@ -2,6 +2,7 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
+using CounterStrikeSharp.API.Core.Capabilities;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
@@ -10,6 +11,8 @@ using RetakesPlugin.Modules;
 using RetakesPlugin.Modules.Enums;
 using RetakesPlugin.Modules.Configs;
 using RetakesPlugin.Modules.Managers;
+using RetakesPluginShared;
+using RetakesPluginShared.Events;
 using Helpers = RetakesPlugin.Modules.Helpers;
 
 namespace RetakesPlugin;
@@ -39,6 +42,8 @@ public class RetakesPlugin : BasePlugin
     private GameManager? _gameManager;
     private SpawnManager? _spawnManager;
     private BreakerManager? _breakerManager;
+    
+    public static PluginCapability<IRetakesPluginEventSender> RetakesPluginEventSenderCapability { get; } = new("retakes_plugin:event_sender");
     #endregion
 
     #region Configs
@@ -80,6 +85,9 @@ public class RetakesPlugin : BasePlugin
         RegisterListener<Listeners.OnMapStart>(OnMapStart);
 
         AddCommandListener("jointeam", OnCommandJoinTeam);
+        
+        var retakesPluginEventSender = new RetakesPluginEventSender();
+        Capabilities.RegisterPluginCapability(RetakesPluginEventSenderCapability, () => retakesPluginEventSender);
 
         if (hotReload)
         {
@@ -664,7 +672,7 @@ public class RetakesPlugin : BasePlugin
             {
                 Helpers.WriteLine($"{LogPrefix}Fallback allocation disabled, skipping.");
                 
-                // TODO: Once shared apis are implemented into CounterStrikeSharp then notify allocators to allocate.
+                RetakesPluginEventSenderCapability.Get()?.TriggerEvent(new AllocateEvent());
             }
         }
 
