@@ -20,7 +20,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(180)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.4.0";
+    private const string Version = "1.4.1";
 
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -944,9 +944,6 @@ public class RetakesPlugin : BasePlugin
 
     private void HandleAutoPlant()
     {
-        // Ensure the round time for defuse is always set to 1.92
-        Server.ExecuteCommand("mp_roundtime_defuse 1.92");
-
         if (RetakesConfig.IsLoaded(_retakesConfig) && !_retakesConfig!.RetakesConfigData!.IsAutoPlantEnabled)
         {
             return;
