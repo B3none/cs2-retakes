@@ -280,7 +280,7 @@ public static class Helpers
 
         plantedC4.DispatchSpawn();
 
-        var gameRules = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules").First().GameRules!;
+        var gameRules = GetGameRules();
         gameRules.BombPlanted = true;
         gameRules.BombDefused = false;
 
