@@ -10,23 +10,29 @@ public class QueueManager
     private readonly int _maxRetakesPlayers;
     private readonly float _terroristRatio;
     private readonly string _queuePriorityFlag;
+    private readonly bool _shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10;
 
     public HashSet<CCSPlayerController> QueuePlayers = new();
     public HashSet<CCSPlayerController> ActivePlayers = new();
 
-    public QueueManager(Translator translator, int? retakesMaxPlayers, float? retakesTerroristRatio,
-        string? queuePriorityFlag)
-    {
+    public QueueManager(
+        Translator translator,
+        int? retakesMaxPlayers,
+        float? retakesTerroristRatio,
+        string? queuePriorityFlag,
+        bool? shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10
+    ) {
         _translator = translator;
         _maxRetakesPlayers = retakesMaxPlayers ?? 9;
         _terroristRatio = retakesTerroristRatio ?? 0.45f;
         _queuePriorityFlag = queuePriorityFlag ?? "@css/vip";
+        _shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 = shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 ?? true;
     }
 
     public int GetTargetNumTerrorists()
     {
-        // TODO: Add a config option for this logic
-        var ratio = (ActivePlayers.Count > 9 ? 0.5 : _terroristRatio) * ActivePlayers.Count;
+        var shouldForceEvenTeams = _shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 && ActivePlayers.Count % 10 == 0;
+        var ratio = (shouldForceEvenTeams ? 0.5 : _terroristRatio) * ActivePlayers.Count;
         var numTerrorists = (int)Math.Round(ratio);
 
         // Ensure at least one terrorist if the calculated number is zero

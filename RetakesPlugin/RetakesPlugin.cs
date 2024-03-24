@@ -20,7 +20,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(180)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.4.1";
+    private const string Version = "1.4.2";
 
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -480,7 +480,8 @@ public class RetakesPlugin : BasePlugin
                 _translator,
                 _retakesConfig?.RetakesConfigData?.MaxPlayers,
                 _retakesConfig?.RetakesConfigData?.TerroristRatio,
-                _retakesConfig?.RetakesConfigData?.QueuePriorityFlag
+                _retakesConfig?.RetakesConfigData?.QueuePriorityFlag,
+                _retakesConfig?.RetakesConfigData?.ShouldForceEvenTeamsWhenPlayerCountIsMultipleOf10
             ),
             _retakesConfig?.RetakesConfigData?.RoundsToScramble,
             _retakesConfig?.RetakesConfigData?.IsScrambleEnabled

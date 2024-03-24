@@ -2,7 +2,7 @@
 
 public class RetakesConfigData
 {
-    public static int CurrentVersion = 6;
+    public static int CurrentVersion = 7;
 
     public int Version { get; set; } = CurrentVersion;
     public int MaxPlayers { get; set; } = 9;
@@ -17,4 +17,5 @@ public class RetakesConfigData
     public bool IsAutoPlantEnabled { get; set; } = true;
     public string QueuePriorityFlag { get; set; } = "@css/vip";
     public bool IsDebugMode { get; set; } = false;
+    public bool ShouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 { get; set; } = true;
 }
