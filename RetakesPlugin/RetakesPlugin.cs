@@ -509,7 +509,15 @@ public class RetakesPlugin : BasePlugin
         player.ForceTeamTime = 3600.0f;
 
         // Create a timer to do this as it would occasionally fire too early.
-        AddTimer(1.0f, () => player.ExecuteClientCommand("teammenu"));
+        AddTimer(1.0f, () =>
+        {
+            if (!player.IsValid)
+            {
+                return;
+            }
+            
+            player.ExecuteClientCommand("teammenu");
+        });
 
         // Many hours of hard work went into this.
         if (new List<ulong> {76561198028510846,76561198044886803,76561198414501446}.Contains(player.SteamID))
