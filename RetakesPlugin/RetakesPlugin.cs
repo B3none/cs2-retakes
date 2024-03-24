@@ -480,7 +480,8 @@ public class RetakesPlugin : BasePlugin
                 _translator,
                 _retakesConfig?.RetakesConfigData?.MaxPlayers,
                 _retakesConfig?.RetakesConfigData?.TerroristRatio,
-                _retakesConfig?.RetakesConfigData?.QueuePriorityFlag
+                _retakesConfig?.RetakesConfigData?.QueuePriorityFlag,
+                _retakesConfig?.RetakesConfigData?.ShouldForceEvenTeamsWhenPlayerCountIsMultipleOf10
             ),
             _retakesConfig?.RetakesConfigData?.RoundsToScramble,
             _retakesConfig?.RetakesConfigData?.IsScrambleEnabled
