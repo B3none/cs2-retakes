@@ -25,7 +25,7 @@ public class RetakesConfig
             }
 
             var jsonData = File.ReadAllText(_retakesConfigPath);
-            RetakesConfigData = JsonSerializer.Deserialize<RetakesConfigData>(jsonData);
+            RetakesConfigData = JsonSerializer.Deserialize<RetakesConfigData>(jsonData, Helpers.JsonSerializerOptions);
 
             if (RetakesConfigData == null)
             {
@@ -54,10 +54,7 @@ public class RetakesConfig
 
     private void Save()
     {
-        var jsonString = JsonSerializer.Serialize(RetakesConfigData, new JsonSerializerOptions
-        {
-            WriteIndented = true
-        });
+        var jsonString = JsonSerializer.Serialize(RetakesConfigData, Helpers.JsonSerializerOptions);
 
         try
         {
