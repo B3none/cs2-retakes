@@ -1,7 +1,7 @@
 ﻿using System.Text.Json.Serialization;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules.Configs.JsonConverters;
-using RetakesPlugin.Modules.Enums;
+using RetakesPluginShared.Enums;
 
 namespace RetakesPlugin.Modules.Configs;
 
