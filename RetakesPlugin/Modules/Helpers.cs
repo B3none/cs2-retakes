@@ -5,7 +5,7 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules.Configs;
-using RetakesPlugin.Modules.Enums;
+using RetakesPluginShared.Enums;
 
 namespace RetakesPlugin.Modules;
 

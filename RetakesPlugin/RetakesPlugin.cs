@@ -8,7 +8,7 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules;
-using RetakesPlugin.Modules.Enums;
+using RetakesPluginShared.Enums;
 using RetakesPlugin.Modules.Configs;
 using RetakesPlugin.Modules.Managers;
 using RetakesPluginShared;
@@ -20,7 +20,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(180)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.4.2";
+    private const string Version = "1.4.3";
 
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -629,7 +629,12 @@ public class RetakesPlugin : BasePlugin
 
         _planter = _spawnManager.HandleRoundSpawns(_currentBombsite, _gameManager.QueueManager.ActivePlayers);
 
-        AnnounceBombsite(_currentBombsite);
+        if (_retakesConfig?.RetakesConfigData?.EnableFallbackBombsiteAnnouncement is true or null)
+        {
+            AnnounceBombsite(_currentBombsite);
+        }
+        
+        RetakesPluginEventSenderCapability.Get()?.TriggerEvent(new AnnounceBombsiteEvent(_currentBombsite));
 
         return HookResult.Continue;
     }
