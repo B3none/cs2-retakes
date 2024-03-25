@@ -17,10 +17,10 @@ using Helpers = RetakesPlugin.Modules.Helpers;
 
 namespace RetakesPlugin;
 
-[MinimumApiVersion(180)]
+[MinimumApiVersion(201)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.4.3";
+    private const string Version = "2.0.0";
 
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
