@@ -1,10 +1,12 @@
 using System.Drawing;
 using System.Text;
+using System.Text.Json;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules.Configs;
+using RetakesPlugin.Modules.Configs.JsonConverters;
 using RetakesPluginShared.Enums;
 
 namespace RetakesPlugin.Modules;
@@ -12,6 +14,15 @@ namespace RetakesPlugin.Modules;
 public static class Helpers
 {
     internal static readonly Random Random = new();
+    internal static readonly JsonSerializerOptions JsonSerializerOptions = new()
+    {
+        WriteIndented = true,
+        Converters =
+        {
+            new VectorJsonConverter(),
+            new QAngleJsonConverter()
+        }
+    };
 
     public static bool IsValidPlayer(CCSPlayerController? player)
     {
