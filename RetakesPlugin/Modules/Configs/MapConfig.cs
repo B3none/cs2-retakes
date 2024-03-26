@@ -29,7 +29,7 @@ public class MapConfig
             }
 
             var jsonData = File.ReadAllText(_mapConfigPath);
-            _mapConfigData = JsonSerializer.Deserialize<MapConfigData>(jsonData);
+            _mapConfigData = JsonSerializer.Deserialize<MapConfigData>(jsonData, Helpers.JsonSerializerOptions);
 
             // TODO: Implement validation to make sure the config is valid / has enough spawns.
             // if (_mapConfigData!.Spawns == null || _mapConfigData.Spawns.Count < 0)
@@ -119,10 +119,7 @@ public class MapConfig
 
     private void Save()
     {
-        var jsonString = JsonSerializer.Serialize(GetSanitisedMapConfigData(), new JsonSerializerOptions
-        {
-            WriteIndented = true
-        });
+        var jsonString = JsonSerializer.Serialize(GetSanitisedMapConfigData(), Helpers.JsonSerializerOptions);
 
         try
         {
