@@ -7,12 +7,20 @@
         </Description>
         <Authors>B3none</Authors>
         
-        <Version>1.0.0</Version>
+        <Version>2.0.0</Version>
         
-        <TargetFramework>net7.0</TargetFramework>
+        <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>RetakesPluginShared</RootNamespace>
         <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
     </PropertyGroup>
+
+    <ItemGroup>
+        <None Include="..\README.md" Pack="true" PackagePath="\" />
+        <None Include="..\LICENSE" Pack="true" PackagePath="" />
+    </ItemGroup>
 </Project>

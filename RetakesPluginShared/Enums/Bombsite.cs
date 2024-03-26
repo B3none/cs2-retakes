@@ -1,4 +1,4 @@
-﻿namespace RetakesPlugin.Modules.Enums;
+﻿namespace RetakesPluginShared.Enums;
 
 public enum Bombsite
 {
