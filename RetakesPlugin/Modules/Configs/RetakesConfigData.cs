@@ -18,5 +18,5 @@ public class RetakesConfigData
     public string QueuePriorityFlag { get; set; } = "@css/vip";
     public bool IsDebugMode { get; set; } = false;
     public bool ShouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 { get; set; } = true;
-    public bool EnableFallbackBombsiteAnnouncement { get; set; }
+    public bool EnableFallbackBombsiteAnnouncement { get; set; } = true;
 }
