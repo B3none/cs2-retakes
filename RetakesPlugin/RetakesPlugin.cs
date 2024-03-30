@@ -629,7 +629,7 @@ public class RetakesPlugin : BasePlugin
 
         _planter = _spawnManager.HandleRoundSpawns(_currentBombsite, _gameManager.QueueManager.ActivePlayers);
 
-        if (_retakesConfig?.RetakesConfigData?.EnableFallbackBombsiteAnnouncement is true or null)
+        if (_retakesConfig?.RetakesConfigData?.EnableFallbackBombsiteAnnouncement is true)
         {
             AnnounceBombsite(_currentBombsite);
         }
