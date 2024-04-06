@@ -23,12 +23,12 @@ public class Translator
 
     private const string CenterModifier = "center.";
     private const string HtmlModifier = "html.";
-    
+
     private string Translate(string key, params object[] arguments)
     {
         var isCenter = key.StartsWith(CenterModifier);
         var isHtml = key.StartsWith(HtmlModifier);
-        
+
         if (isCenter)
         {
             key = key.Substring(CenterModifier.Length);
@@ -46,7 +46,7 @@ public class Translator
         }
 
         var translation = localizedString.Value;
-        
+
         // Handle translation colours
         return translation
             .Replace("[GREEN]", isCenter ? "" : isHtml ? "<font color='green'>" : ChatColors.Green.ToString())

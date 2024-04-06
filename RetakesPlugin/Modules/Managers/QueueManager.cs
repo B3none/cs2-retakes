@@ -21,7 +21,8 @@ public class QueueManager
         float? retakesTerroristRatio,
         string? queuePriorityFlag,
         bool? shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10
-    ) {
+    )
+    {
         _translator = translator;
         _maxRetakesPlayers = retakesMaxPlayers ?? 9;
         _terroristRatio = retakesTerroristRatio ?? 0.45f;
@@ -46,24 +47,24 @@ public class QueueManager
 
     public HookResult PlayerJoinedTeam(CCSPlayerController player, CsTeam fromTeam, CsTeam toTeam)
     {
-        Helpers.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] PlayerTriedToJoinTeam called.");
+        Helpers.Debug($"[{player.PlayerName}] PlayerTriedToJoinTeam called.");
 
         if (fromTeam == CsTeam.None && toTeam == CsTeam.Spectator)
         {
             // This is called when a player first joins.
-            Helpers.WriteLine(
-                $"{RetakesPlugin.LogPrefix}[{player.PlayerName}] {fromTeam.ToString()} -> {toTeam.ToString()}.");
+            Helpers.Debug(
+                $"[{player.PlayerName}] {fromTeam.ToString()} -> {toTeam.ToString()}.");
             return HookResult.Continue;
         }
 
-        Helpers.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Checking ActivePlayers.");
+        Helpers.Debug($"[{player.PlayerName}] Checking ActivePlayers.");
         if (ActivePlayers.Contains(player))
         {
-            Helpers.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Player is an active player.");
+            Helpers.Debug($"[{player.PlayerName}] Player is an active player.");
 
             if (toTeam == CsTeam.Spectator)
             {
-                Helpers.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Switching to spectator.");
+                Helpers.Debug($"[{player.PlayerName}] Switching to spectator.");
                 RemovePlayerFromQueues(player);
                 Helpers.CheckRoundDone();
                 return HookResult.Continue;
@@ -78,8 +79,8 @@ public class QueueManager
                 )
             )
             {
-                Helpers.WriteLine(
-                    $"{RetakesPlugin.LogPrefix}[{player.PlayerName}] player is not in round list for {toTeam}, switching to spectator.");
+                Helpers.Debug(
+                    $"[{player.PlayerName}] player is not in round list for {toTeam}, switching to spectator.");
                 ActivePlayers.Remove(player);
                 QueuePlayers.Add(player);
 
@@ -92,30 +93,30 @@ public class QueueManager
                 return HookResult.Handled;
             }
 
-            Helpers.WriteLine(
-                $"{RetakesPlugin.LogPrefix}[{player.PlayerName}] The player tried joining the team they're already on, or, there were not enough players so we don't care. Do nothing.");
+            Helpers.Debug(
+                $"[{player.PlayerName}] The player tried joining the team they're already on, or, there were not enough players so we don't care. Do nothing.");
             Helpers.CheckRoundDone();
             return HookResult.Handled;
         }
 
-        Helpers.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Checking QueuePlayers.");
+        Helpers.Debug($"[{player.PlayerName}] Checking QueuePlayers.");
         if (!QueuePlayers.Contains(player))
         {
             if (Helpers.GetGameRules().WarmupPeriod && ActivePlayers.Count < _maxRetakesPlayers)
             {
-                Helpers.WriteLine(
-                    $"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Not found, adding to ActivePlayers (because in warmup).");
+                Helpers.Debug(
+                    $"[{player.PlayerName}] Not found, adding to ActivePlayers (because in warmup).");
                 ActivePlayers.Add(player);
                 return HookResult.Continue;
             }
 
-            Helpers.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Not found, adding to QueuePlayers.");
+            Helpers.Debug($"[{player.PlayerName}] Not found, adding to QueuePlayers.");
             player.PrintToChat($"{RetakesPlugin.MessagePrefix}{_translator["retakes.queue.joined"]}");
             QueuePlayers.Add(player);
         }
         else
         {
-            Helpers.WriteLine($"{RetakesPlugin.LogPrefix}[{player.PlayerName}] Already in Queue, do nothing.");
+            Helpers.Debug($"[{player.PlayerName}] Already in Queue, do nothing.");
         }
 
         Helpers.CheckRoundDone();
@@ -129,8 +130,8 @@ public class QueueManager
 
         if (disconnectedActivePlayers.Count > 0)
         {
-            Helpers.WriteLine(
-                $"{RetakesPlugin.LogPrefix}Removing {disconnectedActivePlayers.Count} disconnected players from ActivePlayers.");
+            Helpers.Debug(
+                $"Removing {disconnectedActivePlayers.Count} disconnected players from ActivePlayers.");
             ActivePlayers.RemoveWhere(player => disconnectedActivePlayers.Contains(player));
         }
 
@@ -139,18 +140,18 @@ public class QueueManager
 
         if (disconnectedQueuePlayers.Count > 0)
         {
-            Helpers.WriteLine(
-                $"{RetakesPlugin.LogPrefix}Removing {disconnectedQueuePlayers.Count} disconnected players from QueuePlayers.");
+            Helpers.Debug(
+                $"Removing {disconnectedQueuePlayers.Count} disconnected players from QueuePlayers.");
             QueuePlayers.RemoveWhere(player => disconnectedQueuePlayers.Contains(player));
         }
     }
 
     private void HandleQueuePriority()
     {
-        Helpers.WriteLine($"{RetakesPlugin.LogPrefix}handling queue priority.");
+        Helpers.Debug($"handling queue priority.");
         if (ActivePlayers.Count != _maxRetakesPlayers)
         {
-            Helpers.WriteLine($"{RetakesPlugin.LogPrefix}ActivePlayers.Count != _maxRetakesPlayers, returning.");
+            Helpers.Debug($"ActivePlayers.Count != _maxRetakesPlayers, returning.");
             return;
         }
 
@@ -159,7 +160,7 @@ public class QueueManager
 
         if (vipQueuePlayers.Count <= 0)
         {
-            Helpers.WriteLine($"{RetakesPlugin.LogPrefix}No VIP players found in queue, returning.");
+            Helpers.Debug($"No VIP players found in queue, returning.");
             return;
         }
 
@@ -181,7 +182,7 @@ public class QueueManager
 
             if (nonVipActivePlayers.Count == 0)
             {
-                Helpers.WriteLine($"{RetakesPlugin.LogPrefix}No non-VIP players found in ActivePlayers, returning.");
+                Helpers.Debug($"No non-VIP players found in ActivePlayers, returning.");
                 break;
             }
 
@@ -207,15 +208,15 @@ public class QueueManager
     {
         RemoveDisconnectedPlayers();
 
-        Helpers.WriteLine(
-            $"{RetakesPlugin.LogPrefix}{_maxRetakesPlayers} max players, {ActivePlayers.Count} active players, {QueuePlayers.Count} players in queue.");
-        Helpers.WriteLine($"{RetakesPlugin.LogPrefix}players to add: {_maxRetakesPlayers - ActivePlayers.Count}");
+        Helpers.Debug(
+            $"{_maxRetakesPlayers} max players, {ActivePlayers.Count} active players, {QueuePlayers.Count} players in queue.");
+        Helpers.Debug($"players to add: {_maxRetakesPlayers - ActivePlayers.Count}");
         var playersToAdd = _maxRetakesPlayers - ActivePlayers.Count;
 
         if (playersToAdd > 0 && QueuePlayers.Count > 0)
         {
-            Helpers.WriteLine(
-                $"{RetakesPlugin.LogPrefix} inside if - this means the game has players to add and players in the queue.");
+            Helpers.Debug(
+                $" inside if - this means the game has players to add and players in the queue.");
             // Take players from QueuePlayers and add them to ActivePlayers
             // Ordered by players with queue priority flag first since they
             // have queue priority.
@@ -265,46 +266,46 @@ public class QueueManager
     {
         if (!ActivePlayers.Any())
         {
-            Helpers.WriteLine(
-                $"{RetakesPlugin.LogPrefix}ActivePlayers ({(isBefore ? "BEFORE" : "AFTER")}): No active players.");
+            Helpers.Debug(
+                $"ActivePlayers ({(isBefore ? "BEFORE" : "AFTER")}): No active players.");
         }
         else
         {
-            Helpers.WriteLine(
-                $"{RetakesPlugin.LogPrefix}ActivePlayers ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", ActivePlayers.Where(Helpers.IsValidPlayer).Select(player => player.PlayerName))}");
+            Helpers.Debug(
+                $"ActivePlayers ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", ActivePlayers.Where(Helpers.IsValidPlayer).Select(player => player.PlayerName))}");
         }
 
         if (!QueuePlayers.Any())
         {
-            Helpers.WriteLine(
-                $"{RetakesPlugin.LogPrefix}QueuePlayers ({(isBefore ? "BEFORE" : "AFTER")}): No players in the queue.");
+            Helpers.Debug(
+                $"QueuePlayers ({(isBefore ? "BEFORE" : "AFTER")}): No players in the queue.");
         }
         else
         {
-            Helpers.WriteLine(
-                $"{RetakesPlugin.LogPrefix}QueuePlayers ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", QueuePlayers.Where(Helpers.IsValidPlayer).Select(player => player.PlayerName))}");
+            Helpers.Debug(
+                $"QueuePlayers ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", QueuePlayers.Where(Helpers.IsValidPlayer).Select(player => player.PlayerName))}");
         }
 
         if (!_roundTerrorists.Any())
         {
-            Helpers.WriteLine(
-                $"{RetakesPlugin.LogPrefix}_roundTerrorists ({(isBefore ? "BEFORE" : "AFTER")}): No players in the queue.");
+            Helpers.Debug(
+                $"_roundTerrorists ({(isBefore ? "BEFORE" : "AFTER")}): No players in the queue.");
         }
         else
         {
-            Helpers.WriteLine(
-                $"{RetakesPlugin.LogPrefix}_roundTerrorists ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", _roundTerrorists.Where(Helpers.IsValidPlayer).Select(player => player.PlayerName))}");
+            Helpers.Debug(
+                $"_roundTerrorists ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", _roundTerrorists.Where(Helpers.IsValidPlayer).Select(player => player.PlayerName))}");
         }
 
         if (!_roundCounterTerrorists.Any())
         {
-            Helpers.WriteLine(
-                $"{RetakesPlugin.LogPrefix}_roundCounterTerrorists ({(isBefore ? "BEFORE" : "AFTER")}): No players in the queue.");
+            Helpers.Debug(
+                $"_roundCounterTerrorists ({(isBefore ? "BEFORE" : "AFTER")}): No players in the queue.");
         }
         else
         {
-            Helpers.WriteLine(
-                $"{RetakesPlugin.LogPrefix}_roundCounterTerrorists ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", _roundCounterTerrorists.Where(Helpers.IsValidPlayer).Select(player => player.PlayerName))}");
+            Helpers.Debug(
+                $"_roundCounterTerrorists ({(isBefore ? "BEFORE" : "AFTER")}): {string.Join(", ", _roundCounterTerrorists.Where(Helpers.IsValidPlayer).Select(player => player.PlayerName))}");
         }
     }
 
