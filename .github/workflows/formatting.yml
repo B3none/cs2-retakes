@@ -1,6 +1,10 @@
 ﻿name: Format check on pull request
 
-on: pull_request
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
 
 jobs:
   dotnet-format:
