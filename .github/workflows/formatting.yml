@@ -13,7 +13,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: .NET Format
+      - name: .NET Format (RetakesPlugin)
         uses: zyactions/dotnet-format@v1
         with:
+          workspace: RetakesPlugin
           implicit-restore: true
+
+      - name: .NET Format (RetakesPluginShared)
+        uses: zyactions/dotnet-format@v1
+        with:
+          workspace: RetakesPluginShared
+          implicit-restore: true
+          
