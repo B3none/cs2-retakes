@@ -35,6 +35,9 @@ public class GameManager
 
     private void ScrambleTeams()
     {
+        _scrambleNextRound = false;
+        _consecutiveRoundsWon = 0;
+
         var shuffledActivePlayers = Helpers.Shuffle(QueueManager.ActivePlayers);
 
         var newTerrorists = shuffledActivePlayers.Take(QueueManager.GetTargetNumTerrorists()).ToList();
@@ -66,40 +69,35 @@ public class GameManager
 
     private int _consecutiveRoundsWon;
 
-    public void TerroristRoundWin()
+    private void TerroristRoundWin()
     {
         _consecutiveRoundsWon++;
 
-        if (_consecutiveRoundsWon == _consecutiveRoundWinsToScramble)
+        var shouldScrambleNow = _isScrambleEnabled && _consecutiveRoundsWon == _consecutiveRoundWinsToScramble;
+        var roundsLeftToScramble = _consecutiveRoundWinsToScramble - _consecutiveRoundsWon;
+        // Almost scramble if 1-2 rounds left to automatic scramble
+        var shouldAlmostScramble = _isScrambleEnabled && roundsLeftToScramble > 0 && roundsLeftToScramble <= 2;
+
+        if (shouldScrambleNow)
         {
             Server.PrintToChatAll(
                 $"{RetakesPlugin.MessagePrefix}{_translator["retakes.teams.scramble", _consecutiveRoundWinsToScramble]}");
 
-            _consecutiveRoundsWon = 0;
             ScrambleTeams();
+        }
+        else if (shouldAlmostScramble)
+        {
+            Server.PrintToChatAll(
+                $"{RetakesPlugin.MessagePrefix}{_translator["retakes.teams.almost_scramble", _consecutiveRoundsWon, roundsLeftToScramble]}");
         }
         else if (_consecutiveRoundsWon >= 3)
         {
-            if (_isScrambleEnabled)
-            {
-                Server.PrintToChatAll(
-                    $"{RetakesPlugin.MessagePrefix}{_translator["retakes.teams.almost_scramble", _consecutiveRoundsWon, _consecutiveRoundWinsToScramble - _consecutiveRoundsWon]}");
-            }
-            else
-            {
-                Server.PrintToChatAll(
-                    $"{RetakesPlugin.MessagePrefix}{_translator["retakes.teams.win_streak", _consecutiveRoundsWon]}");
-            }
-        }
-        else if (_scrambleNextRound)
-        {
-            _scrambleNextRound = false;
-            _consecutiveRoundsWon = 0;
-            ScrambleTeams();
+            Server.PrintToChatAll(
+                $"{RetakesPlugin.MessagePrefix}{_translator["retakes.teams.win_streak", _consecutiveRoundsWon]}");
         }
     }
 
-    public void CounterTerroristRoundWin()
+    private void CounterTerroristRoundWin()
     {
         if (_consecutiveRoundsWon >= 3)
         {
@@ -140,7 +138,7 @@ public class GameManager
         SetTeams(newTerrorists, newCounterTerrorists);
     }
 
-    public void BalanceTeams()
+    private void BalanceTeams()
     {
         List<CCSPlayerController> newTerrorists = new();
         List<CCSPlayerController> newCounterTerrorists = new();
@@ -196,6 +194,29 @@ public class GameManager
         }
 
         SetTeams(newTerrorists, newCounterTerrorists);
+    }
+
+    public void OnRoundPreStart(CsTeam winningTeam)
+    {
+        // Handle team swaps during round pre-start.
+        switch (winningTeam)
+        {
+            case CsTeam.CounterTerrorist:
+                CounterTerroristRoundWin();
+                break;
+
+            case CsTeam.Terrorist:
+                TerroristRoundWin();
+                break;
+        }
+
+
+        if (_scrambleNextRound)
+        {
+            ScrambleTeams();
+        }
+
+        BalanceTeams();
     }
 
     private List<CCSPlayerController> GetSortedActivePlayers(CsTeam? team = null)
