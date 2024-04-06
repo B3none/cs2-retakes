@@ -24,7 +24,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: 7.0.x
+          dotnet-version: 8.0.x
       - name: Change directory and build
         run: |
           cd RetakesPlugin
@@ -32,8 +32,8 @@ jobs:
       - name: Create output directory
         run: |
           mkdir -p output/RetakesPlugin
-          mv ./RetakesPlugin/bin/Debug/net7.0/RetakesPlugin.dll output/RetakesPlugin/
-          mv ./RetakesPlugin/bin/Debug/net7.0/RetakesPlugin.pdb output/RetakesPlugin/
+          mv ./RetakesPlugin/bin/Debug/net8.0/RetakesPlugin.dll output/RetakesPlugin/
+          mv ./RetakesPlugin/bin/Debug/net8.0/RetakesPlugin.pdb output/RetakesPlugin/
           mv ./RetakesPlugin/map_config output/RetakesPlugin/
           mv ./RetakesPlugin/lang output/RetakesPlugin/
       - name: Copy output (no map configs)

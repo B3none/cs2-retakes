@@ -8,7 +8,7 @@ using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules;
-using RetakesPlugin.Modules.Enums;
+using RetakesPluginShared.Enums;
 using RetakesPlugin.Modules.Configs;
 using RetakesPlugin.Modules.Managers;
 using RetakesPluginShared;
@@ -17,10 +17,10 @@ using Helpers = RetakesPlugin.Modules.Helpers;
 
 namespace RetakesPlugin;
 
-[MinimumApiVersion(180)]
+[MinimumApiVersion(201)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "1.4.0";
+    private const string Version = "2.0.1";
 
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -480,7 +480,8 @@ public class RetakesPlugin : BasePlugin
                 _translator,
                 _retakesConfig?.RetakesConfigData?.MaxPlayers,
                 _retakesConfig?.RetakesConfigData?.TerroristRatio,
-                _retakesConfig?.RetakesConfigData?.QueuePriorityFlag
+                _retakesConfig?.RetakesConfigData?.QueuePriorityFlag,
+                _retakesConfig?.RetakesConfigData?.ShouldForceEvenTeamsWhenPlayerCountIsMultipleOf10
             ),
             _retakesConfig?.RetakesConfigData?.RoundsToScramble,
             _retakesConfig?.RetakesConfigData?.IsScrambleEnabled
@@ -509,7 +510,15 @@ public class RetakesPlugin : BasePlugin
         player.ForceTeamTime = 3600.0f;
 
         // Create a timer to do this as it would occasionally fire too early.
-        AddTimer(1.0f, () => player.ExecuteClientCommand("teammenu"));
+        AddTimer(1.0f, () =>
+        {
+            if (!player.IsValid)
+            {
+                return;
+            }
+            
+            player.ExecuteClientCommand("teammenu");
+        });
 
         // Many hours of hard work went into this.
         if (new List<ulong> {76561198028510846,76561198044886803,76561198414501446}.Contains(player.SteamID))
@@ -620,7 +629,13 @@ public class RetakesPlugin : BasePlugin
 
         _planter = _spawnManager.HandleRoundSpawns(_currentBombsite, _gameManager.QueueManager.ActivePlayers);
 
-        AnnounceBombsite(_currentBombsite);
+        if (!RetakesConfig.IsLoaded(_retakesConfig) ||
+            _retakesConfig!.RetakesConfigData!.EnableFallbackBombsiteAnnouncement)
+        {
+            AnnounceBombsite(_currentBombsite);
+        }
+        
+        RetakesPluginEventSenderCapability.Get()?.TriggerEvent(new AnnounceBombsiteEvent(_currentBombsite));
 
         return HookResult.Continue;
     }
@@ -944,9 +959,6 @@ public class RetakesPlugin : BasePlugin
 
     private void HandleAutoPlant()
     {
-        // Ensure the round time for defuse is always set to 1.92
-        Server.ExecuteCommand("mp_roundtime_defuse 1.92");
-
         if (RetakesConfig.IsLoaded(_retakesConfig) && !_retakesConfig!.RetakesConfigData!.IsAutoPlantEnabled)
         {
             return;
