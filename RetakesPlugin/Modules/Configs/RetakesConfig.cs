@@ -15,7 +15,7 @@ public class RetakesConfig
 
     public void Load()
     {
-        Helpers.WriteLine($"{RetakesPlugin.LogPrefix}Attempting to load data from {_retakesConfigPath}");
+        Helpers.Debug($"Attempting to load data from {_retakesConfigPath}");
 
         try
         {
@@ -38,17 +38,17 @@ public class RetakesConfig
                 throw new Exception("Config is outdated");
             }
 
-            Helpers.WriteLine($"{RetakesPlugin.LogPrefix}Data loaded from {_retakesConfigPath}");
+            Helpers.Debug($"Data loaded from {_retakesConfigPath}");
         }
         catch (FileNotFoundException)
         {
-            Helpers.WriteLine($"{RetakesPlugin.LogPrefix}No retakes config.");
+            Helpers.Debug($"No retakes config.");
             RetakesConfigData = new RetakesConfigData();
             Save();
         }
         catch (Exception ex)
         {
-            Helpers.WriteLine($"{RetakesPlugin.LogPrefix}An error occurred while loading data: {ex.Message}");
+            Helpers.Debug($"An error occurred while loading data: {ex.Message}");
         }
     }
 
@@ -60,11 +60,11 @@ public class RetakesConfig
         {
             File.WriteAllText(_retakesConfigPath, jsonString);
 
-            Helpers.WriteLine($"{RetakesPlugin.LogPrefix}Data has been written to {_retakesConfigPath}");
+            Helpers.Debug($"Data has been written to {_retakesConfigPath}");
         }
         catch (IOException e)
         {
-            Helpers.WriteLine($"{RetakesPlugin.LogPrefix}An error occurred while writing to the file: {e.Message}");
+            Helpers.Debug($"An error occurred while writing to the file: {e.Message}");
         }
     }
 
@@ -72,13 +72,13 @@ public class RetakesConfig
     {
         if (retakesConfig == null)
         {
-            Helpers.WriteLine($"{RetakesPlugin.LogPrefix}Retakes config is null");
+            Helpers.Debug($"Retakes config is null");
             return false;
         }
 
         if (retakesConfig.RetakesConfigData == null)
         {
-            Helpers.WriteLine($"{RetakesPlugin.LogPrefix}Retakes config data is null");
+            Helpers.Debug($"Retakes config data is null");
             return false;
         }
 

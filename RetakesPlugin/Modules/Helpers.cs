@@ -88,7 +88,7 @@ public static class Helpers
 
     private const string RetakesCfgDirectory = "/../../../../cfg/cs2-retakes";
     private const string RetakesCfgPath = $"{RetakesCfgDirectory}/retakes.cfg";
-    
+
     public static void ExecuteRetakesConfiguration(string moduleDirectory)
     {
         if (!File.Exists(moduleDirectory + RetakesCfgPath))
@@ -150,7 +150,7 @@ public static class Helpers
         Server.ExecuteCommand("exec cs2-retakes/retakes.cfg");
     }
 
-    public static void WriteLine(string message)
+    public static void Debug(string message)
     {
         if (RetakesPlugin.IsDebugMode)
         {
@@ -222,8 +222,8 @@ public static class Helpers
         }
         catch
         {
-            WriteLine(
-                $"{RetakesPlugin.LogPrefix}Incorrect signature detected (Can't use TerminateRound) killing all alive players instead.");
+            Debug(
+                $"Incorrect signature detected (Can't use TerminateRound) killing all alive players instead.");
             var alivePlayers = Utilities.GetPlayers()
                 .Where(IsValidPlayer)
                 .Where(player => player.PawnIsAlive)

@@ -31,7 +31,7 @@ public class VectorJsonConverter : JsonConverter<Vector>
             !float.TryParse(values[1], NumberStyles.Any, CultureInfo.InvariantCulture, out var y) ||
             !float.TryParse(values[2], NumberStyles.Any, CultureInfo.InvariantCulture, out var z))
         {
-            Helpers.WriteLine($"{RetakesPlugin.LogPrefix}Unable to parse Vector float values for: {stringValue}");
+            Helpers.Debug($"Unable to parse Vector float values for: {stringValue}");
             throw new JsonException("Unable to parse Vector float values.");
         }
 
@@ -43,7 +43,7 @@ public class VectorJsonConverter : JsonConverter<Vector>
         var x = value.X.ToString(CultureInfo.InvariantCulture);
         var y = value.Y.ToString(CultureInfo.InvariantCulture);
         var z = value.Z.ToString(CultureInfo.InvariantCulture);
-        
+
         writer.WriteStringValue($"{x} {y} {z}");
     }
 }

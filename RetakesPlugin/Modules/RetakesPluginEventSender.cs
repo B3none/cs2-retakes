@@ -3,7 +3,7 @@ using RetakesPluginShared.Events;
 
 namespace RetakesPlugin.Modules;
 
-public class RetakesPluginEventSender: IRetakesPluginEventSender
+public class RetakesPluginEventSender : IRetakesPluginEventSender
 {
     public event EventHandler<IRetakesPluginEvent>? RetakesPluginEventHandlers;
 

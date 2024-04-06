@@ -20,7 +20,7 @@ public class SpawnManager
     public void CalculateMapSpawns()
     {
         _spawns.Clear();
-        
+
         _spawns.Add(Bombsite.A, new Dictionary<CsTeam, List<Spawn>>()
         {
             { CsTeam.Terrorist, new List<Spawn>()},
@@ -44,7 +44,7 @@ public class SpawnManager
         {
             return new List<Spawn>();
         }
-        
+
         if (team == null)
         {
             return _spawns[bombsite].SelectMany(entry => entry.Value).ToList();
@@ -58,7 +58,7 @@ public class SpawnManager
      */
     public CCSPlayerController? HandleRoundSpawns(Bombsite bombsite, HashSet<CCSPlayerController> players)
     {
-        Helpers.WriteLine($"{RetakesPlugin.LogPrefix}Moving players to spawns.");
+        Helpers.Debug($"Moving players to spawns.");
 
         // Clone the spawns so we can mutate them
         var spawns = _spawns[bombsite].ToDictionary(
@@ -117,7 +117,7 @@ public class SpawnManager
             spawns[team].Remove(spawn);
         }
 
-        Helpers.WriteLine($"{RetakesPlugin.LogPrefix}Moving players to spawns COMPLETE.");
+        Helpers.Debug($"Moving players to spawns COMPLETE.");
 
         return planter;
     }
