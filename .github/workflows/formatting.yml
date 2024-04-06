@@ -6,16 +6,11 @@ jobs:
   dotnet-format:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: Add dotnet-format problem matcher
-        uses: xt0rted/dotnet-format-problem-matcher@v1
-
-      - name: Restore dotnet tools
-        uses: xt0rted/dotnet-tool-restore@v1
-
-      - name: Run dotnet format
-        uses: xt0rted/dotnet-format@v1
+      - name: .NET Format
+        uses: zyactions/dotnet-format@v1
         with:
-          only-changed-files: "true"
+          workspace: test
+          implicit-restore: true
