@@ -106,7 +106,10 @@ public class GameManager
         }
 
         _consecutiveRoundsWon = 0;
+    }
 
+    private void CounterTerroristRoundWinTeamBalance()
+    {
         var targetNumTerrorists = QueueManager.GetTargetNumTerrorists();
         var sortedCounterTerroristPlayers = GetSortedActivePlayers(CsTeam.CounterTerrorist);
 
@@ -203,6 +206,7 @@ public class GameManager
         {
             case CsTeam.CounterTerrorist:
                 CounterTerroristRoundWin();
+                CounterTerroristRoundWinTeamBalance();
                 break;
 
             case CsTeam.Terrorist:
