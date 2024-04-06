@@ -16,5 +16,4 @@ jobs:
       - name: .NET Format
         uses: zyactions/dotnet-format@v1
         with:
-          workspace: test
           implicit-restore: true
