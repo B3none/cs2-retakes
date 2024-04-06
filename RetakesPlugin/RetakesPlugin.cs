@@ -557,23 +557,9 @@ public class RetakesPlugin : BasePlugin
         _gameManager.QueueManager.DebugQueues(false);
         Helpers.Debug($"Updated queues.");
 
-        // Handle team swaps during round pre-start.
-        switch (_lastRoundWinner)
-        {
-            case CsTeam.CounterTerrorist:
-                Helpers.Debug($"Calling CounterTerroristRoundWin()");
-                _gameManager.CounterTerroristRoundWin();
-                Helpers.Debug($"CounterTerroristRoundWin call complete");
-                break;
-
-            case CsTeam.Terrorist:
-                Helpers.Debug($"Calling TerroristRoundWin()");
-                _gameManager.TerroristRoundWin();
-                Helpers.Debug($"TerroristRoundWin call complete");
-                break;
-        }
-
-        _gameManager.BalanceTeams();
+        Helpers.Debug($"Calling GameManager.OnRoundPreStart({_lastRoundWinner})");
+        _gameManager.OnRoundPreStart(_lastRoundWinner);
+        Helpers.Debug($"GameManager.OnRoundPreStart call complete");
 
         // Set round teams to prevent team changes mid round
         _gameManager.QueueManager.SetRoundTeams();
