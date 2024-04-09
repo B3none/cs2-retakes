@@ -484,7 +484,8 @@ public class RetakesPlugin : BasePlugin
                 _retakesConfig?.RetakesConfigData?.ShouldForceEvenTeamsWhenPlayerCountIsMultipleOf10
             ),
             _retakesConfig?.RetakesConfigData?.RoundsToScramble,
-            _retakesConfig?.RetakesConfigData?.IsScrambleEnabled
+            _retakesConfig?.RetakesConfigData?.IsScrambleEnabled,
+            _retakesConfig?.RetakesConfigData?.AutoTeamBalance
         );
 
         _breakerManager = new BreakerManager(

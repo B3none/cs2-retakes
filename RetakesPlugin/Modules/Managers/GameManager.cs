@@ -11,17 +11,19 @@ public class GameManager
     public readonly QueueManager QueueManager;
     private readonly int _consecutiveRoundWinsToScramble;
     private readonly bool _isScrambleEnabled;
+    private readonly bool _autoTeamBalance;
 
     public const int ScoreForKill = 50;
     public const int ScoreForAssist = 25;
     public const int ScoreForDefuse = 50;
 
-    public GameManager(Translator translator, QueueManager queueManager, int? roundsToScramble, bool? isScrambleEnabled)
+    public GameManager(Translator translator, QueueManager queueManager, int? roundsToScramble, bool? isScrambleEnabled, bool? autoTeamBalance)
     {
         _translator = translator;
         QueueManager = queueManager;
         _consecutiveRoundWinsToScramble = roundsToScramble ?? 5;
         _isScrambleEnabled = isScrambleEnabled ?? true;
+        _autoTeamBalance = autoTeamBalance ?? true;
     }
 
     private bool _scrambleNextRound;
@@ -206,7 +208,10 @@ public class GameManager
         {
             case CsTeam.CounterTerrorist:
                 CounterTerroristRoundWin();
-                CounterTerroristRoundWinTeamBalance();
+                if (_autoTeamBalance)
+                {
+                    CounterTerroristRoundWinTeamBalance();
+                }
                 break;
 
             case CsTeam.Terrorist:
@@ -220,7 +225,10 @@ public class GameManager
             ScrambleTeams();
         }
 
-        BalanceTeams();
+        if (_autoTeamBalance)
+        {
+            BalanceTeams();
+        }
     }
 
     private List<CCSPlayerController> GetSortedActivePlayers(CsTeam? team = null)
