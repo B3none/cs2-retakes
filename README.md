@@ -64,6 +64,7 @@ When the plugin is first loaded it will create a `retakes_config.json` file in t
 | IsDebugMode                                       | Whether to enable debug output to the server console or not.                                                                                    | false      | false      | true       |
 | ShouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 | Whether to force even teams when the active players is a multiple of 10 or not. (this means you will get 5v5 @ 10 players / 10v10 @ 20 players) | true       | false      | true       |
 | EnableFallbackBombsiteAnnouncement                | Whether to enable the fallback bombsite announcement.                                                                                           | true       | false      | true       |
+| AddJoiningPlayersToQueue                          | Whether to add players to the queue when they join the game.                                                                                    | false      | false      | true       |
 
 ## Commands
 | Command         | Arguments                         | Description                                                          | Permissions |
