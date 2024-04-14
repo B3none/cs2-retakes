@@ -2,9 +2,10 @@
 
 public class RetakesConfigData
 {
-    public static int CurrentVersion = 8;
+    public static int CurrentVersion = 9;
 
     public int Version { get; set; } = CurrentVersion;
+    public int MinPlayers { get; set; } = 1;
     public int MaxPlayers { get; set; } = 9;
     public float TerroristRatio { get; set; } = 0.45f;
     public int RoundsToScramble { get; set; } = 5;
@@ -19,4 +20,5 @@ public class RetakesConfigData
     public bool IsDebugMode { get; set; } = false;
     public bool ShouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 { get; set; } = true;
     public bool EnableFallbackBombsiteAnnouncement { get; set; } = true;
+    public bool AddJoiningPlayersToQueue { get; set; } = false;
 }

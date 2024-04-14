@@ -137,6 +137,10 @@ public static class Helpers
                 mp_death_drop_defuser 1
                 mp_death_drop_grenade 1
                 mp_warmuptime 15
+                
+                // If AddJoiningPlayersToQueue is enabled, then the following commands are required:
+                // sv_human_autojoin_team 3
+                // mp_force_pick_time -1
 
                 echo [Retakes] Config loaded!
             ";

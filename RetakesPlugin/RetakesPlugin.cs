@@ -20,7 +20,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(201)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "2.0.2";
+    private const string Version = "2.1.0";
 
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -505,21 +505,29 @@ public class RetakesPlugin : BasePlugin
             return HookResult.Continue;
         }
 
-        // TODO: We can make use of sv_human_autojoin_team 3 to prevent needing to do this.
-        player.TeamNum = (int)CsTeam.Spectator;
-        player.ForceTeamTime = 3600.0f;
+		player.TeamNum = (int)CsTeam.Spectator;
 
-        // Create a timer to do this as it would occasionally fire too early.
-        AddTimer(1.0f, () =>
+		if (_retakesConfig?.RetakesConfigData?.AddJoiningPlayersToQueue ?? false)
         {
-            if (!player.IsValid)
-            {
-                return;
-            }
-
-            player.ExecuteClientCommand("teammenu");
-        });
-
+            _gameManager?.QueueManager.AddPlayerToQueue(player);
+        }
+		else
+		{
+            // Give the player time to choose a team.
+            player.ForceTeamTime = 3600.0f;
+            
+        	// Create a timer to do this as it would occasionally fire too early.
+        	AddTimer(1.0f, () =>
+        	{
+	            if (!player.IsValid)
+    	        {
+        	        return;
+        	   	}
+				
+	            player.ExecuteClientCommand("teammenu");
+    	    });
+		}
+        
         // Many hours of hard work went into this.
         if (new List<ulong> { 76561198028510846, 76561198044886803, 76561198414501446 }.Contains(player.SteamID))
         {
