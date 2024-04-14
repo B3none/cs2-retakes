@@ -509,7 +509,7 @@ public class RetakesPlugin : BasePlugin
 
 		if (_retakesConfig?.RetakesConfigData?.AddJoiningPlayersToQueue ?? false)
         {
-            _gameManager?.QueueManager.AddPlayerToQueue(player);
+            _gameManager?.QueueManager.PlayerJoinedTeam(player, CsTeam.Spectator, CsTeam.CounterTerrorist);
         }
 		else
 		{
