@@ -451,8 +451,11 @@ public class RetakesPlugin : BasePlugin
 
         ResetState();
 
-        // Execute the retakes configuration.
-        Helpers.ExecuteRetakesConfiguration(ModuleDirectory);
+        AddTimer(1.0f, () =>
+        {
+            // Execute the retakes configuration.
+            Helpers.ExecuteRetakesConfiguration(ModuleDirectory);
+        });
 
         // If we don't have a map config loaded, load it.
         if (!MapConfig.IsLoaded(_mapConfig, Server.MapName))
