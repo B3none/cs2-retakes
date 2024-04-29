@@ -29,7 +29,7 @@ public static class Helpers
         return player != null && player.IsValid;
     }
 
-    public static bool DoesPlayerHavePawn(CCSPlayerController? player, bool shouldBeAlive = true)
+    public static bool DoesPlayerHaveAlivePawn(CCSPlayerController? player, bool shouldBeAlive = true)
     {
         if (!IsValidPlayer(player))
         {

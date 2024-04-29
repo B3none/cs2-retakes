@@ -89,7 +89,7 @@ public class SpawnManager
 
         foreach (var player in Helpers.Shuffle(players))
         {
-            if (!Helpers.DoesPlayerHavePawn(player))
+            if (!Helpers.DoesPlayerHaveAlivePawn(player))
             {
                 continue;
             }
