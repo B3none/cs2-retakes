@@ -17,10 +17,10 @@ using Helpers = RetakesPlugin.Modules.Helpers;
 
 namespace RetakesPlugin;
 
-[MinimumApiVersion(201)]
+[MinimumApiVersion(220)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "2.0.3";
+    private const string Version = "2.0.4";
 
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -150,9 +150,9 @@ public class RetakesPlugin : BasePlugin
             return;
         }
 
-        if (!Helpers.DoesPlayerHavePawn(player))
+        if (!Helpers.DoesPlayerHaveAlivePawn(player))
         {
-            commandInfo.ReplyToCommand($"{MessagePrefix}You must be a player.");
+            commandInfo.ReplyToCommand($"{MessagePrefix}You must have an alive player pawn.");
             return;
         }
 
@@ -247,7 +247,7 @@ public class RetakesPlugin : BasePlugin
             return;
         }
 
-        if (!Helpers.DoesPlayerHavePawn(player))
+        if (!Helpers.DoesPlayerHaveAlivePawn(player))
         {
             return;
         }
@@ -334,7 +334,7 @@ public class RetakesPlugin : BasePlugin
             return;
         }
 
-        if (!Helpers.DoesPlayerHavePawn(player))
+        if (!Helpers.DoesPlayerHaveAlivePawn(player))
         {
             return;
         }
