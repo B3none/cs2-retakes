@@ -815,6 +815,25 @@ public class RetakesPlugin : BasePlugin
         // Ensure all team join events are silent.
         @event.Silent = true;
 
+        CCSPlayerController? player = @event.Userid;
+
+        if (_gameManager == null)
+        {
+            Helpers.Debug($"Game manager not loaded.");
+            return HookResult.Continue;
+        }
+
+        if (!Helpers.IsValidPlayer(player))
+        {
+            return HookResult.Continue;
+        }
+        int team = @event.Team;
+
+        if (team == (int)CsTeam.Spectator)
+        {
+            _gameManager.QueueManager.RemovePlayerFromQueues(player);
+            _hasMutedVoices.Remove(player);
+        }
         return HookResult.Continue;
     }
 
