@@ -19,6 +19,5 @@ public class RetakesConfigData
     public bool IsDebugMode { get; set; } = false;
     public bool ShouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 { get; set; } = true;
     public bool EnableFallbackBombsiteAnnouncement { get; set; } = true;
-    public bool RemoveSpectators { get; set; } = true;
-
+    public bool ShouldRemoveSpectators { get; set; } = true;
 }

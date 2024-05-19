@@ -1,7 +1,6 @@
 ﻿using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
-using Serilog.Debugging;
 
 namespace RetakesPlugin.Modules.Managers;
 
@@ -12,7 +11,7 @@ public class GameManager
     public readonly QueueManager QueueManager;
     private readonly int _consecutiveRoundWinsToScramble;
     private readonly bool _isScrambleEnabled;
-    private readonly bool _RemoveSpectatorsEnabled;
+    private readonly bool _removeSpectatorsEnabled;
     public const int ScoreForKill = 50;
     public const int ScoreForAssist = 25;
     public const int ScoreForDefuse = 50;
@@ -23,7 +22,7 @@ public class GameManager
         QueueManager = queueManager;
         _consecutiveRoundWinsToScramble = roundsToScramble ?? 5;
         _isScrambleEnabled = isScrambleEnabled ?? true;
-        _RemoveSpectatorsEnabled = RemoveSpectatorsEnabled ?? true;
+        _removeSpectatorsEnabled = RemoveSpectatorsEnabled ?? false;
     }
 
     private bool _scrambleNextRound;
@@ -250,7 +249,7 @@ public class GameManager
 
     public HookResult RemoveSpectators(EventPlayerTeam @event, HashSet<CCSPlayerController> _hasMutedVoices)
     {
-        if (_RemoveSpectatorsEnabled)
+        if (_removeSpectatorsEnabled)
         {
             CCSPlayerController? player = @event.Userid;
 
