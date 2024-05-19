@@ -831,8 +831,12 @@ public class RetakesPlugin : BasePlugin
 
         if (team == (int)CsTeam.Spectator)
         {
-            _gameManager.QueueManager.RemovePlayerFromQueues(player);
-            _hasMutedVoices.Remove(player);
+            // Ensure player is active ingame.
+            if (_gameManager.QueueManager.ActivePlayers.Contains(player))
+            {
+                _gameManager.QueueManager.RemovePlayerFromQueues(player);
+                _hasMutedVoices.Remove(player);
+            }
         }
         return HookResult.Continue;
     }
