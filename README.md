@@ -2,17 +2,14 @@
 ![GitHub Actions Workflow Status](https://img.shields.io/github/actions/workflow/status/b3none/cs2-retakes/plugin-build.yml?branch=master&style=flat-square&label=Latest%20Build)
 
 # CS2 Retakes
-
 CS2 implementation of retakes written in C# for CounterStrikeSharp. Based on the version for CS:GO by Splewis.
 
 ## Share the love
-
 If you appreciate the project then please take the time to star the repository üôè
 
 ![Star us](https://github.com/b3none/gdprconsent/raw/development/.github/README_ASSETS/star_us.png)
 
 ## Features / Roadmap
-
 - [x] Bombsite selection
 - [x] Per map configurations
 - [x] Ability to add spawns
@@ -33,28 +30,22 @@ If you appreciate the project then please take the time to star the repository 
 - [x] Add a release zip file without spawns too
 
 ## Installation
-
 - Download the zip file from the [latest release](https://github.com/B3none/cs2-retakes/releases), and extract the contents into your `counterstrikesharp/plugins` directory.
 - Download the [shared plugin zip file](https://github.com/B3none/cs2-retakes/releases/download/2.0.0/cs2-retakes-plugin-shared-2.0.0.zip) and put it into your `counterstrikesharp/shared` directory.
 
 ## Recommendations
-
 I also recommend installing these plugins for an improved player experience
-
-- Instadefuse: <https://github.com/B3none/cs2-instadefuse>
-- Clutch Announce: <https://github.com/B3none/cs2-clutch-announce>
-- Instaplant (if not using autoplant): <https://github.com/B3none/cs2-instaplant>
+- Instadefuse: https://github.com/B3none/cs2-instadefuse
+- Clutch Announce: https://github.com/B3none/cs2-clutch-announce
+- Instaplant (if not using autoplant): https://github.com/B3none/cs2-instaplant
 
 ## Allocators
-
 Although this plugin comes with it's own weapon allocation system, I would recommend using **one** of the following plugins for a better experience:
-
-- Yoni's Allocator: <https://github.com/yonilerner/cs2-retakes-allocator>
-- NokkviReyr's Allocator: <https://github.com/nokkvireyr/kps-allocator>
-- Ravid's Allocator: <https://github.com/Ravid-A/cs2-retakes-weapon-allocator>
+- Yoni's Allocator: https://github.com/yonilerner/cs2-retakes-allocator
+- NokkviReyr's Allocator: https://github.com/nokkvireyr/kps-allocator
+- Ravid's Allocator: https://github.com/Ravid-A/cs2-retakes-weapon-allocator
 
 ## Configuration
-
 When the plugin is first loaded it will create a `retakes_config.json` file in the plugin directory. This file contains all of the configuration options for the plugin:
 
 | Config                                            | Description                                                                                                                                     | Default    | Min        | Max        |
@@ -73,10 +64,9 @@ When the plugin is first loaded it will create a `retakes_config.json` file in t
 | IsDebugMode                                       | Whether to enable debug output to the server console or not.                                                                                    | false      | false      | true       |
 | ShouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 | Whether to force even teams when the active players is a multiple of 10 or not. (this means you will get 5v5 @ 10 players / 10v10 @ 20 players) | true       | false      | true       |
 | EnableFallbackBombsiteAnnouncement                | Whether to enable the fallback bombsite announcement.                                                                                           | true       | false      | true       |
-| RemoveSpectators                                 | When a player is moved to spectators, remove them from all retake queues. Ensures that AFK plugins work as expected.                                                         | true       | false      | true       |
+| RemoveSpectators                                  | When a player is moved to spectators, remove them from all retake queues. Ensures that AFK plugins work as expected.                            | false      |    false      | true       |
 
 ## Commands
-
 | Command         | Arguments                         | Description                                                          | Permissions |
 |-----------------|-----------------------------------|----------------------------------------------------------------------|-------------|
 | !showspawns     | <A / B>                           | Show the spawns for the specified bombsite.                          | @css/root   |
@@ -89,11 +79,9 @@ When the plugin is first loaded it will create a `retakes_config.json` file in t
 | css_debugqueues |                                   | **SERVER ONLY** Shows the current queue state in the server console. |             |
 
 ## Stay up to date
-
 Subscribe to **release** notifications and stay up to date with the latest features and patches:
 
 ![image](https://github.com/B3none/cs2-retakes/assets/24966460/e288a882-0f1f-4e8c-b67f-e4c066af34ea)
 
 ## Credits
-
 This was inspired by the [CS:GO Retakes project](https://github.com/splewis/csgo-retakes) written by [splewis](https://github.com/splewis).
