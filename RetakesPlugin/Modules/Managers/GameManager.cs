@@ -11,17 +11,18 @@ public class GameManager
     public readonly QueueManager QueueManager;
     private readonly int _consecutiveRoundWinsToScramble;
     private readonly bool _isScrambleEnabled;
-
+    private readonly bool _removeSpectatorsEnabled;
     public const int ScoreForKill = 50;
     public const int ScoreForAssist = 25;
     public const int ScoreForDefuse = 50;
 
-    public GameManager(Translator translator, QueueManager queueManager, int? roundsToScramble, bool? isScrambleEnabled)
+    public GameManager(Translator translator, QueueManager queueManager, int? roundsToScramble, bool? isScrambleEnabled, bool? RemoveSpectatorsEnabled)
     {
         _translator = translator;
         QueueManager = queueManager;
         _consecutiveRoundWinsToScramble = roundsToScramble ?? 5;
         _isScrambleEnabled = isScrambleEnabled ?? true;
+        _removeSpectatorsEnabled = RemoveSpectatorsEnabled ?? false;
     }
 
     private bool _scrambleNextRound;
@@ -244,5 +245,30 @@ public class GameManager
                 player.SwitchTeam(CsTeam.CounterTerrorist);
             }
         }
+    }
+
+    public HookResult RemoveSpectators(EventPlayerTeam @event, HashSet<CCSPlayerController> _hasMutedVoices)
+    {
+        if (_removeSpectatorsEnabled)
+        {
+            CCSPlayerController? player = @event.Userid;
+
+            if (!Helpers.IsValidPlayer(player))
+            {
+                return HookResult.Continue;
+            }
+            int team = @event.Team;
+
+            if (team == (int)CsTeam.Spectator)
+            {
+                // Ensure player is active ingame.
+                if (QueueManager.ActivePlayers.Contains(player))
+                {
+                    QueueManager.RemovePlayerFromQueues(player);
+                    _hasMutedVoices.Remove(player);
+                }
+            }
+        }
+        return HookResult.Continue;
     }
 }
