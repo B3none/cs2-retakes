@@ -307,7 +307,6 @@ public static class Helpers
 
         var eventPtr = NativeAPI.CreateEvent("bomb_planted", true);
         NativeAPI.SetEventPlayerController(eventPtr, "userid", bombCarrier.Handle);
-        NativeAPI.SetEventInt(eventPtr, "userid", (int)bombCarrier.PlayerPawn.Value.Index);
         NativeAPI.SetEventInt(eventPtr, "site", (int)bombsite);
 
         NativeAPI.FireEvent(eventPtr, false);
