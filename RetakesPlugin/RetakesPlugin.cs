@@ -20,7 +20,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(220)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "2.0.6";
+    private const string Version = "2.0.6.1";
 
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -510,7 +510,10 @@ public class RetakesPlugin : BasePlugin
         }
 
         // TODO: We can make use of sv_human_autojoin_team 3 to prevent needing to do this.
-        player.TeamNum = (int)CsTeam.Spectator;
+        
+        //This was commented out as it causes the player to be able to join as spectator stay playing with xray until he's killed.
+        //Players that use this bug are not seen by other players. To fix this, we force the player to join as spectator by default
+        //player.TeamNum = (int)CsTeam.Spectator;
         player.ForceTeamTime = 3600.0f;
 
         // Create a timer to do this as it would occasionally fire too early.
@@ -521,6 +524,7 @@ public class RetakesPlugin : BasePlugin
                 return;
             }
 
+            player.ChangeTeam(CsTeam.Spectator);
             player.ExecuteClientCommand("teammenu");
         });
 
@@ -638,7 +642,6 @@ public class RetakesPlugin : BasePlugin
             Helpers.Debug($"Game manager not loaded.");
             return HookResult.Continue;
         }
-
         // If we are in warmup, skip.
         if (Helpers.GetGameRules().WarmupPeriod)
         {
