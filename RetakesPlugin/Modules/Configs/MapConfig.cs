@@ -17,7 +17,7 @@ public class MapConfig
         _mapConfigData = null;
     }
 
-    public void Load()
+    public void Load(bool isViaCommand = false)
     {
         Helpers.Debug($"Attempting to load map data from {_mapConfigPath}");
 
@@ -42,8 +42,12 @@ public class MapConfig
         catch (FileNotFoundException)
         {
             Helpers.Debug($"No config for map {_mapName}");
-            _mapConfigData = new MapConfigData();
-            Save();
+
+            if (!isViaCommand)
+            {
+                _mapConfigData = new MapConfigData();
+                Save();
+            }
         }
         catch (Exception ex)
         {

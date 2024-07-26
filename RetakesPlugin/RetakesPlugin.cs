@@ -135,6 +135,24 @@ public class RetakesPlugin : BasePlugin
         commandInfo.ReplyToCommand($"{MessagePrefix}The bombsite will now be forced to {_forcedBombsite}.");
     }
     
+    [ConsoleCommand("css_mapconfig", "Forces a specific map config file to load.")]
+    [CommandHelper(minArgs: 1, usage: "[filename]", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    [RequiresPermissions("@css/root")]
+    public void OnCommandMapConfig(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        if (!Helpers.IsValidPlayer(player))
+        {
+            return;
+        }
+
+        var mapConfigFileName = commandInfo.GetArg(1).Trim().Replace(".json", "");
+        
+        _mapConfig = new MapConfig(ModuleDirectory, mapConfigFileName);
+        _mapConfig.Load(true);
+        
+        commandInfo.ReplyToCommand($"{MessagePrefix}There is likely additional output above as to whether it was successful or not...");
+    }
+    
     [ConsoleCommand("css_showspawns", "Show the spawns for the specified bombsite.")]
     [ConsoleCommand("css_spawns", "Show the spawns for the specified bombsite.")]
     [ConsoleCommand("css_edit", "Show the spawns for the specified bombsite.")]
@@ -629,7 +647,7 @@ public class RetakesPlugin : BasePlugin
 
             if (_mapConfig != null)
             {
-                var numSpawns = Helpers.ShowSpawns(_mapConfig.GetSpawnsClone(), _showingSpawnsForBombsite);
+                Helpers.ShowSpawns(_mapConfig.GetSpawnsClone(), _showingSpawnsForBombsite);
             }
 
             return HookResult.Continue;
