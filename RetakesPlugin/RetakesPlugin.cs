@@ -20,7 +20,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(220)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "2.0.7";
+    private const string Version = "2.0.8";
 
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -56,6 +56,7 @@ public class RetakesPlugin : BasePlugin
     private CCSPlayerController? _planter;
     private CsTeam _lastRoundWinner = CsTeam.None;
     private Bombsite? _showingSpawnsForBombsite;
+    private Bombsite? _forcedBombsite;
 
     // TODO: We should really store this in SQLite, but for now we'll just store it in memory.
     private readonly HashSet<CCSPlayerController> _hasMutedVoices = new();
@@ -97,6 +98,43 @@ public class RetakesPlugin : BasePlugin
     }
 
     #region Commands
+    [ConsoleCommand("css_forcebombsitestop", "Clear the forced bombsite and return back to normal.")]
+    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    [RequiresPermissions("@css/root")]
+    public void OnCommandForceBombsiteStop(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        if (!Helpers.IsValidPlayer(player))
+        {
+            return;
+        }
+
+        _forcedBombsite = null;
+        
+        commandInfo.ReplyToCommand($"{MessagePrefix}The bombsite will no longer be forced.");
+    }
+    
+    [ConsoleCommand("css_forcebombsite", "Force the retakes to occur from a single bombsite.")]
+    [CommandHelper(minArgs: 1, usage: "[A/B]", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    [RequiresPermissions("@css/root")]
+    public void OnCommandForceBombsite(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        if (!Helpers.IsValidPlayer(player))
+        {
+            return;
+        }
+
+        var bombsite = commandInfo.GetArg(1).ToUpper();
+        if (bombsite != "A" && bombsite != "B")
+        {
+            commandInfo.ReplyToCommand($"{MessagePrefix}You must specify a bombsite [A / B].");
+            return;
+        }
+
+        _forcedBombsite = bombsite == "A" ? Bombsite.A : Bombsite.B;
+        
+        commandInfo.ReplyToCommand($"{MessagePrefix}The bombsite will now be forced to {_forcedBombsite}.");
+    }
+    
     [ConsoleCommand("css_showspawns", "Show the spawns for the specified bombsite.")]
     [ConsoleCommand("css_spawns", "Show the spawns for the specified bombsite.")]
     [ConsoleCommand("css_edit", "Show the spawns for the specified bombsite.")]
@@ -611,7 +649,7 @@ public class RetakesPlugin : BasePlugin
 
         // Reset round state.
         _breakerManager?.Handle();
-        _currentBombsite = Helpers.Random.Next(0, 2) == 0 ? Bombsite.A : Bombsite.B;
+        _currentBombsite = _forcedBombsite ?? (Helpers.Random.Next(0, 2) == 0 ? Bombsite.A : Bombsite.B);
         _gameManager.ResetPlayerScores();
 
         Helpers.Debug("Clearing _showingSpawnsForBombsite");
@@ -638,6 +676,7 @@ public class RetakesPlugin : BasePlugin
             Helpers.Debug($"Game manager not loaded.");
             return HookResult.Continue;
         }
+        
         // If we are in warmup, skip.
         if (Helpers.GetGameRules().WarmupPeriod)
         {
