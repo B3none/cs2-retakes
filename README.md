@@ -67,16 +67,18 @@ When the plugin is first loaded it will create a `retakes_config.json` file in t
 | ShouldRemoveSpectators                            | When a player is moved to spectators, remove them from all retake queues. Ensures that AFK plugins work as expected.                            | false      |    false      | true       |
 
 ## Commands
-| Command         | Arguments                         | Description                                                          | Permissions |
-|-----------------|-----------------------------------|----------------------------------------------------------------------|-------------|
-| !showspawns     | <A / B>                           | Show the spawns for the specified bombsite.                          | @css/root   |
-| !addspawn       | <CT / T> <Y / N (can be planter)> | Adds a retakes spawn point for the bombsite spawns currently shown.  | @css/root   |
-| !removespawn    |                                   | Removes the nearest spawn point for the bombsite currently shown.    | @css/root   |
-| !nearestspawn   |                                   | Teleports the player to the nearest spawn.                           | @css/root   |
-| !hidespawns     |                                   | Exits the spawn editing mode.                                        | @css/root   |
-| !scramble       |                                   | Scrambles the teams next round.                                      | @css/admin  |
-| !voices         |                                   | Toggles whether or not to hear the bombsite voice announcements.     |             |
-| css_debugqueues |                                   | **SERVER ONLY** Shows the current queue state in the server console. |             |
+| Command            | Arguments                         | Description                                                          | Permissions |
+|--------------------|-----------------------------------|----------------------------------------------------------------------|-------------|
+| !forcebombsite     | <A / B>                           | Force the retakes to occur from a single bombsite.                   | @css/root   |
+| !forcebombsitestop |                                   | Clear the forced bombsite and return back to normal.                 | @css/root   |
+| !showspawns        | <A / B>                           | Show the spawns for the specified bombsite.                          | @css/root   |
+| !addspawn          | <CT / T> <Y / N (can be planter)> | Adds a retakes spawn point for the bombsite spawns currently shown.  | @css/root   |
+| !removespawn       |                                   | Removes the nearest spawn point for the bombsite currently shown.    | @css/root   |
+| !nearestspawn      |                                   | Teleports the player to the nearest spawn.                           | @css/root   |
+| !hidespawns        |                                   | Exits the spawn editing mode.                                        | @css/root   |
+| !scramble          |                                   | Scrambles the teams next round.                                      | @css/admin  |
+| !voices            |                                   | Toggles whether or not to hear the bombsite voice announcements.     |             |
+| css_debugqueues    |                                   | **SERVER ONLY** Shows the current queue state in the server console. |             |
 
 ## Stay up to date
 Subscribe to **release** notifications and stay up to date with the latest features and patches:
