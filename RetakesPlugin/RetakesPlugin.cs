@@ -99,7 +99,7 @@ public class RetakesPlugin : BasePlugin
 
     #region Commands
     [ConsoleCommand("css_forcebombsitestop", "Clear the forced bombsite and return back to normal.")]
-    [CommandHelper(minArgs: 1, usage: "[A/B]", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     [RequiresPermissions("@css/root")]
     public void OnCommandForceBombsiteStop(CCSPlayerController? player, CommandInfo commandInfo)
     {
@@ -114,7 +114,7 @@ public class RetakesPlugin : BasePlugin
     }
     
     [ConsoleCommand("css_forcebombsite", "Force the retakes to occur from a single bombsite.")]
-    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    [CommandHelper(minArgs: 1, usage: "[A/B]", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     [RequiresPermissions("@css/root")]
     public void OnCommandForceBombsite(CCSPlayerController? player, CommandInfo commandInfo)
     {
