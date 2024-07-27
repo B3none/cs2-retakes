@@ -102,6 +102,8 @@ public class RetakesPlugin : BasePlugin
 
     #region Commands
     [ConsoleCommand("css_mapconfig", "Forces a specific map config file to load.")]
+    [ConsoleCommand("css_setmapconfig", "Forces a specific map config file to load.")]
+    [ConsoleCommand("css_loadmapconfig", "Forces a specific map config file to load.")]
     [CommandHelper(minArgs: 1, usage: "[filename]", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     [RequiresPermissions("@css/root")]
     public void OnCommandMapConfig(CCSPlayerController? player, CommandInfo commandInfo)
@@ -135,6 +137,8 @@ public class RetakesPlugin : BasePlugin
     }
     
     [ConsoleCommand("css_mapconfigs", "Displays a list of available map configs.")]
+    [ConsoleCommand("css_viewmapconfigs", "Displays a list of available map configs.")]
+    [ConsoleCommand("css_listmapconfigs", "Displays a list of available map configs.")]
     [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     [RequiresPermissions("@css/root")]
     public void OnCommandMapConfigs(CCSPlayerController? player, CommandInfo commandInfo)
