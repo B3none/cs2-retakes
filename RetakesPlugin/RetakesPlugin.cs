@@ -152,6 +152,9 @@ public class RetakesPlugin : BasePlugin
         
         var files = Directory.GetFiles(mapConfigDirectory);
         
+        // organise files alphabetically
+        Array.Sort(files);
+        
         if (!Directory.Exists(mapConfigDirectory) || files.Length == 0)
         {
             commandInfo.ReplyToCommand($"{MessagePrefix}No map configs found.");
