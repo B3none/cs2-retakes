@@ -82,8 +82,11 @@ public class RetakesPlugin : BasePlugin
         MessagePrefix = _translator["retakes.prefix"];
 
         Helpers.Debug($"Plugin loaded!");
-
-        RegisterListener<Listeners.OnMapStart>(OnMapStart);
+        
+        RegisterListener<Listeners.OnMapStart>(mapName =>
+        {
+            OnMapStart(mapName);
+        });
 
         AddCommandListener("jointeam", OnCommandJoinTeam);
 
@@ -98,19 +101,74 @@ public class RetakesPlugin : BasePlugin
     }
 
     #region Commands
-    [ConsoleCommand("css_forcebombsitestop", "Clear the forced bombsite and return back to normal.")]
-    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    [ConsoleCommand("css_mapconfig", "Forces a specific map config file to load.")]
+    [ConsoleCommand("css_setmapconfig", "Forces a specific map config file to load.")]
+    [ConsoleCommand("css_loadmapconfig", "Forces a specific map config file to load.")]
+    [CommandHelper(minArgs: 1, usage: "[filename]", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     [RequiresPermissions("@css/root")]
-    public void OnCommandForceBombsiteStop(CCSPlayerController? player, CommandInfo commandInfo)
+    public void OnCommandMapConfig(CCSPlayerController? player, CommandInfo commandInfo)
     {
         if (!Helpers.IsValidPlayer(player))
         {
             return;
         }
 
-        _forcedBombsite = null;
+        var mapConfigDirectory = Path.Combine(ModuleDirectory, "map_config");
         
-        commandInfo.ReplyToCommand($"{MessagePrefix}The bombsite will no longer be forced.");
+        if (!Directory.Exists(mapConfigDirectory))
+        {
+            commandInfo.ReplyToCommand($"{MessagePrefix}No map configs found.");
+            return;
+        }
+        
+        var mapConfigFileName = commandInfo.GetArg(1).Trim().Replace(".json", "");
+        
+        var mapConfigFilePath = Path.Combine(mapConfigDirectory, $"{mapConfigFileName}.json");
+        
+        if (!File.Exists(mapConfigFilePath))
+        {
+            commandInfo.ReplyToCommand($"{MessagePrefix}Map config file not found.");
+            return;
+        }
+        
+        OnMapStart(Server.MapName, mapConfigFileName);
+        
+        commandInfo.ReplyToCommand($"{MessagePrefix}The new map config has been successfully loaded.");
+    }
+    
+    [ConsoleCommand("css_mapconfigs", "Displays a list of available map configs.")]
+    [ConsoleCommand("css_viewmapconfigs", "Displays a list of available map configs.")]
+    [ConsoleCommand("css_listmapconfigs", "Displays a list of available map configs.")]
+    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    [RequiresPermissions("@css/root")]
+    public void OnCommandMapConfigs(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        if (player == null || !Helpers.IsValidPlayer(player))
+        {
+            return;
+        }
+        
+        var mapConfigDirectory = Path.Combine(ModuleDirectory, "map_config");
+        
+        var files = Directory.GetFiles(mapConfigDirectory);
+        
+        if (!Directory.Exists(mapConfigDirectory) || files.Length == 0)
+        {
+            commandInfo.ReplyToCommand($"{MessagePrefix}No map configs found.");
+            return;
+        }
+        
+        foreach (var file in files)
+        {
+            var transformedFile = file
+                .Replace($"{mapConfigDirectory}/", "")
+                .Replace(".json", "");
+            
+            commandInfo.ReplyToCommand($"{MessagePrefix}{transformedFile}");
+            player.PrintToConsole($"{MessagePrefix}{transformedFile}");
+        }
+        
+        commandInfo.ReplyToCommand($"{MessagePrefix}A list of available map configs has been outputted above.");
     }
     
     [ConsoleCommand("css_forcebombsite", "Force the retakes to occur from a single bombsite.")]
@@ -133,6 +191,21 @@ public class RetakesPlugin : BasePlugin
         _forcedBombsite = bombsite == "A" ? Bombsite.A : Bombsite.B;
         
         commandInfo.ReplyToCommand($"{MessagePrefix}The bombsite will now be forced to {_forcedBombsite}.");
+    }
+    
+    [ConsoleCommand("css_forcebombsitestop", "Clear the forced bombsite and return back to normal.")]
+    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    [RequiresPermissions("@css/root")]
+    public void OnCommandForceBombsiteStop(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        if (!Helpers.IsValidPlayer(player))
+        {
+            return;
+        }
+
+        _forcedBombsite = null;
+        
+        commandInfo.ReplyToCommand($"{MessagePrefix}The bombsite will no longer be forced.");
     }
     
     [ConsoleCommand("css_showspawns", "Show the spawns for the specified bombsite.")]
@@ -483,9 +556,9 @@ public class RetakesPlugin : BasePlugin
     #endregion
 
     #region Listeners
-    private void OnMapStart(string mapName)
+    private void OnMapStart(string mapName, string? customMapConfig = null)
     {
-        Helpers.Debug($"OnMapStart listener triggered!");
+        Helpers.Debug("OnMapStart listener triggered!");
 
         ResetState();
 
@@ -496,9 +569,9 @@ public class RetakesPlugin : BasePlugin
         });
 
         // If we don't have a map config loaded, load it.
-        if (!MapConfig.IsLoaded(_mapConfig, Server.MapName))
+        if (!MapConfig.IsLoaded(_mapConfig, customMapConfig ?? mapName))
         {
-            _mapConfig = new MapConfig(ModuleDirectory, Server.MapName);
+            _mapConfig = new MapConfig(ModuleDirectory, customMapConfig ?? mapName);
             _mapConfig.Load();
         }
 
@@ -629,7 +702,7 @@ public class RetakesPlugin : BasePlugin
 
             if (_mapConfig != null)
             {
-                var numSpawns = Helpers.ShowSpawns(_mapConfig.GetSpawnsClone(), _showingSpawnsForBombsite);
+                Helpers.ShowSpawns(_mapConfig.GetSpawnsClone(), _showingSpawnsForBombsite);
             }
 
             return HookResult.Continue;

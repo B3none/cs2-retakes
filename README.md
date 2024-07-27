@@ -64,7 +64,7 @@ When the plugin is first loaded it will create a `retakes_config.json` file in t
 | IsDebugMode                                       | Whether to enable debug output to the server console or not.                                                                                    | false      | false      | true       |
 | ShouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 | Whether to force even teams when the active players is a multiple of 10 or not. (this means you will get 5v5 @ 10 players / 10v10 @ 20 players) | true       | false      | true       |
 | EnableFallbackBombsiteAnnouncement                | Whether to enable the fallback bombsite announcement.                                                                                           | true       | false      | true       |
-| ShouldRemoveSpectators                            | When a player is moved to spectators, remove them from all retake queues. Ensures that AFK plugins work as expected.                            | false      |    false      | true       |
+| ShouldRemoveSpectators                            | When a player is moved to spectators, remove them from all retake queues. Ensures that AFK plugins work as expected.                            | false      | false      | true       |
 
 ## Commands
 | Command            | Arguments                         | Description                                                          | Permissions |
@@ -76,6 +76,8 @@ When the plugin is first loaded it will create a `retakes_config.json` file in t
 | !removespawn       |                                   | Removes the nearest spawn point for the bombsite currently shown.    | @css/root   |
 | !nearestspawn      |                                   | Teleports the player to the nearest spawn.                           | @css/root   |
 | !hidespawns        |                                   | Exits the spawn editing mode.                                        | @css/root   |
+| !mapconfig         | <Config file name>                | Forces a specific map config file to load.                           | @css/root   |
+| !mapconfigs        |                                   | Displays a list of available map configs.                            | @css/root   |
 | !scramble          |                                   | Scrambles the teams next round.                                      | @css/admin  |
 | !voices            |                                   | Toggles whether or not to hear the bombsite voice announcements.     |             |
 | css_debugqueues    |                                   | **SERVER ONLY** Shows the current queue state in the server console. |             |
