@@ -115,7 +115,7 @@ public class RetakesPlugin : BasePlugin
         
         OnMapStart(Server.MapName, mapConfigFileName);
         
-        commandInfo.ReplyToCommand($"{MessagePrefix}There is likely additional output above as to whether it was successful or not...");
+        commandInfo.ReplyToCommand($"{MessagePrefix}If this file exists, then the map config has been forced to load.");
     }
     
     [ConsoleCommand("css_forcebombsite", "Force the retakes to occur from a single bombsite.")]
