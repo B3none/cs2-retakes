@@ -130,11 +130,23 @@ public class RetakesPlugin : BasePlugin
         
         var mapConfigDirectory = Path.Combine(ModuleDirectory, "map_config");
         
-        // output each of the files in the directory above
-        foreach (var file in Directory.GetFiles(mapConfigDirectory))
+        var files = Directory.GetFiles(mapConfigDirectory);
+        
+        if (!Directory.Exists(mapConfigDirectory) || files.Length == 0)
         {
-            commandInfo.ReplyToCommand($"{MessagePrefix}{file}");
-            player.PrintToConsole($"{MessagePrefix}{file}");
+            commandInfo.ReplyToCommand($"{MessagePrefix}No map configs found.");
+            return;
+        }
+        
+        foreach (var file in files)
+        {
+            var transformedFile = file
+                .Replace(mapConfigDirectory, "")
+                .Replace("\\", "")
+                .Replace(".json", "");
+            
+            commandInfo.ReplyToCommand($"{MessagePrefix}{transformedFile}");
+            player.PrintToConsole($"{MessagePrefix}{transformedFile}");
         }
         
         commandInfo.ReplyToCommand($"{MessagePrefix}A list of available map configs has been outputted above.");
