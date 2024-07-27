@@ -111,11 +111,27 @@ public class RetakesPlugin : BasePlugin
             return;
         }
 
+        var mapConfigDirectory = Path.Combine(ModuleDirectory, "map_config");
+        
+        if (!Directory.Exists(mapConfigDirectory))
+        {
+            commandInfo.ReplyToCommand($"{MessagePrefix}No map configs found.");
+            return;
+        }
+        
         var mapConfigFileName = commandInfo.GetArg(1).Trim().Replace(".json", "");
+        
+        var mapConfigFilePath = Path.Combine(mapConfigDirectory, $"{mapConfigFileName}.json");
+        
+        if (!File.Exists(mapConfigFilePath))
+        {
+            commandInfo.ReplyToCommand($"{MessagePrefix}Map config file not found.");
+            return;
+        }
         
         OnMapStart(Server.MapName, mapConfigFileName);
         
-        commandInfo.ReplyToCommand($"{MessagePrefix}If this file exists, then the map config has been forced to load.");
+        commandInfo.ReplyToCommand($"{MessagePrefix}The new map config has been successfully loaded.");
     }
     
     [ConsoleCommand("css_mapconfigs", "Displays a list of available map configs.")]
@@ -141,8 +157,7 @@ public class RetakesPlugin : BasePlugin
         foreach (var file in files)
         {
             var transformedFile = file
-                .Replace(mapConfigDirectory, "")
-                .Replace("\\", "")
+                .Replace($"{mapConfigDirectory}/", "")
                 .Replace(".json", "");
             
             commandInfo.ReplyToCommand($"{MessagePrefix}{transformedFile}");
