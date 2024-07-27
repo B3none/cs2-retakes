@@ -118,6 +118,28 @@ public class RetakesPlugin : BasePlugin
         commandInfo.ReplyToCommand($"{MessagePrefix}If this file exists, then the map config has been forced to load.");
     }
     
+    [ConsoleCommand("css_mapconfigs", "Displays a list of available map configs.")]
+    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
+    [RequiresPermissions("@css/root")]
+    public void OnCommandMapConfigs(CCSPlayerController? player, CommandInfo commandInfo)
+    {
+        if (player == null || !Helpers.IsValidPlayer(player))
+        {
+            return;
+        }
+        
+        var mapConfigDirectory = Path.Combine(ModuleDirectory, "map_config");
+        
+        // output each of the files in the directory above
+        foreach (var file in Directory.GetFiles(mapConfigDirectory))
+        {
+            commandInfo.ReplyToCommand($"{MessagePrefix}{file}");
+            player.PrintToConsole($"{MessagePrefix}{file}");
+        }
+        
+        commandInfo.ReplyToCommand($"{MessagePrefix}A list of available map configs has been outputted above.");
+    }
+    
     [ConsoleCommand("css_forcebombsite", "Force the retakes to occur from a single bombsite.")]
     [CommandHelper(minArgs: 1, usage: "[A/B]", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     [RequiresPermissions("@css/root")]
