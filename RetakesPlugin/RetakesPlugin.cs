@@ -20,7 +20,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(220)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "2.0.9";
+    private const string Version = "2.0.10";
 
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -167,8 +167,8 @@ public class RetakesPlugin : BasePlugin
                 .Replace($"{mapConfigDirectory}/", "")
                 .Replace(".json", "");
             
-            commandInfo.ReplyToCommand($"{MessagePrefix}{transformedFile}");
-            player.PrintToConsole($"{MessagePrefix}{transformedFile}");
+            commandInfo.ReplyToCommand($"{MessagePrefix}!mapconfig {transformedFile}");
+            player.PrintToConsole($"{MessagePrefix}!mapconfig {transformedFile}");
         }
         
         commandInfo.ReplyToCommand($"{MessagePrefix}A list of available map configs has been outputted above.");
