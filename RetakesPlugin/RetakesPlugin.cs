@@ -20,7 +20,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(220)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "2.0.9";
+    private const string Version = "2.0.10";
 
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -602,7 +602,8 @@ public class RetakesPlugin : BasePlugin
             ),
             _retakesConfig?.RetakesConfigData?.RoundsToScramble,
             _retakesConfig?.RetakesConfigData?.IsScrambleEnabled,
-            _retakesConfig?.RetakesConfigData?.ShouldRemoveSpectators
+            _retakesConfig?.RetakesConfigData?.ShouldRemoveSpectators,
+            _retakesConfig?.RetakesConfigData?.IsBalanceEnabled
         );
 
         _breakerManager = new BreakerManager(

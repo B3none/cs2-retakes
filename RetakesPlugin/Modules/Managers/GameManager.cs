@@ -12,17 +12,19 @@ public class GameManager
     private readonly int _consecutiveRoundWinsToScramble;
     private readonly bool _isScrambleEnabled;
     private readonly bool _removeSpectatorsEnabled;
+    private readonly bool _isBalanceEnabled;
     public const int ScoreForKill = 50;
     public const int ScoreForAssist = 25;
     public const int ScoreForDefuse = 50;
 
-    public GameManager(Translator translator, QueueManager queueManager, int? roundsToScramble, bool? isScrambleEnabled, bool? RemoveSpectatorsEnabled)
+    public GameManager(Translator translator, QueueManager queueManager, int? roundsToScramble, bool? isScrambleEnabled, bool? removeSpectatorsEnabled, bool? isBalanceEnabled)
     {
         _translator = translator;
         QueueManager = queueManager;
         _consecutiveRoundWinsToScramble = roundsToScramble ?? 5;
         _isScrambleEnabled = isScrambleEnabled ?? true;
-        _removeSpectatorsEnabled = RemoveSpectatorsEnabled ?? false;
+        _removeSpectatorsEnabled = removeSpectatorsEnabled ?? false;
+        _isBalanceEnabled = isBalanceEnabled ?? true;
     }
 
     private bool _scrambleNextRound;
@@ -217,7 +219,10 @@ public class GameManager
             ScrambleTeams();
         }
 
-        BalanceTeams();
+        if (_isBalanceEnabled)
+        {
+            BalanceTeams();
+        }
     }
 
     private List<CCSPlayerController> GetSortedActivePlayers(CsTeam? team = null)
@@ -231,8 +236,8 @@ public class GameManager
 
     private void SetTeams(List<CCSPlayerController>? terrorists, List<CCSPlayerController>? counterTerrorists)
     {
-        terrorists ??= new List<CCSPlayerController>();
-        counterTerrorists ??= new List<CCSPlayerController>();
+        terrorists ??= [];
+        counterTerrorists ??= [];
 
         foreach (var player in QueueManager.ActivePlayers.Where(Helpers.IsValidPlayer))
         {
