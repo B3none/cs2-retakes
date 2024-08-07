@@ -11,16 +11,18 @@ public class QueueManager
     private readonly float _terroristRatio;
     private readonly string _queuePriorityFlag;
     private readonly bool _shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10;
+    private readonly bool _shouldPreventTeamChangesMidRound;
 
-    public HashSet<CCSPlayerController> QueuePlayers = new();
-    public HashSet<CCSPlayerController> ActivePlayers = new();
+    public HashSet<CCSPlayerController> QueuePlayers = [];
+    public HashSet<CCSPlayerController> ActivePlayers = [];
 
     public QueueManager(
         Translator translator,
         int? retakesMaxPlayers,
         float? retakesTerroristRatio,
         string? queuePriorityFlag,
-        bool? shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10
+        bool? shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10,
+        bool? shouldPreventTeamChangesMidRound
     )
     {
         _translator = translator;
@@ -28,6 +30,7 @@ public class QueueManager
         _terroristRatio = retakesTerroristRatio ?? 0.45f;
         _queuePriorityFlag = queuePriorityFlag ?? "@css/vip";
         _shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 = shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 ?? true;
+        _shouldPreventTeamChangesMidRound = shouldPreventTeamChangesMidRound ?? true;
     }
 
     public int GetTargetNumTerrorists()
@@ -67,6 +70,12 @@ public class QueueManager
                 Helpers.Debug($"[{player.PlayerName}] Switching to spectator.");
                 RemovePlayerFromQueues(player);
                 Helpers.CheckRoundDone();
+                return HookResult.Continue;
+            }
+            
+            if (!_shouldPreventTeamChangesMidRound)
+            {
+                Helpers.Debug($"[{player.PlayerName}] Preventing team changes mid round is disabled, allowing team change.");
                 return HookResult.Continue;
             }
 
@@ -309,8 +318,8 @@ public class QueueManager
         }
     }
 
-    private List<CCSPlayerController> _roundTerrorists = new();
-    private List<CCSPlayerController> _roundCounterTerrorists = new();
+    private List<CCSPlayerController> _roundTerrorists = [];
+    private List<CCSPlayerController> _roundCounterTerrorists = [];
 
     public void ClearRoundTeams()
     {
@@ -320,6 +329,11 @@ public class QueueManager
 
     public void SetRoundTeams()
     {
+        if (!_shouldPreventTeamChangesMidRound)
+        {
+            return;
+        }
+        
         _roundTerrorists = ActivePlayers
             .Where(player => Helpers.IsValidPlayer(player) && player.Team == CsTeam.Terrorist).ToList();
         _roundCounterTerrorists = ActivePlayers

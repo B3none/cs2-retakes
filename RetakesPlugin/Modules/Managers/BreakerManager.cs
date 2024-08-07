@@ -7,19 +7,15 @@ namespace RetakesPlugin.Modules.Managers;
 
 public class BreakerManager
 {
-    private readonly List<(string designerName, string action)> _entityActions = new();
+    private readonly List<(string designerName, string action)> _entityActions = [];
 
-    private static readonly HashSet<string> MapsWithPropDynamic = new()
-    {
+    private static readonly HashSet<string> MapsWithPropDynamic = [
         "de_vertigo",
         "de_nuke",
         "de_mirage"
-    };
+    ];
 
-    private static readonly HashSet<string> MapsWithFuncButton = new()
-    {
-        "de_nuke"
-    };
+    private static readonly HashSet<string> MapsWithFuncButton = ["de_nuke"];
 
     public BreakerManager(bool? shouldBreakBreakables, bool? shouldOpenDoors)
     {
