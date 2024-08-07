@@ -2,7 +2,7 @@
 
 public class RetakesConfigData
 {
-    public static int CurrentVersion = 10;
+    public static int CurrentVersion = 11;
 
     public int Version { get; set; } = CurrentVersion;
     public int MaxPlayers { get; set; } = 9;
@@ -21,4 +21,5 @@ public class RetakesConfigData
     public bool EnableFallbackBombsiteAnnouncement { get; set; } = true;
     public bool ShouldRemoveSpectators { get; set; } = true;
     public bool IsBalanceEnabled { get; set; } = true;
+    public bool ShouldPreventTeamChangesMidRound { get; set; } = true;
 }

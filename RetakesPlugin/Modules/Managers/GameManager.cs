@@ -143,8 +143,8 @@ public class GameManager
 
     private void BalanceTeams()
     {
-        List<CCSPlayerController> newTerrorists = new();
-        List<CCSPlayerController> newCounterTerrorists = new();
+        List<CCSPlayerController> newTerrorists = [];
+        List<CCSPlayerController> newCounterTerrorists = [];
 
         var currentNumTerrorist = Helpers.GetCurrentNumPlayers(CsTeam.Terrorist);
         var numTerroristsNeeded = QueueManager.GetTargetNumTerrorists() - currentNumTerrorist;
@@ -201,18 +201,20 @@ public class GameManager
 
     public void OnRoundPreStart(CsTeam winningTeam)
     {
-        // Handle team swaps during round pre-start.
-        switch (winningTeam)
+        if (_isBalanceEnabled)
         {
-            case CsTeam.CounterTerrorist:
-                CounterTerroristRoundWin();
-                break;
+            // Handle team swaps during round pre-start.
+            switch (winningTeam)
+            {
+                case CsTeam.CounterTerrorist:
+                    CounterTerroristRoundWin();
+                    break;
 
-            case CsTeam.Terrorist:
-                TerroristRoundWin();
-                break;
+                case CsTeam.Terrorist:
+                    TerroristRoundWin();
+                    break;
+            }
         }
-
 
         if (_scrambleNextRound)
         {

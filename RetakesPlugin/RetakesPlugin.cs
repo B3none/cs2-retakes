@@ -59,7 +59,7 @@ public class RetakesPlugin : BasePlugin
     private Bombsite? _forcedBombsite;
 
     // TODO: We should really store this in SQLite, but for now we'll just store it in memory.
-    private readonly HashSet<CCSPlayerController> _hasMutedVoices = new();
+    private readonly HashSet<CCSPlayerController> _hasMutedVoices = [];
 
     private void ResetState()
     {
@@ -598,7 +598,8 @@ public class RetakesPlugin : BasePlugin
                 _retakesConfig?.RetakesConfigData?.MaxPlayers,
                 _retakesConfig?.RetakesConfigData?.TerroristRatio,
                 _retakesConfig?.RetakesConfigData?.QueuePriorityFlag,
-                _retakesConfig?.RetakesConfigData?.ShouldForceEvenTeamsWhenPlayerCountIsMultipleOf10
+                _retakesConfig?.RetakesConfigData?.ShouldForceEvenTeamsWhenPlayerCountIsMultipleOf10,
+                _retakesConfig?.RetakesConfigData?.ShouldPreventTeamChangesMidRound
             ),
             _retakesConfig?.RetakesConfigData?.RoundsToScramble,
             _retakesConfig?.RetakesConfigData?.IsScrambleEnabled,
@@ -1011,7 +1012,7 @@ public class RetakesPlugin : BasePlugin
     private void AnnounceBombsite(Bombsite bombsite, bool onlyCenter = false)
     {
         string[] bombsiteAnnouncers =
-        {
+        [
             "balkan_epic",
             "leet_epic",
             "professional_epic",
@@ -1019,7 +1020,7 @@ public class RetakesPlugin : BasePlugin
             "seal_epic",
             "swat_epic",
             "swat_fem"
-        };
+        ];
 
         // Get translation message
         var numTerrorist = Helpers.GetCurrentNumPlayers(CsTeam.Terrorist);

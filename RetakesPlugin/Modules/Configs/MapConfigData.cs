@@ -2,5 +2,5 @@
 
 public class MapConfigData
 {
-    public List<Spawn> Spawns { get; set; } = new();
+    public List<Spawn> Spawns { get; set; } = [];
 }
