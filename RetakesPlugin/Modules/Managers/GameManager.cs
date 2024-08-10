@@ -201,19 +201,19 @@ public class GameManager
 
     public void OnRoundPreStart(CsTeam winningTeam)
     {
-        if (_isBalanceEnabled)
+        // Handle team swaps during round pre-start.
+        switch (winningTeam)
         {
-            // Handle team swaps during round pre-start.
-            switch (winningTeam)
-            {
-                case CsTeam.CounterTerrorist:
+            case CsTeam.CounterTerrorist:
+                if (_isBalanceEnabled)
+                {
                     CounterTerroristRoundWin();
-                    break;
+                }
+                break;
 
-                case CsTeam.Terrorist:
-                    TerroristRoundWin();
-                    break;
-            }
+            case CsTeam.Terrorist:
+                TerroristRoundWin();
+                break;
         }
 
         if (_scrambleNextRound)
