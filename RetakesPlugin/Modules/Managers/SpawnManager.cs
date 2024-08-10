@@ -54,7 +54,7 @@ public class SpawnManager
     }
 
     /**
-     * This function returns a the player who should be the planter and moves all players to random spawns based on bomb site.
+     * This function returns the player who should be the planter and moves all players to random spawns based on bombsite.
      */
     public CCSPlayerController? HandleRoundSpawns(Bombsite bombsite, HashSet<CCSPlayerController> players)
     {
