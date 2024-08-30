@@ -34,7 +34,7 @@ Looking for reliable server hosting? [Dathost](https://dathost.net/r/b3none/cs2-
 - [x] Add a release zip file without spawns too
 
 ## Installation
-- Download the zip file from the [latest release](https://github.com/B3none/cs2-retakes/releases), and extract the contents into your `counterstrikesharp/plugins` directory.
+- Download the zip file from the [latest release](https://github.com/B3none/cs2-retakes/releases/latest), and extract the contents into your `counterstrikesharp/plugins` directory.
 - Download the [shared plugin zip file](https://github.com/B3none/cs2-retakes/releases/download/2.0.0/cs2-retakes-plugin-shared-2.0.0.zip) and put it into your `counterstrikesharp/shared` directory.
 
 ## Recommendations
