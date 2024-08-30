@@ -1,0 +1,70 @@
+name: Build RetakesPluginShared
+
+on:
+  push:
+    branches: [ "master" ]
+    paths:
+      - '**.cs'
+      - '**.csproj'
+  pull_request:
+    branches: [ "master" ]
+    paths:
+      - '**.cs'
+      - '**.csproj'
+  release:
+    types:
+      - created
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: 8.0.x
+      - name: Change directory and build
+        run: |
+          cd RetakesPluginShared
+          dotnet build
+      - name: Create output directory
+        run: |
+          mkdir -p output/RetakesPluginShared
+          mv ./RetakesPluginShared/bin/Debug/net8.0/RetakesPluginShared.dll output/RetakesPluginShared/
+          mv ./RetakesPluginShared/bin/Debug/net8.0/RetakesPluginShared.pdb output/RetakesPluginShared/
+      - name: Publish artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: RetakesPluginShared-${{ github.sha }}
+          path: output
+  
+  release:
+    needs: build
+    permissions: write-all
+    runs-on: ubuntu-latest
+    if: github.event_name == 'release'
+    
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: RetakesPlugin-${{ github.sha }}
+      - name: Create release assets
+        run: |
+          zip -r RetakesPluginShared-${{ github.sha }}.zip ./RetakesPluginShared
+      - name: Get release info
+        run: |
+          RELEASE_INFO=$(curl -sH 'Accept: application/vnd.github.v3+json' https://api.github.com/repos/${{ github.repository }}/releases)
+          export UPLOAD_URL=$(echo $RELEASE_INFO | jq -r ".[] | select(.tag_name == \"${{ github.event.release.tag_name }}\").upload_url")
+          echo "UPLOAD_URL=$UPLOAD_URL" >> $GITHUB_ENV
+      - name: Upload release asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ env.UPLOAD_URL }}
+          asset_path: ./RetakesPluginShared-${{ github.sha }}.zip
+          asset_name: "cs2-retakes-shared-${{ github.event.release.tag_name }}.zip"
+          asset_content_type: application/zip
