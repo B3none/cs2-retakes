@@ -32,9 +32,10 @@ jobs:
           dotnet build
       - name: Create output directory
         run: |
-          mkdir -p output/RetakesPluginShared
-          mv ./RetakesPluginShared/bin/Debug/net8.0/RetakesPluginShared.dll output/RetakesPluginShared/
-          mv ./RetakesPluginShared/bin/Debug/net8.0/RetakesPluginShared.pdb output/RetakesPluginShared/
+          mkdir -p output/addons/counterstrikesharp/shared/RetakesPluginShared
+          mv ./RetakesPluginShared/bin/Debug/net8.0/RetakesPluginShared.dll output/addons/counterstrikesharp/shared/RetakesPluginShared/
+          mv ./RetakesPluginShared/bin/Debug/net8.0/RetakesPluginShared.pdb output/addons/counterstrikesharp/shared/RetakesPluginShared/
+          mv ./RetakesPluginShared/bin/Debug/net8.0/RetakesPluginShared.deps.json output/addons/counterstrikesharp/shared/RetakesPluginShared/
       - name: Publish artifact
         uses: actions/upload-artifact@v4
         with:
