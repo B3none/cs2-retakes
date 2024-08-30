@@ -52,7 +52,7 @@ jobs:
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
-          name: RetakesPlugin-${{ github.sha }}
+          name: RetakesPluginShared-${{ github.sha }}
       - name: Create release assets
         run: |
           zip -r RetakesPluginShared-${{ github.sha }}.zip ./RetakesPluginShared
