@@ -1,10 +1,16 @@
-﻿name: Format check on pull request
+﻿name: Check the format of .cs files
 
 on:
   push:
     branches: [ "master" ]
+    paths:
+      - '**.cs'
+      - '**.csproj'
   pull_request:
     branches: [ "master" ]
+    paths:
+      - '**.cs'
+      - '**.csproj'
 
 jobs:
   dotnet-format:
