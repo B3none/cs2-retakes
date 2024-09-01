@@ -47,26 +47,21 @@ jobs:
     permissions: write-all
     runs-on: ubuntu-latest
     if: github.event_name == 'release'
-    
+  
     steps:
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
           name: RetakesPluginShared-${{ github.sha }}
+  
       - name: Create release assets
         run: |
-          zip -r RetakesPluginShared-${{ github.sha }}.zip ./addons
-      - name: Get release info
-        run: |
-          RELEASE_INFO=$(curl -sH 'Accept: application/vnd.github.v3+json' https://api.github.com/repos/${{ github.repository }}/releases)
-          export UPLOAD_URL=$(echo $RELEASE_INFO | jq -r ".[] | select(.tag_name == \"${{ github.event.release.tag_name }}\").upload_url")
-          echo "UPLOAD_URL=$UPLOAD_URL" >> $GITHUB_ENV
-      - name: Upload release asset
-        uses: actions/upload-release-asset@v1
+          zip -r cs2-retakes-shared-${{ github.event.release.tag_name }}.zip ./addons
+  
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ./cs2-retakes-shared-${{ github.event.release.tag_name }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ env.UPLOAD_URL }}
-          asset_path: ./RetakesPluginShared-${{ github.sha }}.zip
-          asset_name: "cs2-retakes-shared-${{ github.event.release.tag_name }}.zip"
-          asset_content_type: application/zip
