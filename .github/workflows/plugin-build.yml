@@ -57,37 +57,25 @@ jobs:
     permissions: write-all
     runs-on: ubuntu-latest
     if: github.event_name == 'release'
-    
+  
     steps:
       - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
           name: RetakesPlugin-${{ github.sha }}
+          
       - name: Create release assets
         run: |
-          zip -r RetakesPlugin-${{ github.sha }}.zip ./RetakesPlugin
+          zip -r RetakesPlugin.zip ./RetakesPlugin
           rm -rf ./RetakesPlugin/map_config
-          zip -r RetakesPlugin-${{ github.sha }}-no-map-configs.zip ./RetakesPlugin
-      - name: Get release info
-        run: |
-          RELEASE_INFO=$(curl -sH 'Accept: application/vnd.github.v3+json' https://api.github.com/repos/${{ github.repository }}/releases)
-          export UPLOAD_URL=$(echo $RELEASE_INFO | jq -r ".[] | select(.tag_name == \"${{ github.event.release.tag_name }}\").upload_url")
-          echo "UPLOAD_URL=$UPLOAD_URL" >> $GITHUB_ENV
-      - name: Upload release asset
-        uses: actions/upload-release-asset@v1
+          zip -r RetakesPlugin-no-map-configs.zip ./RetakesPlugin
+  
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            ./RetakesPlugin.zip
+            ./RetakesPlugin-no-map-configs.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ env.UPLOAD_URL }}
-          asset_path: ./RetakesPlugin-${{ github.sha }}.zip
-          asset_name: "cs2-retakes-${{ github.event.release.tag_name }}.zip"
-          asset_content_type: application/zip
-      - name: Upload release asset (no map configs)
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ env.UPLOAD_URL }}
-          asset_path: ./RetakesPlugin-${{ github.sha }}-no-map-configs.zip
-          asset_name: "cs2-retakes-${{ github.event.release.tag_name }}-no-map-configs.zip"
-          asset_content_type: application/zip
+  
