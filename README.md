@@ -36,6 +36,7 @@ If you appreciate the project then please take the time to star the repository ð
 ## Recommendations
 I also recommend installing these plugins for an improved player experience
 - Instadefuse: https://github.com/B3none/cs2-instadefuse
+- Retakes Zones (prevent silly flanks / rotations): https://github.com/oscar-wos/Retakes-Zones
 - Clutch Announce: https://github.com/B3none/cs2-clutch-announce
 - Instaplant (if not using autoplant): https://github.com/B3none/cs2-instaplant
 
