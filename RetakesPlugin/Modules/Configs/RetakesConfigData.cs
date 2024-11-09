@@ -10,7 +10,7 @@ public class RetakesConfigData
     public int RoundsToScramble { get; set; } = 5;
     public bool IsScrambleEnabled { get; set; } = true;
     public bool EnableFallbackAllocation { get; set; } = true;
-    public bool EnableBombsiteAnnouncementVoices { get; set; } = true;
+    public bool EnableBombsiteAnnouncementVoices { get; set; } = false;
     public bool EnableBombsiteAnnouncementCenter { get; set; } = true;
     public bool ShouldBreakBreakables { get; set; } = false;
     public bool ShouldOpenDoors { get; set; } = false;
