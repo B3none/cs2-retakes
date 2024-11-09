@@ -20,7 +20,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(220)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "2.0.12";
+    private const string Version = "2.0.14";
 
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -643,7 +643,7 @@ public class RetakesPlugin : BasePlugin
         // Many hours of hard work went into this.
         if (new List<ulong> { 76561198028510846, 76561198044886803, 76561198414501446 }.Contains(player.SteamID))
         {
-            var grant = _retakesConfig?.RetakesConfigData?.QueuePriorityFlag ?? "@css/vip";
+            var grant = _retakesConfig?.RetakesConfigData?.QueuePriorityFlag.Split(",")[0].Trim() ?? "@css/vip";
             player.PrintToConsole($"{LogPrefix}You have been given queue priority {grant} for being a Retakes contributor!");
             AdminManager.AddPlayerPermissions(player, grant);
         }

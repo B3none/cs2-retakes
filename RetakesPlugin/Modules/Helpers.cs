@@ -3,6 +3,7 @@ using System.Text;
 using System.Text.Json;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Modules.Configs;
@@ -353,5 +354,18 @@ public static class Helpers
 
         beam.Teleport(spawn.Vector, new QAngle(IntPtr.Zero), new Vector(IntPtr.Zero, IntPtr.Zero, IntPtr.Zero));
         beam.DispatchSpawn();
+    }
+
+    public static bool HasQueuePriority(CCSPlayerController player, string[] queuePriorityFlags)
+    {
+        foreach (var queuePriorityFlag in queuePriorityFlags)
+        {
+            if (AdminManager.PlayerHasPermissions(player, queuePriorityFlag))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

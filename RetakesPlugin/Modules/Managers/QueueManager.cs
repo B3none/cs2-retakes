@@ -1,5 +1,4 @@
 ﻿using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Utils;
 
 namespace RetakesPlugin.Modules.Managers;
@@ -9,7 +8,7 @@ public class QueueManager
     private readonly Translator _translator;
     private readonly int _maxRetakesPlayers;
     private readonly float _terroristRatio;
-    private readonly string _queuePriorityFlag;
+    private readonly string[] _queuePriorityFlags;
     private readonly bool _shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10;
     private readonly bool _shouldPreventTeamChangesMidRound;
 
@@ -20,7 +19,7 @@ public class QueueManager
         Translator translator,
         int? retakesMaxPlayers,
         float? retakesTerroristRatio,
-        string? queuePriorityFlag,
+        string? queuePriorityFlags,
         bool? shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10,
         bool? shouldPreventTeamChangesMidRound
     )
@@ -28,7 +27,7 @@ public class QueueManager
         _translator = translator;
         _maxRetakesPlayers = retakesMaxPlayers ?? 9;
         _terroristRatio = retakesTerroristRatio ?? 0.45f;
-        _queuePriorityFlag = queuePriorityFlag ?? "@css/vip";
+        _queuePriorityFlags = queuePriorityFlags?.Split(",").Select(flag => flag.Trim()).ToArray() ?? ["@css/vip"];
         _shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 = shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 ?? true;
         _shouldPreventTeamChangesMidRound = shouldPreventTeamChangesMidRound ?? true;
     }
@@ -165,7 +164,7 @@ public class QueueManager
         }
 
         var vipQueuePlayers = QueuePlayers
-            .Where(player => AdminManager.PlayerHasPermissions(player, _queuePriorityFlag)).ToList();
+            .Where(player => Helpers.HasQueuePriority(player, _queuePriorityFlags)).ToList();
 
         if (vipQueuePlayers.Count <= 0)
         {
@@ -185,7 +184,7 @@ public class QueueManager
             // TODO: We shouldn't really shuffle here, implement a last in first out queue instead.
             var nonVipActivePlayers = Helpers.Shuffle(
                 ActivePlayers
-                    .Where(player => !AdminManager.PlayerHasPermissions(player, _queuePriorityFlag))
+                    .Where(player => !Helpers.HasQueuePriority(player, _queuePriorityFlags))
                     .ToList()
             );
 
@@ -230,7 +229,7 @@ public class QueueManager
             // Ordered by players with queue priority flag first since they
             // have queue priority.
             var playersToAddList = QueuePlayers
-                .OrderBy(player => AdminManager.PlayerHasPermissions(player, _queuePriorityFlag) ? 1 : 0)
+                .OrderBy(player => Helpers.HasQueuePriority(player, _queuePriorityFlags) ? 1 : 0)
                 .Take(playersToAdd)
                 .ToList();
 
