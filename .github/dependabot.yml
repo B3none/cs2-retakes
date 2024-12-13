@@ -9,3 +9,7 @@ updates:
     directory: "/RetakesPlugin" # Location of package manifests
     schedule:
       interval: "daily"
+  - package-ecosystem: "nuget" # See documentation for possible values
+    directory: "/RetakesPluginShared" # Location of package manifests
+    schedule:
+      interval: "daily"
