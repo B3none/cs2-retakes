@@ -108,7 +108,7 @@ public class RetakesPlugin : BasePlugin
     [RequiresPermissions("@css/root")]
     public void OnCommandMapConfig(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (!Helpers.IsValidPlayer(player))
+        if (player != null && !Helpers.IsValidPlayer(player))
         {
             return;
         }
@@ -143,7 +143,7 @@ public class RetakesPlugin : BasePlugin
     [RequiresPermissions("@css/root")]
     public void OnCommandMapConfigs(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (player == null || !Helpers.IsValidPlayer(player))
+        if (player != null && !Helpers.IsValidPlayer(player))
         {
             return;
         }
@@ -179,7 +179,7 @@ public class RetakesPlugin : BasePlugin
     [RequiresPermissions("@css/root")]
     public void OnCommandForceBombsite(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (!Helpers.IsValidPlayer(player))
+        if (player != null && !Helpers.IsValidPlayer(player))
         {
             return;
         }
@@ -201,7 +201,7 @@ public class RetakesPlugin : BasePlugin
     [RequiresPermissions("@css/root")]
     public void OnCommandForceBombsiteStop(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (!Helpers.IsValidPlayer(player))
+        if (player != null && !Helpers.IsValidPlayer(player))
         {
             return;
         }
@@ -218,7 +218,7 @@ public class RetakesPlugin : BasePlugin
     [RequiresPermissions("@css/root")]
     public void OnCommandShowSpawns(CCSPlayerController? player, CommandInfo commandInfo)
     {
-        if (!Helpers.IsValidPlayer(player))
+        if (player != null && !Helpers.IsValidPlayer(player))
         {
             return;
         }
