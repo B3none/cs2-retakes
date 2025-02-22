@@ -37,7 +37,7 @@ public static class Helpers
             return false;
         }
 
-        var playerPawn = player!.PlayerPawn.Value;
+        var playerPawn = player!.Pawn.Value;
 
         if (playerPawn == null || playerPawn is { AbsOrigin: null, AbsRotation: null })
         {
@@ -164,7 +164,7 @@ public static class Helpers
         var players = 0;
 
         foreach (var player in Utilities.GetPlayers()
-                     .Where(player => IsValidPlayer(player) && IsPlayerConnected(player)))
+                     .Where(player => IsValidPlayer(player)))
         {
             if (csTeam == null || player.Team == csTeam)
             {
@@ -252,7 +252,7 @@ public static class Helpers
             throw new Exception("Player controller is not valid");
         }
 
-        var playerPawn = player.PlayerPawn.Value;
+        var playerPawn = player.Pawn.Value;
 
         if (playerPawn == null || !playerPawn.IsValid)
         {
