@@ -168,7 +168,7 @@ public class RetakesPlugin : BasePlugin
                 .Replace(".json", "");
 
             commandInfo.ReplyToCommand($"{MessagePrefix}!mapconfig {transformedFile}");
-            player.PrintToConsole($"{MessagePrefix}!mapconfig {transformedFile}");
+            player?.PrintToConsole($"{MessagePrefix}!mapconfig {transformedFile}");
         }
 
         commandInfo.ReplyToCommand($"{MessagePrefix}A list of available map configs has been outputted above.");

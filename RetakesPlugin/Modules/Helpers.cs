@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
 using System.Text;
 using System.Text.Json;
@@ -25,7 +26,7 @@ public static class Helpers
         }
     };
 
-    public static bool IsValidPlayer(CCSPlayerController? player)
+    public static bool IsValidPlayer([NotNullWhen(true)] CCSPlayerController? player)
     {
         return player != null && player.IsValid;
     }
