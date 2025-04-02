@@ -20,7 +20,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(220)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "2.0.14";
+    private const string Version = "2.0.15";
 
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -82,7 +82,7 @@ public class RetakesPlugin : BasePlugin
         MessagePrefix = _translator["retakes.prefix"];
 
         Helpers.Debug($"Plugin loaded!");
-        
+
         RegisterListener<Listeners.OnMapStart>(mapName =>
         {
             OnMapStart(mapName);
@@ -114,28 +114,28 @@ public class RetakesPlugin : BasePlugin
         }
 
         var mapConfigDirectory = Path.Combine(ModuleDirectory, "map_config");
-        
+
         if (!Directory.Exists(mapConfigDirectory))
         {
             commandInfo.ReplyToCommand($"{MessagePrefix}No map configs found.");
             return;
         }
-        
+
         var mapConfigFileName = commandInfo.GetArg(1).Trim().Replace(".json", "");
-        
+
         var mapConfigFilePath = Path.Combine(mapConfigDirectory, $"{mapConfigFileName}.json");
-        
+
         if (!File.Exists(mapConfigFilePath))
         {
             commandInfo.ReplyToCommand($"{MessagePrefix}Map config file not found.");
             return;
         }
-        
+
         OnMapStart(Server.MapName, mapConfigFileName);
-        
+
         commandInfo.ReplyToCommand($"{MessagePrefix}The new map config has been successfully loaded.");
     }
-    
+
     [ConsoleCommand("css_mapconfigs", "Displays a list of available map configs.")]
     [ConsoleCommand("css_viewmapconfigs", "Displays a list of available map configs.")]
     [ConsoleCommand("css_listmapconfigs", "Displays a list of available map configs.")]
@@ -147,33 +147,33 @@ public class RetakesPlugin : BasePlugin
         {
             return;
         }
-        
+
         var mapConfigDirectory = Path.Combine(ModuleDirectory, "map_config");
-        
+
         var files = Directory.GetFiles(mapConfigDirectory);
-        
+
         // organise files alphabetically
         Array.Sort(files);
-        
+
         if (!Directory.Exists(mapConfigDirectory) || files.Length == 0)
         {
             commandInfo.ReplyToCommand($"{MessagePrefix}No map configs found.");
             return;
         }
-        
+
         foreach (var file in files)
         {
             var transformedFile = file
                 .Replace($"{mapConfigDirectory}/", "")
                 .Replace(".json", "");
-            
+
             commandInfo.ReplyToCommand($"{MessagePrefix}!mapconfig {transformedFile}");
-            player.PrintToConsole($"{MessagePrefix}!mapconfig {transformedFile}");
+            player?.PrintToConsole($"{MessagePrefix}!mapconfig {transformedFile}");
         }
-        
+
         commandInfo.ReplyToCommand($"{MessagePrefix}A list of available map configs has been outputted above.");
     }
-    
+
     [ConsoleCommand("css_forcebombsite", "Force the retakes to occur from a single bombsite.")]
     [CommandHelper(minArgs: 1, usage: "[A/B]", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     [RequiresPermissions("@css/root")]
@@ -192,10 +192,10 @@ public class RetakesPlugin : BasePlugin
         }
 
         _forcedBombsite = bombsite == "A" ? Bombsite.A : Bombsite.B;
-        
+
         commandInfo.ReplyToCommand($"{MessagePrefix}The bombsite will now be forced to {_forcedBombsite}.");
     }
-    
+
     [ConsoleCommand("css_forcebombsitestop", "Clear the forced bombsite and return back to normal.")]
     [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
     [RequiresPermissions("@css/root")]
@@ -207,10 +207,10 @@ public class RetakesPlugin : BasePlugin
         }
 
         _forcedBombsite = null;
-        
+
         commandInfo.ReplyToCommand($"{MessagePrefix}The bombsite will no longer be forced.");
     }
-    
+
     [ConsoleCommand("css_showspawns", "Show the spawns for the specified bombsite.")]
     [ConsoleCommand("css_spawns", "Show the spawns for the specified bombsite.")]
     [ConsoleCommand("css_edit", "Show the spawns for the specified bombsite.")]
@@ -754,7 +754,7 @@ public class RetakesPlugin : BasePlugin
             Helpers.Debug($"Game manager not loaded.");
             return HookResult.Continue;
         }
-        
+
         // If we are in warmup, skip.
         if (Helpers.GetGameRules().WarmupPeriod)
         {
@@ -852,6 +852,11 @@ public class RetakesPlugin : BasePlugin
             {
                 Helpers.Debug($"[{player.PlayerName}] moving to spectator.");
                 player.ChangeTeam(CsTeam.Spectator);
+            }
+            if (player.IsBot && !player.IsHLTV)
+            {
+                _gameManager.QueueManager.ActivePlayers.Add(player);
+                Helpers.Debug($"[{player.PlayerName}] Force added bot to active players.");
             }
 
             return HookResult.Continue;
