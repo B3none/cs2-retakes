@@ -7,7 +7,7 @@
 
   <ItemGroup>
     <PackageReference Include="CounterStrikeSharp.API" Version="1.0.318" />
-    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="9.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="9.0.5" />
     <ProjectReference Include="..\RetakesPluginShared\RetakesPluginShared.csproj" />
   </ItemGroup>
 
