@@ -255,6 +255,11 @@ public class QueueManager
 
             foreach (var player in QueuePlayers)
             {
+                if (!Helpers.IsValidPlayer(player))
+                {
+                    continue;
+                }
+                
                 player.PrintToChat($"{RetakesPlugin.MessagePrefix}{waitingMessage}");
             }
         }
