@@ -226,7 +226,7 @@
     },
     {
       "Vector": "419.41 1695.32 -213.96753",
-      "QAngle": "0 -159.7 0",
+      "QAngle": "0 -159.70 0",
       "Team": 3,
       "Bombsite": 0,
       "CanBePlanter": false
@@ -295,15 +295,15 @@
       "CanBePlanter": false
     },
     {
-      "Vector": "-483.96826 -1042.182 -350.96875",
-      "QAngle": "0 -3.0037231 0",
+      "Vector": "-876.7882 -1780.6874 -153.96875",
+      "QAngle": "0 93.76489 0",
       "Team": 2,
       "Bombsite": 1,
       "CanBePlanter": false
     },
     {
-      "Vector": "-871.6219 -1766.3618 -153.96875",
-      "QAngle": "0 63.912277 0",
+      "Vector": "-483.96826 -1042.182 -350.96875",
+      "QAngle": "0 -3.0037231 0",
       "Team": 2,
       "Bombsite": 1,
       "CanBePlanter": false
