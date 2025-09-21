@@ -229,7 +229,7 @@ public class QueueManager
             // Ordered by players with queue priority flag first since they
             // have queue priority.
             var playersToAddList = QueuePlayers
-                .OrderBy(player => Helpers.HasQueuePriority(player, _queuePriorityFlags) ? 1 : 0)
+                .OrderByDescending(player => Helpers.HasQueuePriority(player, _queuePriorityFlags))
                 .Take(playersToAdd)
                 .ToList();
 
