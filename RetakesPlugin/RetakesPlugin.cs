@@ -599,7 +599,8 @@ public class RetakesPlugin : BasePlugin
                 _retakesConfig?.RetakesConfigData?.TerroristRatio,
                 _retakesConfig?.RetakesConfigData?.QueuePriorityFlag,
                 _retakesConfig?.RetakesConfigData?.ShouldForceEvenTeamsWhenPlayerCountIsMultipleOf10,
-                _retakesConfig?.RetakesConfigData?.ShouldPreventTeamChangesMidRound
+                _retakesConfig?.RetakesConfigData?.ShouldPreventTeamChangesMidRound,
+                _retakesConfig?.RetakesConfigData?.ShouldQueuePriorityPlayersBeImmune
             ),
             _retakesConfig?.RetakesConfigData?.RoundsToScramble,
             _retakesConfig?.RetakesConfigData?.IsScrambleEnabled,
