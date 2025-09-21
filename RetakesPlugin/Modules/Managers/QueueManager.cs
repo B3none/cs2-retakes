@@ -11,6 +11,7 @@ public class QueueManager
     private readonly string[] _queuePriorityFlags;
     private readonly bool _shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10;
     private readonly bool _shouldPreventTeamChangesMidRound;
+    private readonly bool _shouldQueuePriorityPlayersBeImmune;
 
     public HashSet<CCSPlayerController> QueuePlayers = [];
     public HashSet<CCSPlayerController> ActivePlayers = [];
@@ -21,7 +22,8 @@ public class QueueManager
         float? retakesTerroristRatio,
         string? queuePriorityFlags,
         bool? shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10,
-        bool? shouldPreventTeamChangesMidRound
+        bool? shouldPreventTeamChangesMidRound,
+        bool? shouldQueuePriorityPlayersBeImmune
     )
     {
         _translator = translator;
@@ -30,6 +32,7 @@ public class QueueManager
         _queuePriorityFlags = queuePriorityFlags?.Split(",").Select(flag => flag.Trim()).ToArray() ?? ["@css/vip"];
         _shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 = shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 ?? true;
         _shouldPreventTeamChangesMidRound = shouldPreventTeamChangesMidRound ?? true;
+        _shouldQueuePriorityPlayersBeImmune = shouldQueuePriorityPlayersBeImmune ?? true;
     }
 
     public int GetTargetNumTerrorists()
@@ -156,6 +159,12 @@ public class QueueManager
 
     private void HandleQueuePriority()
     {
+        if (!_shouldQueuePriorityPlayersBeImmune)
+        {
+            Helpers.Debug("Queue priority immunity disabled, skipping.");
+            return;
+        }
+
         Helpers.Debug($"handling queue priority.");
         if (ActivePlayers.Count != _maxRetakesPlayers)
         {
