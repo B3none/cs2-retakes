@@ -1,8 +1,12 @@
-﻿namespace RetakesPlugin.Modules.Configs;
+using System;
+using System.Linq;
+using System.Text.Json.Serialization;
+
+namespace RetakesPlugin.Modules.Configs;
 
 public class RetakesConfigData
 {
-    public static int CurrentVersion = 12;
+    public static int CurrentVersion = 13;
 
     public int Version { get; set; } = CurrentVersion;
     public int MaxPlayers { get; set; } = 9;
@@ -16,6 +20,7 @@ public class RetakesConfigData
     public bool ShouldOpenDoors { get; set; } = false;
     public bool IsAutoPlantEnabled { get; set; } = true;
     public string QueuePriorityFlag { get; set; } = "@css/vip";
+    public string QueuePriorityImmuneFlag { get; set; } = string.Empty;
     public bool ShouldQueuePriorityPlayersBeImmune { get; set; } = true;
     public bool IsDebugMode { get; set; } = false;
     public bool ShouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 { get; set; } = true;
@@ -23,4 +28,27 @@ public class RetakesConfigData
     public bool ShouldRemoveSpectators { get; set; } = true;
     public bool IsBalanceEnabled { get; set; } = true;
     public bool ShouldPreventTeamChangesMidRound { get; set; } = true;
+
+    [JsonIgnore]
+    public string[] QueuePriorityFlags => ParseFlags(QueuePriorityFlag, ["@css/vip"]);
+
+    [JsonIgnore]
+    public string[] QueuePriorityImmuneFlags => ParseFlags(QueuePriorityImmuneFlag, Array.Empty<string>());
+
+    private static string[] ParseFlags(string? flags, string[] defaultFlags)
+    {
+        if (string.IsNullOrWhiteSpace(flags))
+        {
+            return defaultFlags;
+        }
+
+        var parsedFlags = flags
+            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+            .Select(flag => flag.Trim())
+            .Where(flag => !string.IsNullOrWhiteSpace(flag))
+            .ToArray();
+
+        return parsedFlags.Length > 0 ? parsedFlags : defaultFlags;
+    }
+
 }

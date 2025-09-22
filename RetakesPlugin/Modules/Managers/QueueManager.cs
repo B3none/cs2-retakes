@@ -1,4 +1,6 @@
-﻿using CounterStrikeSharp.API.Core;
+using System;
+using System.Linq;
+using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 
 namespace RetakesPlugin.Modules.Managers;
@@ -9,6 +11,7 @@ public class QueueManager
     private readonly int _maxRetakesPlayers;
     private readonly float _terroristRatio;
     private readonly string[] _queuePriorityFlags;
+    private readonly string[] _queuePriorityImmuneFlags;
     private readonly bool _shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10;
     private readonly bool _shouldPreventTeamChangesMidRound;
     private readonly bool _shouldQueuePriorityPlayersBeImmune;
@@ -20,7 +23,8 @@ public class QueueManager
         Translator translator,
         int? retakesMaxPlayers,
         float? retakesTerroristRatio,
-        string? queuePriorityFlags,
+        string[]? queuePriorityFlags,
+        string[]? queuePriorityImmuneFlags,
         bool? shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10,
         bool? shouldPreventTeamChangesMidRound,
         bool? shouldQueuePriorityPlayersBeImmune
@@ -29,7 +33,10 @@ public class QueueManager
         _translator = translator;
         _maxRetakesPlayers = retakesMaxPlayers ?? 9;
         _terroristRatio = retakesTerroristRatio ?? 0.45f;
-        _queuePriorityFlags = queuePriorityFlags?.Split(",").Select(flag => flag.Trim()).ToArray() ?? ["@css/vip"];
+        _queuePriorityFlags = queuePriorityFlags is { Length: > 0 }
+            ? queuePriorityFlags.ToArray()
+            : new[] { "@css/vip" };
+        _queuePriorityImmuneFlags = queuePriorityImmuneFlags?.ToArray() ?? Array.Empty<string>();
         _shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 = shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 ?? true;
         _shouldPreventTeamChangesMidRound = shouldPreventTeamChangesMidRound ?? true;
         _shouldQueuePriorityPlayersBeImmune = shouldQueuePriorityPlayersBeImmune ?? true;
@@ -193,7 +200,9 @@ public class QueueManager
             // TODO: We shouldn't really shuffle here, implement a last in first out queue instead.
             var nonVipActivePlayers = Helpers.Shuffle(
                 ActivePlayers
-                    .Where(player => !Helpers.HasQueuePriority(player, _queuePriorityFlags))
+                    .Where(player =>
+                        !Helpers.HasQueuePriority(player, _queuePriorityFlags)
+                        && !Helpers.HasQueuePriorityImmunity(player, _queuePriorityImmuneFlags))
                     .ToList()
             );
 
