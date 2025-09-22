@@ -597,7 +597,8 @@ public class RetakesPlugin : BasePlugin
                 _translator,
                 _retakesConfig?.RetakesConfigData?.MaxPlayers,
                 _retakesConfig?.RetakesConfigData?.TerroristRatio,
-                _retakesConfig?.RetakesConfigData?.QueuePriorityFlag,
+                _retakesConfig?.RetakesConfigData?.QueuePriorityFlags,
+                _retakesConfig?.RetakesConfigData?.QueuePriorityImmuneFlags,
                 _retakesConfig?.RetakesConfigData?.ShouldForceEvenTeamsWhenPlayerCountIsMultipleOf10,
                 _retakesConfig?.RetakesConfigData?.ShouldPreventTeamChangesMidRound,
                 _retakesConfig?.RetakesConfigData?.ShouldQueuePriorityPlayersBeImmune

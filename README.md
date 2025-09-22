@@ -62,9 +62,11 @@ When the plugin is first loaded it will create a `retakes_config.json` file in t
 | ShouldBreakBreakables                             | Whether to break all breakable props on round start (People are noticing rare crashes when this is enabled).                                    | false      | false      | true       |
 | ShouldOpenDoors                                   | Whether to open doors on round start (People are noticing rare crashes when this is enabled).                                                   | false      | false      | true       |
 | IsAutoPlantEnabled                                | Whether to enable auto bomb planting at the start of the round or not.                                                                          | true       | false      | true       |
-| QueuePriorityFlag                                 | A comma separated list of CSS flags for queue priority.                                                                                         | @css/vip   | n/a        | n/a        |
-| ShouldQueuePriorityPlayersBeImmune                | Whether queue priority players keep their slot when the server is full.
-                                                                       | true       | false      | true       |
+| QueuePriorityFlag                                 | A comma separated list of CSS flags for queue priority.                                                                       | @css/vip   | n/a        | n/a        |
+| QueuePriorityImmuneFlag                           | A comma separated list of CSS flags that should never be replaced during queue priority swaps. Only applied when `ShouldQueuePriorityPlayersBeImmune` is true.
+                                                                      | "" (none) | n/a        | n/a        |
+| ShouldQueuePriorityPlayersBeImmune                | Whether queue priority players keep their slot when the server is full. When enabled, both queue priority and queue priority immune flags keep their slot.
+                                                       | true       | false      | true       |
 | IsDebugMode                                       | Whether to enable debug output to the server console or not.                                                                                    | false      | false      | true       |
 | ShouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 | Whether to force even teams when the active players is a multiple of 10 or not. (this means you will get 5v5 @ 10 players / 10v10 @ 20 players) | true       | false      | true       |
 | EnableFallbackBombsiteAnnouncement                | Whether to enable the fallback bombsite announcement.                                                                                           | true       | false      | true       |
