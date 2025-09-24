@@ -356,31 +356,16 @@ public static class Helpers
         beam.DispatchSpawn();
     }
 
-    private static bool PlayerHasAnyFlag(CCSPlayerController player, string[] flags)
+    public static bool HasQueuePriority(CCSPlayerController player, string[] queuePriorityFlags)
     {
-        if (flags.Length == 0)
+        foreach (var queuePriorityFlag in queuePriorityFlags)
         {
-            return false;
-        }
-
-        foreach (var flag in flags)
-        {
-            if (AdminManager.PlayerHasPermissions(player, flag))
+            if (AdminManager.PlayerHasPermissions(player, queuePriorityFlag))
             {
                 return true;
             }
         }
 
         return false;
-    }
-
-    public static bool HasQueuePriority(CCSPlayerController player, string[] queuePriorityFlags)
-    {
-        return PlayerHasAnyFlag(player, queuePriorityFlags);
-    }
-
-    public static bool HasQueuePriorityImmunity(CCSPlayerController player, string[] queuePriorityImmuneFlags)
-    {
-        return PlayerHasAnyFlag(player, queuePriorityImmuneFlags);
     }
 }
