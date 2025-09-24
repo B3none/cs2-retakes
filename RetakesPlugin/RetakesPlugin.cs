@@ -1,4 +1,4 @@
-﻿using CounterStrikeSharp.API;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
@@ -598,6 +598,7 @@ public class RetakesPlugin : BasePlugin
                 _retakesConfig?.RetakesConfigData?.MaxPlayers,
                 _retakesConfig?.RetakesConfigData?.TerroristRatio,
                 _retakesConfig?.RetakesConfigData?.QueuePriorityFlag,
+                _retakesConfig?.RetakesConfigData?.QueueImmunityFlag,
                 _retakesConfig?.RetakesConfigData?.ShouldForceEvenTeamsWhenPlayerCountIsMultipleOf10,
                 _retakesConfig?.RetakesConfigData?.ShouldPreventTeamChangesMidRound
             ),
