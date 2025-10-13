@@ -631,13 +631,42 @@ public class RetakesPlugin : BasePlugin
         // Create a timer to do this as it would occasionally fire too early.
         AddTimer(1.0f, () =>
         {
-            if (!player.IsValid)
+            if (!player.IsValid || _gameManager == null)
             {
                 return;
             }
 
             player.ChangeTeam(CsTeam.Spectator);
-            player.ExecuteClientCommand("teammenu");
+            
+            // Add player to queue system so they can join the next round
+            Helpers.Debug($"[{player.PlayerName}] Adding new player to queue via OnPlayerConnectFull");
+            
+            // Check if player is already in queue system
+            var isInQueue = _gameManager.QueueManager.QueuePlayers.Contains(player);
+            var isInActivePlayers = _gameManager.QueueManager.ActivePlayers.Contains(player);
+            
+            if (!isInQueue && !isInActivePlayers)
+            {
+                // Clear round teams to allow changes
+                _gameManager.QueueManager.ClearRoundTeams();
+                
+                // Add player to queue system - use Terrorist as default team for queue entry
+                _gameManager.QueueManager.DebugQueues(true);
+                _gameManager.QueueManager.PlayerJoinedTeam(player, CsTeam.None, CsTeam.Terrorist);
+                _gameManager.QueueManager.Update();
+                _gameManager.QueueManager.DebugQueues(false);
+                
+                Helpers.Debug($"[{player.PlayerName}] Player added to queue. ActivePlayers count: {_gameManager.QueueManager.ActivePlayers.Count}");
+                
+                // If this is the first player, restart the game
+                if (_gameManager.QueueManager.ActivePlayers.Count == 1)
+                {
+                    Helpers.Debug($"[{player.PlayerName}] First active player - restarting game");
+                    Helpers.RestartGame();
+                }
+            }
+            
+            // player.ExecuteClientCommand("teammenu");
         });
 
         // Many hours of hard work went into this.
