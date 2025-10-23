@@ -181,12 +181,12 @@ public class QueueManager
                 continue;
             }
 
-            // TODO: We shouldn't really shuffle here, implement a last in first out queue instead.
-            var nonVipActivePlayers = Helpers.Shuffle(
-                ActivePlayers
+            // Order the non-VIP players by their Slot
+            // Remove the player with the highest Slot, essentially Last In First Out
+            var nonVipActivePlayers = ActivePlayers
                     .Where(player => !Helpers.HasQueuePriority(player, _queuePriorityFlags))
-                    .ToList()
-            );
+                    .OrderByDescending(player => player.Slot)
+                    .ToList();
 
             if (nonVipActivePlayers.Count == 0)
             {
@@ -228,8 +228,12 @@ public class QueueManager
             // Take players from QueuePlayers and add them to ActivePlayers
             // Ordered by players with queue priority flag first since they
             // have queue priority.
+            // Then order by players slot. This provides a rough
+            // estimate of the order the players joined the server
+            // to be selected to join a team.
             var playersToAddList = QueuePlayers
                 .OrderBy(player => Helpers.HasQueuePriority(player, _queuePriorityFlags) ? 1 : 0)
+                .ThenBy(player => player.Slot)
                 .Take(playersToAdd)
                 .ToList();
 
