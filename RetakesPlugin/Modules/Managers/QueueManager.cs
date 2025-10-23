@@ -232,7 +232,7 @@ public class QueueManager
             // estimate of the order the players joined the server
             // to be selected to join a team.
             var playersToAddList = QueuePlayers
-                .OrderBy(player => Helpers.HasQueuePriority(player, _queuePriorityFlags) ? 1 : 0)
+                .OrderBy(player => Helpers.HasQueuePriority(player, _queuePriorityFlags) ? 0 : 1)
                 .ThenBy(player => player.Slot)
                 .Take(playersToAdd)
                 .ToList();
