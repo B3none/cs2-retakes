@@ -45,7 +45,7 @@ public class VoicesCommand
             _hasMutedVoices.Remove(player);
         }
 
-        var statusText = didMute ? $"{_plugin.Localizer["retakes.disabled"]}" : $"{_plugin.Localizer["retakes.enabled"]}";
+        var statusText = didMute ? $"{_plugin.Localizer["retakes.enabled"]}" : $"{_plugin.Localizer["retakes.disabled"]}";
 
         commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.voices.toggle", statusText]}");
 
