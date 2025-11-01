@@ -11,18 +11,28 @@ public class QueueManager
     private readonly int _maxRetakesPlayers;
     private readonly float _terroristRatio;
     private readonly string[] _queuePriorityFlags;
+    private readonly string[] _queueImmunityFlags;
     private readonly bool _shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10;
     private readonly bool _shouldPreventTeamChangesMidRound;
 
     public HashSet<CCSPlayerController> QueuePlayers = [];
     public HashSet<CCSPlayerController> ActivePlayers = [];
 
-    public QueueManager(RetakesPlugin plugin, int? retakesMaxPlayers, float? retakesTerroristRatio, string? queuePriorityFlags, bool? shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10, bool? shouldPreventTeamChangesMidRound)
+    public QueueManager(RetakesPlugin plugin, int? retakesMaxPlayers, float? retakesTerroristRatio, string? queuePriorityFlags, string? queueImmunityFlags, bool? shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10, bool? shouldPreventTeamChangesMidRound)
     {
         _plugin = plugin;
         _maxRetakesPlayers = retakesMaxPlayers ?? 9;
         _terroristRatio = retakesTerroristRatio ?? 0.45f;
-        _queuePriorityFlags = queuePriorityFlags?.Split(",").Select(flag => flag.Trim()).ToArray() ?? ["@css/vip"];
+        _queuePriorityFlags = ParseFlags(queuePriorityFlags);
+
+        if (_queuePriorityFlags.Length == 0)
+        {
+            _queuePriorityFlags = ["@css/vip"];
+        }
+
+        var parsedImmunityFlags = ParseFlags(queueImmunityFlags);
+        _queueImmunityFlags = parsedImmunityFlags.Length > 0 ? parsedImmunityFlags : _queuePriorityFlags;
+
         _shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 = shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 ?? true;
         _shouldPreventTeamChangesMidRound = shouldPreventTeamChangesMidRound ?? true;
 
@@ -122,7 +132,7 @@ public class QueueManager
         if (disconnectedActivePlayers.Count > 0)
         {
             Logger.LogDebug("QueueManager", $"Removing {disconnectedActivePlayers.Count} disconnected active players");
-            ActivePlayers.RemoveWhere(player => disconnectedActivePlayers.Contains(player));
+            ActivePlayers.RemoveWhere(disconnectedActivePlayers.Contains);
         }
 
         var disconnectedQueuePlayers = QueuePlayers
@@ -159,31 +169,32 @@ public class QueueManager
                 continue;
             }
 
-            var nonVipActivePlayers = PlayerHelper.Shuffle(
+            var replaceablePlayers = PlayerHelper.Shuffle(
                 ActivePlayers
-                    .Where(player => !PlayerHelper.HasQueuePriority(player, _queuePriorityFlags))
+                    .Where(player => !PlayerHelper.HasQueuePriority(player, _queuePriorityFlags) && !PlayerHelper.HasQueueImmunity(player, _queueImmunityFlags))
                     .ToList(),
                 new Random()
             );
 
-            if (nonVipActivePlayers.Count == 0)
+            if (replaceablePlayers.Count == 0)
             {
+                Logger.LogDebug("QueueManager", "No replaceable players found");
                 break;
             }
 
-            var nonVipActivePlayer = nonVipActivePlayers.First();
+            var replaceablePlayer = replaceablePlayers.First();
 
-            nonVipActivePlayer.ChangeTeam(CsTeam.Spectator);
-            ActivePlayers.Remove(nonVipActivePlayer);
-            QueuePlayers.Add(nonVipActivePlayer);
-            nonVipActivePlayer.PrintToChat($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.queue.replaced_by_vip", vipQueuePlayer.PlayerName]}");
+            replaceablePlayer.ChangeTeam(CsTeam.Spectator);
+            ActivePlayers.Remove(replaceablePlayer);
+            QueuePlayers.Add(replaceablePlayer);
+            replaceablePlayer.PrintToChat($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.queue.replaced_by_vip", vipQueuePlayer.PlayerName]}");
 
             ActivePlayers.Add(vipQueuePlayer);
             QueuePlayers.Remove(vipQueuePlayer);
             vipQueuePlayer.ChangeTeam(CsTeam.CounterTerrorist);
-            vipQueuePlayer.PrintToChat($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.queue.vip_took_place", nonVipActivePlayer.PlayerName]}");
+            vipQueuePlayer.PrintToChat($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.queue.vip_took_place", replaceablePlayer.PlayerName]}");
 
-            Logger.LogInfo("QueueManager", $"VIP {vipQueuePlayer.PlayerName} replaced {nonVipActivePlayer.PlayerName}");
+            Logger.LogInfo("QueueManager", $"VIP {vipQueuePlayer.PlayerName} replaced {replaceablePlayer.PlayerName}");
         }
     }
 
@@ -231,6 +242,20 @@ public class QueueManager
                 player.PrintToChat($"{_plugin.Localizer["retakes.prefix"]} {waitingMessage}");
             }
         }
+    }
+
+    private static string[] ParseFlags(string? rawFlags)
+    {
+        if (string.IsNullOrWhiteSpace(rawFlags))
+        {
+            return Array.Empty<string>();
+        }
+
+        return rawFlags
+            .Split(",", StringSplitOptions.RemoveEmptyEntries)
+            .Select(flag => flag.Trim())
+            .Where(flag => !string.IsNullOrWhiteSpace(flag))
+            .ToArray();
     }
 
     public void RemovePlayerFromQueues(CCSPlayerController player)

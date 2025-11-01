@@ -1,9 +1,9 @@
-using System.Diagnostics.CodeAnalysis;
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
+using System.Diagnostics.CodeAnalysis;
 
 namespace RetakesPlugin.Utils;
 
@@ -75,9 +75,24 @@ public static class PlayerHelper
 
     public static bool HasQueuePriority(CCSPlayerController player, string[] queuePriorityFlags)
     {
-        foreach (var queuePriorityFlag in queuePriorityFlags)
+        return PlayerHasAnyQueuePermission(player, queuePriorityFlags);
+    }
+
+    public static bool HasQueueImmunity(CCSPlayerController player, string[] queueImmunityFlags)
+    {
+        return PlayerHasAnyQueuePermission(player, queueImmunityFlags);
+    }
+
+    private static bool PlayerHasAnyQueuePermission(CCSPlayerController player, IEnumerable<string> permissionFlags)
+    {
+        foreach (var permissionFlag in permissionFlags)
         {
-            if (AdminManager.PlayerHasPermissions(player, queuePriorityFlag))
+            if (string.IsNullOrWhiteSpace(permissionFlag))
+            {
+                continue;
+            }
+
+            if (AdminManager.PlayerHasPermissions(player, permissionFlag))
             {
                 return true;
             }

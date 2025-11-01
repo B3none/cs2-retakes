@@ -146,6 +146,7 @@ public class RetakesPlugin : BasePlugin, IPluginConfig<BaseConfigs>
                     Config.Game.MaxPlayers,
                     Config.Team.TerroristRatio,
                     Config.Queue.QueuePriorityFlag,
+                    Config.Queue.QueueImmunityFlag,
                     Config.Team.ShouldForceEvenTeamsWhenPlayerCountIsMultipleOf10,
                     Config.Team.ShouldPreventTeamChangesMidRound
                 ),
