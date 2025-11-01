@@ -1,19 +1,28 @@
-﻿using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 
-namespace RetakesPlugin.Modules.Managers;
+using RetakesPlugin.Utils;
 
-public static class AllocationManager
+namespace RetakesPlugin.Services;
+
+public class AllocationService
 {
-    public static void Allocate(CCSPlayerController player)
+    private readonly Random _random;
+
+    public AllocationService(Random random)
+    {
+        _random = random;
+    }
+
+    public void AllocatePlayer(CCSPlayerController player)
     {
         AllocateEquipment(player);
         AllocateWeapons(player);
         AllocateGrenades(player);
     }
 
-    private static void AllocateEquipment(CCSPlayerController player)
+    private void AllocateEquipment(CCSPlayerController player)
     {
         player.GiveNamedItem(CsItem.KevlarHelmet);
 
@@ -30,7 +39,7 @@ public static class AllocationManager
         }
     }
 
-    private static void AllocateWeapons(CCSPlayerController player)
+    private void AllocateWeapons(CCSPlayerController player)
     {
         if (player.Team == CsTeam.Terrorist)
         {
@@ -40,7 +49,7 @@ public static class AllocationManager
 
         if (player.Team == CsTeam.CounterTerrorist)
         {
-            // @klippy
+            // Easter egg for klippy
             if (player.PlayerName.Trim() == "klip")
             {
                 player.GiveNamedItem(CsItem.M4A4);
@@ -56,9 +65,9 @@ public static class AllocationManager
         player.GiveNamedItem(CsItem.Knife);
     }
 
-    private static void AllocateGrenades(CCSPlayerController player)
+    private void AllocateGrenades(CCSPlayerController player)
     {
-        switch (Helpers.Random.Next(4))
+        switch (_random.Next(4))
         {
             case 0:
                 player.GiveNamedItem(CsItem.SmokeGrenade);

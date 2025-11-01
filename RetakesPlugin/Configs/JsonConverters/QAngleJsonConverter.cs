@@ -1,13 +1,15 @@
-﻿using System.Globalization;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using CounterStrikeSharp.API.Modules.Utils;
+using System.Text.Json.Serialization;
+using System.Globalization;
+using System.Text.Json;
 
-namespace RetakesPlugin.Modules.Configs.JsonConverters;
+using RetakesPlugin.Utils;
 
-public class VectorJsonConverter : JsonConverter<Vector>
+namespace RetakesPlugin.Configs.JsonConverters;
+
+public class QAngleJsonConverter : JsonConverter<QAngle>
 {
-    public override Vector Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override QAngle Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
         if (reader.TokenType != JsonTokenType.String)
         {
@@ -31,14 +33,14 @@ public class VectorJsonConverter : JsonConverter<Vector>
             !float.TryParse(values[1], NumberStyles.Any, CultureInfo.InvariantCulture, out var y) ||
             !float.TryParse(values[2], NumberStyles.Any, CultureInfo.InvariantCulture, out var z))
         {
-            Helpers.Debug($"Unable to parse Vector float values for: {stringValue}");
-            throw new JsonException("Unable to parse Vector float values.");
+            Logger.LogDebug("QAngleJsonConverter", $"Unable to parse QAngle float values for: {stringValue}");
+            throw new JsonException("Unable to parse QAngle float values.");
         }
 
-        return new Vector(x, y, z);
+        return new QAngle(x, y, z);
     }
 
-    public override void Write(Utf8JsonWriter writer, Vector value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, QAngle value, JsonSerializerOptions options)
     {
         var x = value.X.ToString(CultureInfo.InvariantCulture);
         var y = value.Y.ToString(CultureInfo.InvariantCulture);
