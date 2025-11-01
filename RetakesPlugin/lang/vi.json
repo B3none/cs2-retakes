@@ -1,6 +1,7 @@
 ﻿{
   "retakes.prefix": "[{green}RETAKES{default}]",
-  
+  "retakes.no_permissions": "Bạn không có quyền sử dụng lệnh này.",
+
   "retakes.queue.joined": "Bạn đã được đưa vào hàng chờ.",
   "retakes.queue.waiting": "Trận đấu hiện đã đầy với {green}{0}{default} người chơi. Bạn đang trong hàng chờ.",
   "retakes.queue.replaced_by_vip": "Bạn đã bị thay thế bởi VIP {green}{0}{default}.",

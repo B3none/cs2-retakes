@@ -1,5 +1,6 @@
 {
   "retakes.prefix": "[{green}RETAKES{default}]",
+  "retakes.no_permissions": "Sizda bu buyruqdan foydalanish huquqi yo'q.",
   
   "retakes.queue.joined": "Siz kutish navbatiga qo‘shildingiz.",
   "retakes.queue.waiting": "O‘yin hozirda {green}{0}{default} o‘yinchilar bilan to‘la. Siz kutish navbatidasiz.",

@@ -1,10 +1,14 @@
 {
   "retakes.prefix": "[{green}RETAKES{default}]",
-  
+  "retakes.no_permissions": "У вас нет разрешения на использование этой команды.",
+
   "retakes.queue.joined": "Вы в очереди. Ожидайте.",
   "retakes.queue.waiting": "Сейчас играет максимальное количество игроков - {green}{0}{default}. Вы в очереди.",
+  "retakes.queue.replaced_by_vip": "Вас заменил VIP-игрок {green}{0}{default}.",
+  "retakes.queue.vip_took_place": "Вы заняли место {green}{0}{default} в игре.",
 
   "retakes.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} T{default} против {purple}{2} CT",
+  "retakes.voices.toggle": "У вас {0} голосовые объявления!",
 
   "retakes.teams.scramble": "Террористы выиграли {green}{0}{default} раундов подряд. {purple}Команды были перемешаны!",
   "retakes.teams.almost_scramble": "Террористы выиграли {green}{0}{default} раундов подряд - если они выиграют еще {green}{1}, то {purple}команды будут перемешаны.",

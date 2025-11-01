@@ -1,10 +1,14 @@
 {
   "retakes.prefix": "[{green}RETAKES{default}]",
-  
+  "retakes.no_permissions": "Nincs jogosultságod használni ezt a parancsot.",
+
   "retakes.queue.joined": "Át lettél rakva a várólistába.",
   "retakes.queue.waiting": "Játék jelenleg fullon van {green}{0}{default} játékossal. Bent vagy a várólistában.",
+  "retakes.queue.replaced_by_vip": "Egy VIP játékos, {green}{0}{default} helyettesített téged.",
+  "retakes.queue.vip_took_place": "Átvetted {green}{0}{default} helyét a játékban.",
 
   "retakes.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} T-k{default} vs {purple}{2} TE-k",
+  "retakes.voices.toggle": "{0} hangos bejelentéseid vannak!",
 
   "retakes.teams.scramble": "Terroristák {green}{0}{default} kört nyertek egymás után. {purple}A csapatok össze lettek keverve!",
   "retakes.teams.almost_scramble": "Terroristák {green}{0}{default} kört nyertek egymás után - ha még nyernek {green}{1} kört, {purple}a csapatok össze lesznek keverve.",

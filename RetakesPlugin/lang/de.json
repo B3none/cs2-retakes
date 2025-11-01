@@ -1,10 +1,14 @@
 {
   "retakes.prefix": "[{green}RETAKES{default}]",
-  
+  "retakes.no_permissions": "Du hast keine Berechtigung, diesen Befehl zu verwenden.",
+
   "retakes.queue.joined": "Sie befinden sich in der Warteschlange.",
   "retakes.queue.waiting": "Das Spiel ist aktuell voll mit {green}{0}{default} Spielern. Sie sind in der Warteschlange.",
+  "retakes.queue.replaced_by_vip": "Sie wurden durch VIP-Spieler {green}{0}{default} ersetzt.",
+  "retakes.queue.vip_took_place": "Sie haben {green}{0}{default}s Platz im Spiel eingenommen.",
 
   "retakes.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} Ts{default} vs {purple}{2} CTs",
+  "retakes.voices.toggle": "Sie haben {0} Sprachansagen!",
 
   "retakes.teams.scramble": "Die Terroristen haben {green}{0}{default} Runden in Folge gewonnen. {purple}Teams werden gemischt!",
   "retakes.teams.almost_scramble": "Die Terroristen haben {green}{0}{default} Runden in Folge gewonnen - wenn sie noch {green}{1} gewinnen, {purple}werden die Teams gemischt.",

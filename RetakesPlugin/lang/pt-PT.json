@@ -1,6 +1,7 @@
 {
   "retakes.prefix": "[{green}RETAKES{default}]",
-  
+  "retakes.no_permissions": "Não tens permissão para usar este comando.",
+
   "retakes.queue.joined": "Você foi colocado na fila de espera, aguarda a próxima ronda.",
   "retakes.queue.waiting": "As equipas estão cheias de momento com {green}{0}{default} players. Você está na fila de espera.",
   "retakes.queue.replaced_by_vip": "Você foi substituído pelo jogador VIP {green}{0}{default}.",
