@@ -15,6 +15,7 @@ namespace RetakesPlugin.Events;
 
 public class RoundEventHandlers
 {
+    private readonly RetakesPlugin _plugin;
     private readonly GameManager _gameManager;
     private readonly SpawnManager _spawnManager;
     private readonly BreakerManager? _breakerManager;
@@ -32,8 +33,9 @@ public class RoundEventHandlers
     private CsTeam _lastRoundWinner = CsTeam.None;
     private Bombsite? _forcedBombsite;
 
-    public RoundEventHandlers(GameManager gameManager, SpawnManager spawnManager, BreakerManager? breakerManager, AllocationService allocationService, AnnouncementService announcementService, bool isAutoPlantEnabled, bool enableFallbackAllocation, bool enableFallbackBombsiteAnnouncement, Random random, MapConfigService mapConfigService)
+    public RoundEventHandlers(RetakesPlugin plugin, GameManager gameManager, SpawnManager spawnManager, BreakerManager? breakerManager, AllocationService allocationService, AnnouncementService announcementService, bool isAutoPlantEnabled, bool enableFallbackAllocation, bool enableFallbackBombsiteAnnouncement, Random random, MapConfigService mapConfigService)
     {
+        _plugin = plugin;
         _gameManager = gameManager;
         _spawnManager = spawnManager;
         _breakerManager = breakerManager;
@@ -192,9 +194,8 @@ public class RoundEventHandlers
     {
         Logger.LogInfo("Round", "Bomb planted");
 
-        Task.Run(async () =>
+        _plugin.AddTimer(4.1f, () =>
         {
-            await Task.Delay(4100);
             _announcementService.AnnounceBombsite(_currentBombsite, true);
         });
 

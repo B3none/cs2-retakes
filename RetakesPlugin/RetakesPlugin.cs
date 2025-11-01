@@ -171,6 +171,7 @@ public class RetakesPlugin : BasePlugin, IPluginConfig<BaseConfigs>
 
             // Initialize Event Handlers
             _roundEventHandlers = new RoundEventHandlers(
+                this,
                 _gameManager,
                 _spawnManager,
                 _breakerManager,
@@ -183,7 +184,7 @@ public class RetakesPlugin : BasePlugin, IPluginConfig<BaseConfigs>
                 _mapConfigService
             );
 
-            _playerEventHandlers = new PlayerEventHandlers(_gameManager, _hasMutedVoices);
+            _playerEventHandlers = new PlayerEventHandlers(this, _gameManager, _hasMutedVoices);
 
             // Initialize Commands
             _adminCommands = new AdminCommands(this, _gameManager, _roundEventHandlers);

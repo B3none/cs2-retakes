@@ -9,11 +9,13 @@ namespace RetakesPlugin.Events;
 
 public class PlayerEventHandlers
 {
+    private readonly RetakesPlugin _plugin;
     private readonly GameManager _gameManager;
     private readonly HashSet<CCSPlayerController> _hasMutedVoices;
 
-    public PlayerEventHandlers(GameManager gameManager, HashSet<CCSPlayerController> hasMutedVoices)
+    public PlayerEventHandlers(RetakesPlugin plugin, GameManager gameManager, HashSet<CCSPlayerController> hasMutedVoices)
     {
+        _plugin = plugin;
         _gameManager = gameManager;
         _hasMutedVoices = hasMutedVoices;
     }
@@ -30,11 +32,9 @@ public class PlayerEventHandlers
         player.ForceTeamTime = 3600.0f;
 
         // Add small delay to ensure player is fully connected
-        Task.Run(async () =>
+        _plugin.AddTimer(1.0f, () =>
         {
-            await Task.Delay(1000);
-
-            if (!player.IsValid)
+            if (!PlayerHelper.IsValid(player))
             {
                 return;
             }
