@@ -4,7 +4,7 @@ namespace RetakesPlugin.Configs;
 
 public class QueueSettings
 {
-
+    [JsonPropertyName("QueuePriorityFlag")]
     public string QueuePriorityFlag { get; set; } = "@css/vip";
 
     [JsonPropertyName("QueueImmunityFlag")]
