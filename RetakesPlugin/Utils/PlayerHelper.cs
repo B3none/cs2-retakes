@@ -83,6 +83,16 @@ public static class PlayerHelper
         return PlayerHasAnyQueuePermission(player, queueImmunityFlags);
     }
 
+    public static bool HasAdminPermission(CCSPlayerController? player, params string[] permissionFlags)
+    {
+        if (player == null)
+        {
+            return true;
+        }
+
+        return PlayerHasAnyQueuePermission(player, permissionFlags);
+    }
+
     private static bool PlayerHasAnyQueuePermission(CCSPlayerController player, IEnumerable<string> permissionFlags)
     {
         foreach (var permissionFlag in permissionFlags)

@@ -1,6 +1,5 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Utils;
@@ -27,15 +26,22 @@ public class SpawnEditorCommands
         _spawnManager = spawnManager;
     }
 
-    [ConsoleCommand("css_showspawns", "Show the spawns for the specified bombsite.")]
-    [ConsoleCommand("css_spawns", "Show the spawns for the specified bombsite.")]
-    [ConsoleCommand("css_edit", "Show the spawns for the specified bombsite.")]
-    [CommandHelper(minArgs: 1, usage: "[A/B]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
-    [RequiresPermissions("@css/root")]
     public void OnCommandShowSpawns(CCSPlayerController? player, CommandInfo commandInfo)
     {
         if (!PlayerHelper.IsValid(player))
         {
+            return;
+        }
+
+        if (!AdminManager.PlayerHasPermissions(player, "@css/root"))
+        {
+            commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.no_permissions"]}");
+            return;
+        }
+
+        if (commandInfo.ArgCount < 2)
+        {
+            commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} Usage: !showspawns [A/B]");
             return;
         }
 
@@ -54,17 +60,22 @@ public class SpawnEditorCommands
 
         SpawnService.ShowSpawns(_plugin, _mapConfigService.GetSpawnsClone(), _showingSpawnsForBombsite);
 
-        Logger.LogInfo("Commands", $"Showing spawns for bombsite {_showingSpawnsForBombsite} to {player.PlayerName}");
+        Logger.LogInfo("Commands", $"Showing spawns for bombsite {_showingSpawnsForBombsite} to {player!.PlayerName}");
     }
 
-    [ConsoleCommand("css_add", "Creates a new retakes spawn for the bombsite currently shown.")]
-    [ConsoleCommand("css_addspawn", "Creates a new retakes spawn for the bombsite currently shown.")]
-    [ConsoleCommand("css_new", "Creates a new retakes spawn for the bombsite currently shown.")]
-    [ConsoleCommand("css_newspawn", "Creates a new retakes spawn for the bombsite currently shown.")]
-    [CommandHelper(minArgs: 1, usage: "[T/CT] [Y/N can be planter]", whoCanExecute: CommandUsage.CLIENT_ONLY)]
-    [RequiresPermissions("@css/root")]
     public void OnCommandAddSpawn(CCSPlayerController? player, CommandInfo commandInfo)
     {
+        if (!PlayerHelper.IsValid(player))
+        {
+            return;
+        }
+
+        if (!AdminManager.PlayerHasPermissions(player, "@css/root"))
+        {
+            commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.no_permissions"]}");
+            return;
+        }
+
         if (_showingSpawnsForBombsite == null)
         {
             commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} You can't add a spawn if you're not showing the spawns.");
@@ -74,6 +85,12 @@ public class SpawnEditorCommands
         if (!PlayerHelper.HasAlivePawn(player))
         {
             commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} You must have an alive player pawn.");
+            return;
+        }
+
+        if (commandInfo.ArgCount < 2)
+        {
+            commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} Usage: !add [T/CT] [Y/N can be planter]");
             return;
         }
 
@@ -140,14 +157,19 @@ public class SpawnEditorCommands
         }
     }
 
-    [ConsoleCommand("css_remove", "Deletes the nearest retakes spawn.")]
-    [ConsoleCommand("css_removespawn", "Deletes the nearest retakes spawn.")]
-    [ConsoleCommand("css_delete", "Deletes the nearest retakes spawn.")]
-    [ConsoleCommand("css_deletespawn", "Deletes the nearest retakes spawn.")]
-    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
-    [RequiresPermissions("@css/root")]
     public void OnCommandRemoveSpawn(CCSPlayerController? player, CommandInfo commandInfo)
     {
+        if (!PlayerHelper.IsValid(player))
+        {
+            return;
+        }
+
+        if (!AdminManager.PlayerHasPermissions(player, "@css/root"))
+        {
+            commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.no_permissions"]}");
+            return;
+        }
+
         if (_showingSpawnsForBombsite == null)
         {
             commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} You can't remove a spawn if you're not showing the spawns.");
@@ -205,12 +227,19 @@ public class SpawnEditorCommands
         }
     }
 
-    [ConsoleCommand("css_nearestspawn", "Goes to nearest retakes spawn.")]
-    [ConsoleCommand("css_nearest", "Goes to nearest retakes spawn.")]
-    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
-    [RequiresPermissions("@css/root")]
     public void OnCommandNearestSpawn(CCSPlayerController? player, CommandInfo commandInfo)
     {
+        if (!PlayerHelper.IsValid(player))
+        {
+            return;
+        }
+
+        if (!AdminManager.PlayerHasPermissions(player, "@css/root"))
+        {
+            commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.no_permissions"]}");
+            return;
+        }
+
         if (_showingSpawnsForBombsite == null)
         {
             commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} You must be in spawn editing mode.");
@@ -256,13 +285,19 @@ public class SpawnEditorCommands
         commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} Teleported to nearest spawn");
     }
 
-    [ConsoleCommand("css_hidespawns", "Exits the spawn editing mode.")]
-    [ConsoleCommand("css_done", "Exits the spawn editing mode.")]
-    [ConsoleCommand("css_exitedit", "Exits the spawn editing mode.")]
-    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
-    [RequiresPermissions("@css/root")]
     public void OnCommandHideSpawns(CCSPlayerController? player, CommandInfo commandInfo)
     {
+        if (!PlayerHelper.IsValid(player))
+        {
+            return;
+        }
+
+        if (!AdminManager.PlayerHasPermissions(player, "@css/root"))
+        {
+            commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.no_permissions"]}");
+            return;
+        }
+
         _showingSpawnsForBombsite = null;
         Server.ExecuteCommand("mp_warmup_end");
         Logger.LogInfo("Commands", $"{player?.PlayerName} exited spawn editing mode");

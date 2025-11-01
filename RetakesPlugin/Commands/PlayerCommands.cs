@@ -1,5 +1,4 @@
 using CounterStrikeSharp.API.Core;
-using CounterStrikeSharp.API.Core.Attributes.Registration;
 using CounterStrikeSharp.API.Modules.Commands;
 using CounterStrikeSharp.API.Modules.Utils;
 
@@ -21,8 +20,6 @@ public class PlayerCommands
         _hasMutedVoices = hasMutedVoices;
     }
 
-    [ConsoleCommand("css_voices", "Toggles whether or not you want to hear bombsite voice announcements.")]
-    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_ONLY)]
     public void OnCommandVoices(CCSPlayerController? player, CommandInfo commandInfo)
     {
         if (!PlayerHelper.IsValid(player))
@@ -38,14 +35,14 @@ public class PlayerCommands
         }
 
         var didMute = false;
-        if (!_hasMutedVoices.Contains(player!))
+        if (!_hasMutedVoices.Contains(player))
         {
             didMute = true;
-            _hasMutedVoices.Add(player!);
+            _hasMutedVoices.Add(player);
         }
         else
         {
-            _hasMutedVoices.Remove(player!);
+            _hasMutedVoices.Remove(player);
         }
 
         var statusText = didMute ? $"{ChatColors.Red}disabled{ChatColors.White}" : $"{ChatColors.Green}enabled{ChatColors.White}";

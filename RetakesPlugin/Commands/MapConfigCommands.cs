@@ -2,7 +2,6 @@ using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Core.Attributes.Registration;
 
 using RetakesPlugin.Utils;
 
@@ -21,15 +20,22 @@ public class MapConfigCommands
         _onMapConfigLoad = onMapConfigLoad;
     }
 
-    [ConsoleCommand("css_mapconfig", "Forces a specific map config file to load.")]
-    [ConsoleCommand("css_setmapconfig", "Forces a specific map config file to load.")]
-    [ConsoleCommand("css_loadmapconfig", "Forces a specific map config file to load.")]
-    [CommandHelper(minArgs: 1, usage: "[filename]", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
-    [RequiresPermissions("@css/root")]
     public void OnCommandMapConfig(CCSPlayerController? player, CommandInfo commandInfo)
     {
         if (player != null && !PlayerHelper.IsValid(player))
         {
+            return;
+        }
+
+        if (!AdminManager.PlayerHasPermissions(player, "@css/root"))
+        {
+            commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.no_permissions"]}");
+            return;
+        }
+
+        if (commandInfo.ArgCount < 2)
+        {
+            commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} Usage: !mapconfig [filename]");
             return;
         }
 
@@ -56,11 +62,6 @@ public class MapConfigCommands
         Logger.LogInfo("Commands", $"Map config '{mapConfigFileName}' loaded by {player?.PlayerName ?? "Console"}");
     }
 
-    [ConsoleCommand("css_mapconfigs", "Displays a list of available map configs.")]
-    [ConsoleCommand("css_viewmapconfigs", "Displays a list of available map configs.")]
-    [ConsoleCommand("css_listmapconfigs", "Displays a list of available map configs.")]
-    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
-    [RequiresPermissions("@css/root")]
     public void OnCommandMapConfigs(CCSPlayerController? player, CommandInfo commandInfo)
     {
         if (player != null && !PlayerHelper.IsValid(player))
@@ -68,12 +69,24 @@ public class MapConfigCommands
             return;
         }
 
-        var mapConfigDirectory = Path.Combine(_moduleDirectory, "map_config");
-        var files = Directory.GetFiles(mapConfigDirectory);
+        if (!AdminManager.PlayerHasPermissions(player, "@css/root"))
+        {
+            commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.no_permissions"]}");
+            return;
+        }
 
+        var mapConfigDirectory = Path.Combine(_moduleDirectory, "map_config");
+
+        if (!Directory.Exists(mapConfigDirectory))
+        {
+            commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} No map configs found.");
+            return;
+        }
+
+        var files = Directory.GetFiles(mapConfigDirectory);
         Array.Sort(files);
 
-        if (!Directory.Exists(mapConfigDirectory) || files.Length == 0)
+        if (files.Length == 0)
         {
             commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} No map configs found.");
             return;

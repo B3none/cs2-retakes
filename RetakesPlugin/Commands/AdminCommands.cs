@@ -1,7 +1,6 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
-using CounterStrikeSharp.API.Core.Attributes.Registration;
 
 using RetakesPlugin.Events;
 using RetakesPlugin.Managers;
@@ -23,9 +22,6 @@ public class AdminCommands
         _roundEventHandlers = roundEventHandlers;
     }
 
-    [ConsoleCommand("css_forcebombsite", "Force the retakes to occur from a single bombsite.")]
-    [CommandHelper(minArgs: 1, usage: "[A/B]", whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
-    [RequiresPermissions("@css/root")]
     public void OnCommandForceBombsite(CCSPlayerController? player, CommandInfo commandInfo)
     {
         if (player != null && !PlayerHelper.IsValid(player))
@@ -33,27 +29,42 @@ public class AdminCommands
             return;
         }
 
+        if (!AdminManager.PlayerHasPermissions(player, "@css/root"))
+        {
+            commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.no_permissions"]}");
+            return;
+        }
+
+        if (commandInfo.ArgCount < 2)
+        {
+            commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} Usage: !forcebombsite [A/B]");
+            return;
+        }
+
         var bombsite = commandInfo.GetArg(1).ToUpper();
         if (bombsite != "A" && bombsite != "B")
         {
-            commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]}  You must specify a bombsite [A / B].");
+            commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} You must specify a bombsite [A / B].");
             return;
         }
 
         var forcedBombsite = bombsite == "A" ? Bombsite.A : Bombsite.B;
         _roundEventHandlers.SetForcedBombsite(forcedBombsite);
 
-        commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]}  The bombsite will now be forced to {forcedBombsite}.");
+        commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} The bombsite will now be forced to {forcedBombsite}.");
         Logger.LogInfo("Commands", $"Bombsite forced to {forcedBombsite} by {player?.PlayerName ?? "Console"}");
     }
 
-    [ConsoleCommand("css_forcebombsitestop", "Clear the forced bombsite and return back to normal.")]
-    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
-    [RequiresPermissions("@css/root")]
     public void OnCommandForceBombsiteStop(CCSPlayerController? player, CommandInfo commandInfo)
     {
         if (player != null && !PlayerHelper.IsValid(player))
         {
+            return;
+        }
+
+        if (!AdminManager.PlayerHasPermissions(player, "@css/root"))
+        {
+            commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.no_permissions"]}");
             return;
         }
 
@@ -63,21 +74,37 @@ public class AdminCommands
         Logger.LogInfo("Commands", $"Forced bombsite cleared by {player?.PlayerName ?? "Console"}");
     }
 
-    [ConsoleCommand("css_scramble", "Sets teams to scramble on the next round.")]
-    [ConsoleCommand("css_scrambleteams", "Sets teams to scramble on the next round.")]
-    [CommandHelper(whoCanExecute: CommandUsage.CLIENT_AND_SERVER)]
-    [RequiresPermissions("@css/admin")]
     public void OnCommandScramble(CCSPlayerController? player, CommandInfo commandInfo)
     {
+        if (player != null && !PlayerHelper.IsValid(player))
+        {
+            return;
+        }
+
+        if (!AdminManager.PlayerHasPermissions(player, "@css/admin"))
+        {
+            commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.no_permissions"]}");
+            return;
+        }
+
         _gameManager.ScrambleNextRound(player);
         Logger.LogInfo("Commands", $"Teams scramble requested by {player?.PlayerName ?? "Console"}");
     }
 
-    [ConsoleCommand("css_debugqueues", "Prints the state of the queues to the console.")]
-    [CommandHelper(whoCanExecute: CommandUsage.SERVER_ONLY)]
-    [RequiresPermissions("@css/root")]
     public void OnCommandDebugState(CCSPlayerController? player, CommandInfo commandInfo)
     {
+        if (player != null)
+        {
+            commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} This command can only be executed from the server console.");
+            return;
+        }
+
+        if (!AdminManager.PlayerHasPermissions(player, "@css/root"))
+        {
+            commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.no_permissions"]}");
+            return;
+        }
+
         _gameManager.QueueManager.DebugQueues(true);
     }
 }
