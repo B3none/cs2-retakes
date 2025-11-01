@@ -1,6 +1,8 @@
 {
   "retakes.prefix": "[{green}RETAKES{default}]",
   "retakes.no_permissions": "No tienes permiso para usar este comando.",
+  "retakes.enabled": "{red}deshabilitado{default}",
+  "retakes.disabled": "{green}habilitado{default}",
 
   "retakes.queue.joined": "Fuiste puesto en la lista de espera.",
   "retakes.queue.waiting": "La partida está llena con {green}{0}{default} jugadores. Te encuentras en la lista de espera.",

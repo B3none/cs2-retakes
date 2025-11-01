@@ -1,6 +1,8 @@
 ﻿{
   "retakes.prefix": "[{green}RETAKES{default}]",
   "retakes.no_permissions": "您没有使用此命令的权限。",
+  "retakes.enabled": "{red}已禁用{default}",
+  "retakes.disabled": "{green}已启用{default}",
 
   "retakes.queue.joined": "您已被放入等待队列。",
   "retakes.queue.waiting": "游戏当前已满，共有{green}{0}{default}名玩家。您正在等待队列中。",

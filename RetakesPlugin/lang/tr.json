@@ -1,6 +1,8 @@
 {
   "retakes.prefix": "[{green}RETAKES{default}]",
   "retakes.no_permissions": "Bu komutu kullanma izniniz yok.",
+  "retakes.enabled": "{red}devre dışı{default}",
+  "retakes.disabled": "{green}etkin{default}",
 
   "retakes.queue.joined": "Bekleme sırasına alındınız.",
   "retakes.queue.waiting": "Oyun şu anda {green}{0}{default} oyuncuyla dolu. Bekleme sırasındasınız.",

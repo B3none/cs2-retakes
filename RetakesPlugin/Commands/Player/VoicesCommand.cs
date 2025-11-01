@@ -45,7 +45,7 @@ public class VoicesCommand
             _hasMutedVoices.Remove(player);
         }
 
-        var statusText = didMute ? $"{ChatColors.Red}disabled{ChatColors.White}" : $"{ChatColors.Green}enabled{ChatColors.White}";
+        var statusText = didMute ? $"{_plugin.Localizer["retakes.disabled"]}" : $"{_plugin.Localizer["retakes.enabled"]}";
 
         commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.voices.toggle", statusText]}");
 

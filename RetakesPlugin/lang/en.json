@@ -1,7 +1,9 @@
 ﻿{
   "retakes.prefix": "[{green}RETAKES{default}]",
   "retakes.no_permissions": "You don't have permission to use this command.",
-  
+  "retakes.enabled": "{red}disabled{default}",
+  "retakes.disabled": "{green}enabled{default}",
+
   "retakes.queue.joined": "You have been placed in the waiting queue.",
   "retakes.queue.waiting": "The game is currently full with {green}{0}{default} players. You are in the waiting queue.",
   "retakes.queue.replaced_by_vip": "You have been replaced by VIP player {green}{0}{default}.",
@@ -9,7 +11,7 @@
 
   "retakes.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} Ts{default} vs {purple}{2} CTs",
   "retakes.voices.toggle": "You have {0} voice announcements!",
-  
+
   "retakes.teams.scramble": "The terrorists won {green}{0}{default} rounds in a row. {purple}Teams are being scrambled!",
   "retakes.teams.almost_scramble": "The terrorists have won {green}{0}{default} rounds in a row - if they win {green}{1} more, {purple}teams will be scrambled.",
   "retakes.teams.win_streak": "The terrorists have won {green}{0}{default} rounds in a row!",

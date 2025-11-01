@@ -1,6 +1,8 @@
 ﻿{
   "retakes.prefix": "[{green}RETAKES{default}]",
   "retakes.no_permissions": "Bạn không có quyền sử dụng lệnh này.",
+  "retakes.enabled": "{red}đã tắt{default}",
+  "retakes.disabled": "{green}đã bật{default}",
 
   "retakes.queue.joined": "Bạn đã được đưa vào hàng chờ.",
   "retakes.queue.waiting": "Trận đấu hiện đã đầy với {green}{0}{default} người chơi. Bạn đang trong hàng chờ.",

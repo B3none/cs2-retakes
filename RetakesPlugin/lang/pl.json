@@ -1,6 +1,8 @@
 {
   "retakes.prefix": "[{green}RETAKES{default}]",
   "retakes.no_permissions": "Nie masz uprawnień do użycia tej komendy.",
+  "retakes.enabled": "{red}wyłączone{default}",
+  "retakes.disabled": "{green}włączone{default}",
 
   "retakes.queue.joined": "Zostałeś dodany do kolejki.",
   "retakes.queue.waiting": "Gra jest pełna z {green}{0}{default} graczami. Jesteś aktualnie w kolejce.",

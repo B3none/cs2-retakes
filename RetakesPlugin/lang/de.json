@@ -1,6 +1,8 @@
 {
   "retakes.prefix": "[{green}RETAKES{default}]",
   "retakes.no_permissions": "Du hast keine Berechtigung, diesen Befehl zu verwenden.",
+  "retakes.enabled": "{red}deaktiviert{default}",
+  "retakes.disabled": "{green}aktiviert{default}",
 
   "retakes.queue.joined": "Sie befinden sich in der Warteschlange.",
   "retakes.queue.waiting": "Das Spiel ist aktuell voll mit {green}{0}{default} Spielern. Sie sind in der Warteschlange.",

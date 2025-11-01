@@ -1,6 +1,8 @@
 {
   "retakes.prefix": "[{green}RETAKES{default}]",
   "retakes.no_permissions": "Vous n'avez pas la permission d'utiliser cette commande.",
+  "retakes.enabled": "{red}désactivé{default}",
+  "retakes.disabled": "{green}activé{default}",
 
   "retakes.queue.joined": "Vous avez été placé dans la file d'attente.",
   "retakes.queue.waiting": "La partie est actuellement complète avec {green}{0}{default} joueurs. Vous êtes dans la file d'attente.",

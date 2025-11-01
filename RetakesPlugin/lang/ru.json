@@ -1,6 +1,8 @@
 {
   "retakes.prefix": "[{green}RETAKES{default}]",
   "retakes.no_permissions": "У вас нет разрешения на использование этой команды.",
+  "retakes.enabled": "{red}отключено{default}",
+  "retakes.disabled": "{green}включено{default}",
 
   "retakes.queue.joined": "Вы в очереди. Ожидайте.",
   "retakes.queue.waiting": "Сейчас играет максимальное количество игроков - {green}{0}{default}. Вы в очереди.",

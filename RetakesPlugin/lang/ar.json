@@ -1,6 +1,8 @@
 {
   "retakes.prefix": "[{green}RETAKES{default}]",
   "retakes.no_permissions": "ليس لديك الإذن لاستخدام هذا الأمر.",
+  "retakes.enabled": "{red}معطل{default}",
+  "retakes.disabled": "{green}مفعل{default}",
 
   "retakes.queue.joined": "لقد تم وضعك في قائمة الانتظار.",
   "retakes.queue.waiting": "اللعبة ممتلئة حالياً ب{green}{0}{default} لاعبين. أنت في قائمة الانتظار.",
