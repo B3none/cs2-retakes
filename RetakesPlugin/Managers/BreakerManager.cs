@@ -1,9 +1,11 @@
-﻿using CounterStrikeSharp.API;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities;
 using CounterStrikeSharp.API.Modules.Utils;
 
-namespace RetakesPlugin.Modules.Managers;
+using RetakesPlugin.Utils;
+
+namespace RetakesPlugin.Managers;
 
 public class BreakerManager
 {
@@ -38,11 +40,14 @@ public class BreakerManager
             {
                 _entityActions.Add(("func_button", "Kill"));
             }
+
+            Logger.LogInfo("BreakerManager", "Breakables enabled");
         }
 
         if (shouldOpenDoors ?? false)
         {
             _entityActions.Add(("prop_door_rotating", "open"));
+            Logger.LogInfo("BreakerManager", "Door opening enabled");
         }
     }
 
@@ -52,6 +57,8 @@ public class BreakerManager
         {
             return;
         }
+
+        var entitiesProcessed = 0;
 
         var pEntity = new CEntityIdentity(EntitySystem.FirstActiveEntity);
         for (; pEntity != null && pEntity.Handle != IntPtr.Zero; pEntity = pEntity.Next)
@@ -71,30 +78,30 @@ public class BreakerManager
                     case "prop.breakable.01":
                     case "prop.breakable.02":
                         var breakableEntity = new PointerTo<CBreakable>(pEntity.Handle).Value;
-
                         if (breakableEntity.IsValid)
                         {
                             breakableEntity.AcceptInput(action);
+                            entitiesProcessed++;
                         }
 
                         break;
 
                     case "func_button":
                         var button = new PointerTo<CBaseButton>(pEntity.Handle).Value;
-
                         if (button.IsValid)
                         {
                             button.AcceptInput(action);
+                            entitiesProcessed++;
                         }
 
                         break;
 
                     case "prop_door_rotating":
                         var propDoorRotating = new PointerTo<CPropDoorRotating>(pEntity.Handle).Value;
-
                         if (propDoorRotating.IsValid)
                         {
                             propDoorRotating.AcceptInput(action);
+                            entitiesProcessed++;
                         }
 
                         break;
@@ -102,6 +109,11 @@ public class BreakerManager
 
                 break;
             }
+        }
+
+        if (entitiesProcessed > 0)
+        {
+            Logger.LogDebug("BreakerManager", $"Processed {entitiesProcessed} entities");
         }
     }
 }
