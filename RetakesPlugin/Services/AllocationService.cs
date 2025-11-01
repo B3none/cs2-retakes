@@ -2,8 +2,6 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 
-using RetakesPlugin.Utils;
-
 namespace RetakesPlugin.Services;
 
 public class AllocationService

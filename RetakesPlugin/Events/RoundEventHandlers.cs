@@ -1,13 +1,11 @@
 using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
-using CounterStrikeSharp.API.Core.Capabilities;
 
+using RetakesPlugin.Utils;
 using RetakesPlugin.Managers;
 using RetakesPlugin.Services;
-using RetakesPlugin.Utils;
-using RetakesPlugin.Commands;
-using RetakesPluginShared;
+using RetakesPlugin.Commands.SpawnEditor;
 using RetakesPluginShared.Enums;
 using RetakesPluginShared.Events;
 
@@ -26,7 +24,7 @@ public class RoundEventHandlers
     private readonly bool _enableFallbackBombsiteAnnouncement;
     private readonly Random _random;
     private readonly MapConfigService _mapConfigService;
-    private SpawnEditorCommands? _spawnEditorCommands;
+    private ShowSpawnsCommand? _showSpawnsCommand;
 
     private Bombsite _currentBombsite = Bombsite.A;
     private CCSPlayerController? _planter;
@@ -48,9 +46,9 @@ public class RoundEventHandlers
         _mapConfigService = mapConfigService;
     }
 
-    public void SetCommandReferences(SpawnEditorCommands? spawnEditorCommands)
+    public void SetCommandReferences(ShowSpawnsCommand? showSpawnsCommand)
     {
-        _spawnEditorCommands = spawnEditorCommands;
+        _showSpawnsCommand = showSpawnsCommand;
     }
 
     public void SetForcedBombsite(Bombsite? bombsite)
@@ -93,11 +91,10 @@ public class RoundEventHandlers
         if (GameRulesHelper.GetGameRules().WarmupPeriod)
         {
             Logger.LogDebug("Round", "Warmup round, skipping.");
-            if (_spawnEditorCommands?.ShowingSpawnsForBombsite != null)
+            if (_showSpawnsCommand?.ShowingSpawnsForBombsite != null)
             {
-                SpawnService.ShowSpawns(null!, _mapConfigService.GetSpawnsClone(),
-                    _spawnEditorCommands.ShowingSpawnsForBombsite);
-                Logger.LogDebug("Round", $"Re-showing spawns for bombsite {_spawnEditorCommands.ShowingSpawnsForBombsite}");
+                SpawnService.ShowSpawns(null!, _mapConfigService.GetSpawnsClone(), _showSpawnsCommand.ShowingSpawnsForBombsite);
+                Logger.LogDebug("Round", $"Re-showing spawns for bombsite {_showSpawnsCommand.ShowingSpawnsForBombsite}");
             }
 
             return HookResult.Continue;

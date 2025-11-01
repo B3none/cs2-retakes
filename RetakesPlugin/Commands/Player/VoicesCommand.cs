@@ -5,22 +5,22 @@ using CounterStrikeSharp.API.Modules.Utils;
 using RetakesPlugin.Configs;
 using RetakesPlugin.Utils;
 
-namespace RetakesPlugin.Commands;
+namespace RetakesPlugin.Commands.Player;
 
-public class PlayerCommands
+public class VoicesCommand
 {
     private readonly HashSet<CCSPlayerController> _hasMutedVoices;
     private readonly BaseConfigs _config;
     private readonly RetakesPlugin _plugin;
 
-    public PlayerCommands(RetakesPlugin plugin, BaseConfigs config, HashSet<CCSPlayerController> hasMutedVoices)
+    public VoicesCommand(RetakesPlugin plugin, BaseConfigs config, HashSet<CCSPlayerController> hasMutedVoices)
     {
         _plugin = plugin;
         _config = config;
         _hasMutedVoices = hasMutedVoices;
     }
 
-    public void OnCommandVoices(CCSPlayerController? player, CommandInfo commandInfo)
+    public void OnCommand(CCSPlayerController? player, CommandInfo commandInfo)
     {
         if (!PlayerHelper.IsValid(player))
         {
