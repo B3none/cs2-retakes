@@ -25,7 +25,7 @@ public class RetakesPlugin : BasePlugin, IPluginConfig<BaseConfigs>
     #region Plugin Info
     public override string ModuleName => "Retakes Plugin";
     public override string ModuleVersion => Version;
-    public override string ModuleAuthor => "B3none, luca.uy";
+    public override string ModuleAuthor => "B3none";
     public override string ModuleDescription => "https://github.com/b3none/cs2-retakes";
     #endregion
 
