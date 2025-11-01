@@ -179,7 +179,8 @@ public class RetakesPlugin : BasePlugin, IPluginConfig<BaseConfigs>
                 Config.Bomb.IsAutoPlantEnabled,
                 Config.Game.EnableFallbackAllocation,
                 Config.MapConfig.EnableFallbackBombsiteAnnouncement,
-                _random
+                _random,
+                _mapConfigService
             );
 
             _playerEventHandlers = new PlayerEventHandlers(_gameManager, _hasMutedVoices);

@@ -26,6 +26,8 @@ public class SpawnEditorCommands
         _spawnManager = spawnManager;
     }
 
+    public Bombsite? ShowingSpawnsForBombsite => _showingSpawnsForBombsite;
+
     public void OnCommandShowSpawns(CCSPlayerController? player, CommandInfo commandInfo)
     {
         if (!PlayerHelper.IsValid(player))
@@ -54,11 +56,18 @@ public class SpawnEditorCommands
 
         _showingSpawnsForBombsite = bombsite == "A" ? Bombsite.A : Bombsite.B;
 
-        Server.ExecuteCommand("mp_warmup_start");
-        Server.ExecuteCommand("mp_warmuptime 120");
         Server.ExecuteCommand("mp_warmup_pausetimer 1");
+        Server.ExecuteCommand("mp_warmuptime 999999");
+        Server.ExecuteCommand("mp_warmup_start");
 
-        SpawnService.ShowSpawns(_plugin, _mapConfigService.GetSpawnsClone(), _showingSpawnsForBombsite);
+        _plugin.AddTimer(1.0f, () =>
+        {
+            if (_showingSpawnsForBombsite != null)
+            {
+                SpawnService.ShowSpawns(_plugin, _mapConfigService.GetSpawnsClone(), _showingSpawnsForBombsite);
+                Logger.LogInfo("Commands", $"Spawns displayed for bombsite {_showingSpawnsForBombsite}");
+            }
+        });
 
         Logger.LogInfo("Commands", $"Showing spawns for bombsite {_showingSpawnsForBombsite} to {player!.PlayerName}");
     }
@@ -299,7 +308,10 @@ public class SpawnEditorCommands
         }
 
         _showingSpawnsForBombsite = null;
+
+        Server.ExecuteCommand("mp_warmup_pausetimer 0");
         Server.ExecuteCommand("mp_warmup_end");
+
         Logger.LogInfo("Commands", $"{player?.PlayerName} exited spawn editing mode");
     }
 }

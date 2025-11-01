@@ -6,6 +6,7 @@ using CounterStrikeSharp.API.Core.Capabilities;
 using RetakesPlugin.Managers;
 using RetakesPlugin.Services;
 using RetakesPlugin.Utils;
+using RetakesPlugin.Commands;
 using RetakesPluginShared;
 using RetakesPluginShared.Enums;
 using RetakesPluginShared.Events;
@@ -23,13 +24,15 @@ public class RoundEventHandlers
     private readonly bool _enableFallbackAllocation;
     private readonly bool _enableFallbackBombsiteAnnouncement;
     private readonly Random _random;
+    private readonly MapConfigService _mapConfigService;
+    private SpawnEditorCommands? _spawnEditorCommands;
 
     private Bombsite _currentBombsite = Bombsite.A;
     private CCSPlayerController? _planter;
     private CsTeam _lastRoundWinner = CsTeam.None;
     private Bombsite? _forcedBombsite;
 
-    public RoundEventHandlers(GameManager gameManager, SpawnManager spawnManager, BreakerManager? breakerManager, AllocationService allocationService, AnnouncementService announcementService, bool isAutoPlantEnabled, bool enableFallbackAllocation, bool enableFallbackBombsiteAnnouncement, Random random)
+    public RoundEventHandlers(GameManager gameManager, SpawnManager spawnManager, BreakerManager? breakerManager, AllocationService allocationService, AnnouncementService announcementService, bool isAutoPlantEnabled, bool enableFallbackAllocation, bool enableFallbackBombsiteAnnouncement, Random random, MapConfigService mapConfigService)
     {
         _gameManager = gameManager;
         _spawnManager = spawnManager;
@@ -40,6 +43,12 @@ public class RoundEventHandlers
         _enableFallbackAllocation = enableFallbackAllocation;
         _enableFallbackBombsiteAnnouncement = enableFallbackBombsiteAnnouncement;
         _random = random;
+        _mapConfigService = mapConfigService;
+    }
+
+    public void SetCommandReferences(SpawnEditorCommands? spawnEditorCommands)
+    {
+        _spawnEditorCommands = spawnEditorCommands;
     }
 
     public void SetForcedBombsite(Bombsite? bombsite)
@@ -81,7 +90,26 @@ public class RoundEventHandlers
 
         if (GameRulesHelper.GetGameRules().WarmupPeriod)
         {
-            Logger.LogDebug("Round", "Warmup round, skipping start logic");
+            Logger.LogDebug("Round", "Warmup round, skipping.");
+            if (_spawnEditorCommands?.ShowingSpawnsForBombsite != null)
+            {
+                SpawnService.ShowSpawns(null!, _mapConfigService.GetSpawnsClone(),
+                    _spawnEditorCommands.ShowingSpawnsForBombsite);
+                Logger.LogDebug("Round", $"Re-showing spawns for bombsite {_spawnEditorCommands.ShowingSpawnsForBombsite}");
+            }
+
+            return HookResult.Continue;
+        }
+
+        if (_gameManager == null)
+        {
+            Logger.LogDebug("Round", "Game manager not loaded.");
+            return HookResult.Continue;
+        }
+
+        if (_spawnManager == null)
+        {
+            Logger.LogDebug("Round", "Spawn manager not loaded.");
             return HookResult.Continue;
         }
 
