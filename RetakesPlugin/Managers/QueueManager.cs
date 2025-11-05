@@ -142,7 +142,7 @@ public class QueueManager
         if (disconnectedQueuePlayers.Count > 0)
         {
             Logger.LogDebug("QueueManager", $"Removing {disconnectedQueuePlayers.Count} disconnected queue players");
-            QueuePlayers.RemoveWhere(player => disconnectedQueuePlayers.Contains(player));
+            QueuePlayers.RemoveWhere(disconnectedQueuePlayers.Contains);
         }
     }
 
@@ -169,12 +169,11 @@ public class QueueManager
                 continue;
             }
 
-            var replaceablePlayers = PlayerHelper.Shuffle(
-                ActivePlayers
-                    .Where(player => !PlayerHelper.HasQueuePriority(player, _queuePriorityFlags) && !PlayerHelper.HasQueueImmunity(player, _queueImmunityFlags))
-                    .ToList(),
-                new Random()
-            );
+            // Remove newest non-VIP players first (by highest slot number)
+            var replaceablePlayers = ActivePlayers
+                    .Where(player => !PlayerHelper.HasQueuePriority(player, _queuePriorityFlags))
+                    .OrderByDescending(player => player.Slot)
+                    .ToList();
 
             if (replaceablePlayers.Count == 0)
             {
@@ -207,8 +206,10 @@ public class QueueManager
         var playersToAdd = _maxRetakesPlayers - ActivePlayers.Count;
         if (playersToAdd > 0 && QueuePlayers.Count > 0)
         {
+            // Prioritize players with queue priority flag, then by join order (player slot)
             var playersToAddList = QueuePlayers
                 .OrderBy(player => PlayerHelper.HasQueuePriority(player, _queuePriorityFlags) ? 0 : 1)
+                .ThenBy(player => player.Slot)
                 .Take(playersToAdd)
                 .ToList();
 
