@@ -1,5 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Drawing;
+using System.Collections.Generic;
 using System.Text;
 using System.Text.Json;
 using CounterStrikeSharp.API;
@@ -358,9 +359,24 @@ public static class Helpers
 
     public static bool HasQueuePriority(CCSPlayerController player, string[] queuePriorityFlags)
     {
-        foreach (var queuePriorityFlag in queuePriorityFlags)
+        return PlayerHasAnyQueuePermission(player, queuePriorityFlags);
+    }
+
+    public static bool HasQueueImmunity(CCSPlayerController player, string[] queueImmunityFlags)
+    {
+        return PlayerHasAnyQueuePermission(player, queueImmunityFlags);
+    }
+
+    private static bool PlayerHasAnyQueuePermission(CCSPlayerController player, IEnumerable<string> permissionFlags)
+    {
+        foreach (var permissionFlag in permissionFlags)
         {
-            if (AdminManager.PlayerHasPermissions(player, queuePriorityFlag))
+            if (string.IsNullOrWhiteSpace(permissionFlag))
+            {
+                continue;
+            }
+
+            if (AdminManager.PlayerHasPermissions(player, permissionFlag))
             {
                 return true;
             }

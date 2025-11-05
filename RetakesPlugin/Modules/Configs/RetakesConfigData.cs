@@ -1,8 +1,8 @@
-﻿namespace RetakesPlugin.Modules.Configs;
+namespace RetakesPlugin.Modules.Configs;
 
 public class RetakesConfigData
 {
-    public static int CurrentVersion = 11;
+    public static int CurrentVersion = 12;
 
     public int Version { get; set; } = CurrentVersion;
     public int MaxPlayers { get; set; } = 9;
@@ -16,6 +16,7 @@ public class RetakesConfigData
     public bool ShouldOpenDoors { get; set; } = false;
     public bool IsAutoPlantEnabled { get; set; } = true;
     public string QueuePriorityFlag { get; set; } = "@css/vip";
+    public string QueueImmunityFlag { get; set; } = "@css/vip";
     public bool IsDebugMode { get; set; } = false;
     public bool ShouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 { get; set; } = true;
     public bool EnableFallbackBombsiteAnnouncement { get; set; } = true;

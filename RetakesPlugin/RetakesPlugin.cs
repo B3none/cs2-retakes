@@ -1,4 +1,4 @@
-﻿using CounterStrikeSharp.API;
+using CounterStrikeSharp.API;
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Core.Attributes;
 using CounterStrikeSharp.API.Core.Attributes.Registration;
@@ -20,7 +20,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(335)]
 public class RetakesPlugin : BasePlugin
 {
-    private const string Version = "2.1.5";
+    private const string Version = "2.1.6";
 
     #region Plugin info
     public override string ModuleName => "Retakes Plugin";
@@ -598,6 +598,7 @@ public class RetakesPlugin : BasePlugin
                 _retakesConfig?.RetakesConfigData?.MaxPlayers,
                 _retakesConfig?.RetakesConfigData?.TerroristRatio,
                 _retakesConfig?.RetakesConfigData?.QueuePriorityFlag,
+                _retakesConfig?.RetakesConfigData?.QueueImmunityFlag,
                 _retakesConfig?.RetakesConfigData?.ShouldForceEvenTeamsWhenPlayerCountIsMultipleOf10,
                 _retakesConfig?.RetakesConfigData?.ShouldPreventTeamChangesMidRound
             ),

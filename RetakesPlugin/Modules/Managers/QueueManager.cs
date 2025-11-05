@@ -1,4 +1,4 @@
-﻿using CounterStrikeSharp.API.Core;
+using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 
 namespace RetakesPlugin.Modules.Managers;
@@ -9,6 +9,7 @@ public class QueueManager
     private readonly int _maxRetakesPlayers;
     private readonly float _terroristRatio;
     private readonly string[] _queuePriorityFlags;
+    private readonly string[] _queueImmunityFlags;
     private readonly bool _shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10;
     private readonly bool _shouldPreventTeamChangesMidRound;
 
@@ -20,6 +21,7 @@ public class QueueManager
         int? retakesMaxPlayers,
         float? retakesTerroristRatio,
         string? queuePriorityFlags,
+        string? queueImmunityFlags,
         bool? shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10,
         bool? shouldPreventTeamChangesMidRound
     )
@@ -27,7 +29,15 @@ public class QueueManager
         _translator = translator;
         _maxRetakesPlayers = retakesMaxPlayers ?? 9;
         _terroristRatio = retakesTerroristRatio ?? 0.45f;
-        _queuePriorityFlags = queuePriorityFlags?.Split(",").Select(flag => flag.Trim()).ToArray() ?? ["@css/vip"];
+        _queuePriorityFlags = ParseFlags(queuePriorityFlags);
+        if (_queuePriorityFlags.Length == 0)
+        {
+            _queuePriorityFlags = ["@css/vip"];
+        }
+
+        var parsedImmunityFlags = ParseFlags(queueImmunityFlags);
+        _queueImmunityFlags = parsedImmunityFlags.Length > 0 ? parsedImmunityFlags : _queuePriorityFlags;
+
         _shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 = shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 ?? true;
         _shouldPreventTeamChangesMidRound = shouldPreventTeamChangesMidRound ?? true;
     }
@@ -183,24 +193,24 @@ public class QueueManager
 
             // Order the non-VIP players by their Slot
             // Remove the player with the highest Slot, essentially Last In First Out
-            var nonVipActivePlayers = ActivePlayers
+            var replaceablePlayers = ActivePlayers
                     .Where(player => !Helpers.HasQueuePriority(player, _queuePriorityFlags))
                     .OrderByDescending(player => player.Slot)
                     .ToList();
 
-            if (nonVipActivePlayers.Count == 0)
+            if (replaceablePlayers.Count == 0)
             {
-                Helpers.Debug($"No non-VIP players found in ActivePlayers, returning.");
+                Helpers.Debug($"No replaceable players found in ActivePlayers, returning.");
                 break;
             }
 
-            var nonVipActivePlayer = nonVipActivePlayers.First();
+            var replaceablePlayer = replaceablePlayers.First();
 
             // Switching them to spectator will automatically remove them from the queue
-            nonVipActivePlayer.ChangeTeam(CsTeam.Spectator);
-            ActivePlayers.Remove(nonVipActivePlayer);
-            QueuePlayers.Add(nonVipActivePlayer);
-            nonVipActivePlayer.PrintToChat(
+            replaceablePlayer.ChangeTeam(CsTeam.Spectator);
+            ActivePlayers.Remove(replaceablePlayer);
+            QueuePlayers.Add(replaceablePlayer);
+            replaceablePlayer.PrintToChat(
                 $"{RetakesPlugin.MessagePrefix}{_translator["retakes.queue.replaced_by_vip", vipQueuePlayer.PlayerName]}");
 
             // Add the new VIP player to ActivePlayers and remove them from QueuePlayers
@@ -208,7 +218,7 @@ public class QueueManager
             QueuePlayers.Remove(vipQueuePlayer);
             vipQueuePlayer.ChangeTeam(CsTeam.CounterTerrorist);
             vipQueuePlayer.PrintToChat(
-                $"{RetakesPlugin.MessagePrefix}{_translator["retakes.queue.vip_took_place", nonVipActivePlayer.PlayerName]}");
+                $"{RetakesPlugin.MessagePrefix}{_translator["retakes.queue.vip_took_place", replaceablePlayer.PlayerName]}");
         }
     }
 
@@ -267,6 +277,20 @@ public class QueueManager
                 player.PrintToChat($"{RetakesPlugin.MessagePrefix}{waitingMessage}");
             }
         }
+    }
+
+    private static string[] ParseFlags(string? rawFlags)
+    {
+        if (string.IsNullOrWhiteSpace(rawFlags))
+        {
+            return Array.Empty<string>();
+        }
+
+        return rawFlags
+            .Split(",", StringSplitOptions.RemoveEmptyEntries)
+            .Select(flag => flag.Trim())
+            .Where(flag => !string.IsNullOrWhiteSpace(flag))
+            .ToArray();
     }
 
     public void RemovePlayerFromQueues(CCSPlayerController player)
