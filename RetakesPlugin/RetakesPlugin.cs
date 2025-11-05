@@ -62,7 +62,7 @@ public class RetakesPlugin : BasePlugin, IPluginConfig<BaseConfigs>
     private ForceBombsiteCommand? _forceBombsiteCommand;
     private ForceBombsiteStopCommand? _forceBombsiteStopCommand;
     private ScrambleCommand? _scrambleCommand;
-    private DebugStateCommand? _debugStateCommand;
+    private DebugQueuesCommand? _debugQueuesCommand;
 
     // Map Config Commands
     private MapConfigCommand? _mapConfigCommand;
@@ -209,7 +209,7 @@ public class RetakesPlugin : BasePlugin, IPluginConfig<BaseConfigs>
             _forceBombsiteCommand = new ForceBombsiteCommand(this, _roundEventHandlers);
             _forceBombsiteStopCommand = new ForceBombsiteStopCommand(this, _roundEventHandlers);
             _scrambleCommand = new ScrambleCommand(this, _gameManager);
-            _debugStateCommand = new DebugStateCommand(this, _gameManager);
+            _debugQueuesCommand = new DebugQueuesCommand(this, _gameManager);
 
             _mapConfigCommand = new MapConfigCommand(this, ModuleDirectory, (configName) =>
             {
@@ -238,7 +238,7 @@ public class RetakesPlugin : BasePlugin, IPluginConfig<BaseConfigs>
 
     private void RegisterCommands()
     {
-        if (_forceBombsiteCommand == null || _forceBombsiteStopCommand == null || _scrambleCommand == null || _debugStateCommand == null || _mapConfigCommand == null || _mapConfigsCommand == null || _voicesCommand == null || _showSpawnsCommand == null || _addSpawnCommand == null || _removeSpawnCommand == null || _nearestSpawnCommand == null || _hideSpawnsCommand == null)
+        if (_forceBombsiteCommand == null || _forceBombsiteStopCommand == null || _scrambleCommand == null || _debugQueuesCommand == null || _mapConfigCommand == null || _mapConfigsCommand == null || _voicesCommand == null || _showSpawnsCommand == null || _addSpawnCommand == null || _removeSpawnCommand == null || _nearestSpawnCommand == null || _hideSpawnsCommand == null)
         {
             Utils.Logger.LogWarning("Commands", "Cannot register commands - command handlers not initialized");
             return;
@@ -249,7 +249,7 @@ public class RetakesPlugin : BasePlugin, IPluginConfig<BaseConfigs>
         AddCommand("css_forcebombsitestop", "Clear the forced bombsite and return back to normal.", _forceBombsiteStopCommand.OnCommand);
         AddCommand("css_scramble", "Sets teams to scramble on the next round.", _scrambleCommand.OnCommand);
         AddCommand("css_scrambleteams", "Sets teams to scramble on the next round.", _scrambleCommand.OnCommand);
-        AddCommand("css_debugqueues", "Prints the state of the queues to the console.", _debugStateCommand.OnCommand);
+        AddCommand("css_debugqueues", "Prints the state of the queues to the console.", _debugQueuesCommand.OnCommand);
 
         // Map Config Commands
         AddCommand("css_mapconfig", "Forces a specific map config file to load.", _mapConfigCommand.OnCommand);

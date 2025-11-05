@@ -6,12 +6,12 @@ using RetakesPlugin.Managers;
 
 namespace RetakesPlugin.Commands.Admin;
 
-public class DebugStateCommand
+public class DebugQueuesCommand
 {
     private readonly RetakesPlugin _plugin;
     private readonly GameManager _gameManager;
 
-    public DebugStateCommand(RetakesPlugin plugin, GameManager gameManager)
+    public DebugQueuesCommand(RetakesPlugin plugin, GameManager gameManager)
     {
         _plugin = plugin;
         _gameManager = gameManager;
