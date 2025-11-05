@@ -24,7 +24,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(345)]
 public class RetakesPlugin : BasePlugin, IPluginConfig<BaseConfigs>
 {
-    public const string Version = "2.2.0";
+    public const string Version = "3.0.0";
 
     #region Plugin Info
     public override string ModuleName => "Retakes Plugin";
