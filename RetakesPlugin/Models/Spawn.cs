@@ -1,9 +1,10 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 using CounterStrikeSharp.API.Modules.Utils;
-using RetakesPlugin.Modules.Configs.JsonConverters;
+
+using RetakesPlugin.Configs.JsonConverters;
 using RetakesPluginShared.Enums;
 
-namespace RetakesPlugin.Modules.Configs;
+namespace RetakesPlugin.Models;
 
 public class Spawn
 {

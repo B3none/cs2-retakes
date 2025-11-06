@@ -1,19 +1,22 @@
 using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
-using RetakesPlugin.Modules.Configs;
+
+using RetakesPlugin.Models;
+using RetakesPlugin.Services;
+using RetakesPlugin.Utils;
 using RetakesPluginShared.Enums;
 
-namespace RetakesPlugin.Modules.Managers;
+namespace RetakesPlugin.Managers;
 
 public class SpawnManager
 {
-    private readonly MapConfig _mapConfig;
+    private readonly MapConfigService _mapConfigService;
     private readonly Dictionary<Bombsite, Dictionary<CsTeam, List<Spawn>>> _spawns = new();
+    private readonly Random _random = new();
 
-    public SpawnManager(MapConfig mapConfig)
+    public SpawnManager(MapConfigService mapConfigService)
     {
-        _mapConfig = mapConfig;
-
+        _mapConfigService = mapConfigService;
         CalculateMapSpawns();
     }
 
@@ -32,16 +35,20 @@ public class SpawnManager
             { CsTeam.CounterTerrorist, [] }
         });
 
-        foreach (var spawn in _mapConfig.GetSpawnsClone())
+        foreach (var spawn in _mapConfigService.GetSpawnsClone())
         {
             _spawns[spawn.Bombsite][spawn.Team].Add(spawn);
         }
+
+        Logger.LogInfo("SpawnManager", "Map spawns calculated successfully");
     }
 
     public List<Spawn> GetSpawns(Bombsite bombsite, CsTeam? team = null)
     {
-        if (_spawns[bombsite][CsTeam.Terrorist].Count == 0 && _spawns[bombsite][CsTeam.CounterTerrorist].Count == 0)
+        if (_spawns[bombsite][CsTeam.Terrorist].Count == 0 &&
+            _spawns[bombsite][CsTeam.CounterTerrorist].Count == 0)
         {
+            Logger.LogWarning("SpawnManager", $"No spawns found for bombsite {bombsite}");
             return [];
         }
 
@@ -53,43 +60,42 @@ public class SpawnManager
         return _spawns[bombsite][(CsTeam)team];
     }
 
-    /**
-     * This function returns the player who should be the planter and moves all players to random spawns based on bombsite.
-     */
     public CCSPlayerController? HandleRoundSpawns(Bombsite bombsite, HashSet<CCSPlayerController> players)
     {
-        Helpers.Debug($"Moving players to spawns.");
+        Logger.LogDebug("SpawnManager", $"Handling round spawns for bombsite {bombsite}");
 
-        // Clone the spawns so we can mutate them
         var spawns = _spawns[bombsite].ToDictionary(
             entry => entry.Key,
             entry => entry.Value.ToList()
         );
 
-        if (
-            Helpers.GetCurrentNumPlayers(CsTeam.CounterTerrorist) > spawns[CsTeam.CounterTerrorist].Count ||
-            Helpers.GetCurrentNumPlayers(CsTeam.Terrorist) > spawns[CsTeam.Terrorist].Count
-        )
+        var ctCount = PlayerHelper.GetPlayerCount(CsTeam.CounterTerrorist);
+        var tCount = PlayerHelper.GetPlayerCount(CsTeam.Terrorist);
+
+        if (ctCount > spawns[CsTeam.CounterTerrorist].Count ||
+            tCount > spawns[CsTeam.Terrorist].Count)
         {
-            // TODO: Potentially update the maxRetakesPlayers on the fly.
-            throw new Exception($"There are not enough spawns in the map config for Bombsite {bombsite.ToString()}!");
+            Logger.LogError("SpawnManager",
+                $"Not enough spawns for bombsite {bombsite}! CT: {ctCount}/{spawns[CsTeam.CounterTerrorist].Count}, T: {tCount}/{spawns[CsTeam.Terrorist].Count}");
+            throw new Exception($"Not enough spawns in map config for Bombsite {bombsite}!");
         }
 
         var planterSpawns = spawns[CsTeam.Terrorist].Where(spawn => spawn.CanBePlanter).ToList();
 
         if (planterSpawns.Count == 0)
         {
-            throw new Exception($"There are no planter spawns for Bombsite {bombsite.ToString()}!");
+            Logger.LogError("SpawnManager", $"No planter spawns found for bombsite {bombsite}");
+            throw new Exception($"No planter spawns for Bombsite {bombsite}!");
         }
 
-        var randomPlanterSpawn = planterSpawns[Helpers.Random.Next(planterSpawns.Count)];
+        var randomPlanterSpawn = planterSpawns[_random.Next(planterSpawns.Count)];
         spawns[CsTeam.Terrorist].Remove(randomPlanterSpawn);
 
         CCSPlayerController? planter = null;
 
-        foreach (var player in Helpers.Shuffle(players))
+        foreach (var player in PlayerHelper.Shuffle(players, _random))
         {
-            if (!Helpers.DoesPlayerHaveAlivePawn(player))
+            if (!PlayerHelper.HasAlivePawn(player))
             {
                 continue;
             }
@@ -111,13 +117,13 @@ public class SpawnManager
                 continue;
             }
 
-            var spawn = player == planter ? randomPlanterSpawn : spawns[team][Helpers.Random.Next(count)];
+            var spawn = player == planter ? randomPlanterSpawn : spawns[team][_random.Next(count)];
 
             player.Pawn.Value!.Teleport(spawn.Vector, spawn.QAngle, new Vector());
             spawns[team].Remove(spawn);
         }
 
-        Helpers.Debug($"Moving players to spawns COMPLETE.");
+        Logger.LogInfo("SpawnManager", $"Players moved to spawns. Planter: {planter?.PlayerName ?? "None"}");
 
         return planter;
     }

@@ -1,25 +1,30 @@
-﻿using System.Text.Json;
+using System.Text.Json;
 
-namespace RetakesPlugin.Modules.Configs;
+using RetakesPlugin.Models;
+using RetakesPlugin.Utils;
 
-public class MapConfig
+namespace RetakesPlugin.Services;
+
+public class MapConfigService
 {
     private readonly string _mapName;
     private readonly string _mapConfigDirectory;
     private readonly string _mapConfigPath;
     private MapConfigData? _mapConfigData;
+    private readonly JsonSerializerOptions _jsonOptions;
 
-    public MapConfig(string moduleDirectory, string mapName)
+    public MapConfigService(string moduleDirectory, string mapName, JsonSerializerOptions jsonOptions)
     {
         _mapName = mapName;
         _mapConfigDirectory = Path.Combine(moduleDirectory, "map_config");
         _mapConfigPath = Path.Combine(_mapConfigDirectory, $"{mapName}.json");
         _mapConfigData = null;
+        _jsonOptions = jsonOptions;
     }
 
     public void Load(bool isViaCommand = false)
     {
-        Helpers.Debug($"Attempting to load map data from {_mapConfigPath}");
+        Logger.LogDebug("MapConfig", $"Attempting to load map data from {_mapConfigPath}");
 
         try
         {
@@ -29,19 +34,13 @@ public class MapConfig
             }
 
             var jsonData = File.ReadAllText(_mapConfigPath);
-            _mapConfigData = JsonSerializer.Deserialize<MapConfigData>(jsonData, Helpers.JsonSerializerOptions);
+            _mapConfigData = JsonSerializer.Deserialize<MapConfigData>(jsonData, _jsonOptions);
 
-            // TODO: Implement validation to make sure the config is valid / has enough spawns.
-            // if (_mapConfigData!.Spawns == null || _mapConfigData.Spawns.Count < 0)
-            // {
-            //     throw new Exception("No spawns found in config");
-            // }
-
-            Helpers.Debug($"Data loaded from {_mapConfigPath}");
+            Logger.LogInfo("MapConfig", $"Map config loaded for {_mapName}");
         }
         catch (FileNotFoundException)
         {
-            Helpers.Debug($"No config for map {_mapName}");
+            Logger.LogWarning("MapConfig", $"No config found for map {_mapName}");
 
             if (!isViaCommand)
             {
@@ -51,13 +50,10 @@ public class MapConfig
         }
         catch (Exception ex)
         {
-            Helpers.Debug($"An error occurred while loading data: {ex.Message}");
+            Logger.LogException("MapConfig", ex);
         }
     }
 
-    /**
-     * This function returns a clone of the spawns list. (free to mutate :>)
-     */
     public List<Spawn> GetSpawnsClone()
     {
         if (_mapConfigData == null)
@@ -72,18 +68,18 @@ public class MapConfig
     {
         _mapConfigData ??= new MapConfigData();
 
-        // Check if the spawn already exists based on vector and bombsite
         if (_mapConfigData.Spawns.Any(existingSpawn =>
                 existingSpawn.Vector == spawn.Vector && existingSpawn.Bombsite == spawn.Bombsite))
         {
-            return false; // Spawn already exists, avoid duplication
+            Logger.LogWarning("MapConfig", "Spawn already exists, avoiding duplication");
+            return false;
         }
 
         _mapConfigData.Spawns.Add(spawn);
-
         Save();
         Load();
 
+        Logger.LogInfo("MapConfig", "Spawn added successfully");
         return true;
     }
 
@@ -94,25 +90,25 @@ public class MapConfig
         if (!_mapConfigData.Spawns.Any(existingSpawn =>
                 existingSpawn.Vector == spawn.Vector && existingSpawn.Bombsite == spawn.Bombsite))
         {
-            return false; // Spawn doesn't exist, avoid removing
+            Logger.LogWarning("MapConfig", "Spawn doesn't exist, nothing to remove");
+            return false;
         }
 
         _mapConfigData.Spawns.Remove(spawn);
-
         Save();
         Load();
 
+        Logger.LogInfo("MapConfig", "Spawn removed successfully");
         return true;
     }
 
-    private MapConfigData GetSanitisedMapConfigData()
+    private MapConfigData GetSanitizedMapConfigData()
     {
         if (_mapConfigData == null)
         {
             throw new Exception("Map config data is null");
         }
 
-        // Remove any duplicate spawns in the list
         _mapConfigData.Spawns = _mapConfigData.Spawns
             .GroupBy(spawn => new { spawn.Vector, spawn.Bombsite })
             .Select(group => group.First())
@@ -123,7 +119,7 @@ public class MapConfig
 
     private void Save()
     {
-        var jsonString = JsonSerializer.Serialize(GetSanitisedMapConfigData(), Helpers.JsonSerializerOptions);
+        var jsonString = JsonSerializer.Serialize(GetSanitizedMapConfigData(), _jsonOptions);
 
         try
         {
@@ -133,16 +129,15 @@ public class MapConfig
             }
 
             File.WriteAllText(_mapConfigPath, jsonString);
-
-            Helpers.Debug($"Data has been written to {_mapConfigPath}");
+            Logger.LogDebug("MapConfig", $"Data written to {_mapConfigPath}");
         }
         catch (IOException e)
         {
-            Helpers.Debug($"An error occurred while writing to the file: {e.Message}");
+            Logger.LogError("MapConfig", $"Error writing to file: {e.Message}");
         }
     }
 
-    public static bool IsLoaded(MapConfig? mapConfig, string currentMap)
+    public static bool IsLoaded(MapConfigService? mapConfig, string currentMap)
     {
         if (mapConfig == null || mapConfig._mapName != currentMap)
         {
