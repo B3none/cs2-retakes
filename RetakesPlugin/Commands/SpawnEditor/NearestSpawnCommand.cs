@@ -13,13 +13,11 @@ namespace RetakesPlugin.Commands.SpawnEditor;
 public class NearestSpawnCommand
 {
     private readonly RetakesPlugin _plugin;
-    private readonly SpawnManager _spawnManager;
     private readonly ShowSpawnsCommand _showSpawnsCommand;
 
-    public NearestSpawnCommand(RetakesPlugin plugin, SpawnManager spawnManager, ShowSpawnsCommand showSpawnsCommand)
+    public NearestSpawnCommand(RetakesPlugin plugin, ShowSpawnsCommand showSpawnsCommand)
     {
         _plugin = plugin;
-        _spawnManager = spawnManager;
         _showSpawnsCommand = showSpawnsCommand;
     }
 
@@ -47,7 +45,13 @@ public class NearestSpawnCommand
             return;
         }
 
-        var spawns = _spawnManager.GetSpawns((Bombsite)_showSpawnsCommand.ShowingSpawnsForBombsite);
+        if (_plugin.SpawnManager == null)
+        {
+            commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} Services not initialized.");
+            return;
+        }
+
+        var spawns = _plugin.SpawnManager.GetSpawns((Bombsite)_showSpawnsCommand.ShowingSpawnsForBombsite);
 
         if (spawns.Count == 0)
         {

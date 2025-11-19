@@ -26,6 +26,8 @@ public class MapConfigService
     {
         Logger.LogDebug("MapConfig", $"Attempting to load map data from {_mapConfigPath}");
 
+        _mapConfigData = null;
+
         try
         {
             if (!File.Exists(_mapConfigPath))
