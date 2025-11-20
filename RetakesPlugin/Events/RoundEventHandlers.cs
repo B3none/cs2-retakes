@@ -42,6 +42,8 @@ public class RoundEventHandlers
         _enableFallbackAllocation = enableFallbackAllocation;
         _enableFallbackBombsiteAnnouncement = enableFallbackBombsiteAnnouncement;
         _random = random;
+        
+        Logger.LogInfo("RoundEventHandlers", $"EnableFallbackAllocation inicializado a: {_enableFallbackAllocation}");
     }
 
     public void SetCommandReferences(ShowSpawnsCommand? showSpawnsCommand)
@@ -135,6 +137,8 @@ public class RoundEventHandlers
             return HookResult.Continue;
         }
 
+        Logger.LogDebug("Round", $"EnableFallbackAllocation: {_enableFallbackAllocation}");
+
         foreach (var player in _gameManager.QueueManager.ActivePlayers.Where(PlayerHelper.IsValid))
         {
             if (!PlayerHelper.IsValid(player))
@@ -152,7 +156,12 @@ public class RoundEventHandlers
 
             if (_enableFallbackAllocation)
             {
+                Logger.LogDebug("Round", $"Asignando armas a {player.PlayerName} (fallback allocation habilitado)");
                 _allocationService.AllocatePlayer(player);
+            }
+            else
+            {
+                Logger.LogDebug("Round", $"No asignando armas a {player.PlayerName} (fallback allocation deshabilitado)");
             }
         }
 
