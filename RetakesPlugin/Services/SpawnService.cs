@@ -20,6 +20,8 @@ public static class SpawnService
             return -1;
         }
 
+        ClearAllSpawnModels();
+
         spawns = spawns.Where(spawn => spawn.Bombsite == bombsite).ToList();
 
         foreach (var spawn in spawns)

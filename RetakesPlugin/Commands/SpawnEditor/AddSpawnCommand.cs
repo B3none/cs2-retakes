@@ -14,15 +14,11 @@ namespace RetakesPlugin.Commands.SpawnEditor;
 public class AddSpawnCommand
 {
     private readonly RetakesPlugin _plugin;
-    private readonly MapConfigService _mapConfigService;
-    private readonly SpawnManager _spawnManager;
     private readonly ShowSpawnsCommand _showSpawnsCommand;
 
-    public AddSpawnCommand(RetakesPlugin plugin, MapConfigService mapConfigService, SpawnManager spawnManager, ShowSpawnsCommand showSpawnsCommand)
+    public AddSpawnCommand(RetakesPlugin plugin, ShowSpawnsCommand showSpawnsCommand)
     {
         _plugin = plugin;
-        _mapConfigService = mapConfigService;
-        _spawnManager = spawnManager;
         _showSpawnsCommand = showSpawnsCommand;
     }
 
@@ -71,7 +67,13 @@ public class AddSpawnCommand
             return;
         }
 
-        var spawns = _spawnManager.GetSpawns((Bombsite)_showSpawnsCommand.ShowingSpawnsForBombsite);
+        if (_plugin.SpawnManager == null || _plugin.MapConfigService == null)
+        {
+            commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} Services not initialized.");
+            return;
+        }
+
+        var spawns = _plugin.SpawnManager.GetSpawns((Bombsite)_showSpawnsCommand.ShowingSpawnsForBombsite);
         var closestDistance = 9999.9;
 
         foreach (var spawn in spawns)
@@ -104,10 +106,10 @@ public class AddSpawnCommand
 
         SpawnService.ShowSpawn(newSpawn);
 
-        var didAddSpawn = _mapConfigService.AddSpawn(newSpawn);
+        var didAddSpawn = _plugin.MapConfigService.AddSpawn(newSpawn);
         if (didAddSpawn)
         {
-            _spawnManager.CalculateMapSpawns();
+            _plugin.SpawnManager.CalculateMapSpawns();
         }
 
         commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} {(didAddSpawn ? "Spawn added" : "Error adding spawn")}");

@@ -23,7 +23,6 @@ public class RoundEventHandlers
     private readonly bool _enableFallbackAllocation;
     private readonly bool _enableFallbackBombsiteAnnouncement;
     private readonly Random _random;
-    private readonly MapConfigService _mapConfigService;
     private ShowSpawnsCommand? _showSpawnsCommand;
 
     private Bombsite _currentBombsite = Bombsite.A;
@@ -31,7 +30,7 @@ public class RoundEventHandlers
     private CsTeam _lastRoundWinner = CsTeam.None;
     private Bombsite? _forcedBombsite;
 
-    public RoundEventHandlers(RetakesPlugin plugin, GameManager gameManager, SpawnManager spawnManager, BreakerManager? breakerManager, AllocationService allocationService, AnnouncementService announcementService, bool isAutoPlantEnabled, bool enableFallbackAllocation, bool enableFallbackBombsiteAnnouncement, Random random, MapConfigService mapConfigService)
+    public RoundEventHandlers(RetakesPlugin plugin, GameManager gameManager, SpawnManager spawnManager, BreakerManager? breakerManager, AllocationService allocationService, AnnouncementService announcementService, bool isAutoPlantEnabled, bool enableFallbackAllocation, bool enableFallbackBombsiteAnnouncement, Random random)
     {
         _plugin = plugin;
         _gameManager = gameManager;
@@ -43,7 +42,8 @@ public class RoundEventHandlers
         _enableFallbackAllocation = enableFallbackAllocation;
         _enableFallbackBombsiteAnnouncement = enableFallbackBombsiteAnnouncement;
         _random = random;
-        _mapConfigService = mapConfigService;
+        
+        Logger.LogInfo("RoundEventHandlers", $"EnableFallbackAllocation inicializado a: {_enableFallbackAllocation}");
     }
 
     public void SetCommandReferences(ShowSpawnsCommand? showSpawnsCommand)
@@ -91,9 +91,9 @@ public class RoundEventHandlers
         if (GameRulesHelper.GetGameRules().WarmupPeriod)
         {
             Logger.LogDebug("Round", "Warmup round, skipping.");
-            if (_showSpawnsCommand?.ShowingSpawnsForBombsite != null)
+            if (_showSpawnsCommand?.ShowingSpawnsForBombsite != null && _plugin.MapConfigService != null)
             {
-                SpawnService.ShowSpawns(null!, _mapConfigService.GetSpawnsClone(), _showSpawnsCommand.ShowingSpawnsForBombsite);
+                SpawnService.ShowSpawns(null!, _plugin.MapConfigService.GetSpawnsClone(), _showSpawnsCommand.ShowingSpawnsForBombsite);
                 Logger.LogDebug("Round", $"Re-showing spawns for bombsite {_showSpawnsCommand.ShowingSpawnsForBombsite}");
             }
 
@@ -137,6 +137,8 @@ public class RoundEventHandlers
             return HookResult.Continue;
         }
 
+        Logger.LogDebug("Round", $"EnableFallbackAllocation: {_enableFallbackAllocation}");
+
         foreach (var player in _gameManager.QueueManager.ActivePlayers.Where(PlayerHelper.IsValid))
         {
             if (!PlayerHelper.IsValid(player))
@@ -154,7 +156,12 @@ public class RoundEventHandlers
 
             if (_enableFallbackAllocation)
             {
+                Logger.LogDebug("Round", $"Asignando armas a {player.PlayerName} (fallback allocation habilitado)");
                 _allocationService.AllocatePlayer(player);
+            }
+            else
+            {
+                Logger.LogDebug("Round", $"No asignando armas a {player.PlayerName} (fallback allocation deshabilitado)");
             }
         }
 

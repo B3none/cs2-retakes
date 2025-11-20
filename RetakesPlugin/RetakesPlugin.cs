@@ -24,7 +24,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(345)]
 public class RetakesPlugin : BasePlugin, IPluginConfig<BaseConfigs>
 {
-    public const string Version = "3.0.0-beta";
+    public const string Version = "3.0.1-beta";
 
     #region Plugin Info
     public override string ModuleName => "Retakes Plugin";
@@ -55,6 +55,9 @@ public class RetakesPlugin : BasePlugin, IPluginConfig<BaseConfigs>
     private AnnouncementService? _announcementService;
     private RoundEventHandlers? _roundEventHandlers;
     private PlayerEventHandlers? _playerEventHandlers;
+
+    public MapConfigService? MapConfigService => _mapConfigService;
+    public SpawnManager? SpawnManager => _spawnManager;
     #endregion
 
     #region Commands
@@ -138,6 +141,8 @@ public class RetakesPlugin : BasePlugin, IPluginConfig<BaseConfigs>
     {
         Utils.Logger.LogInfo("MapStart", $"Map started: {mapName}");
 
+        SpawnService.ClearAllSpawnModels();
+
         AddTimer(1.0f, () =>
         {
             ServerHelper.ExecuteRetakesConfiguration(ModuleDirectory);
@@ -199,8 +204,7 @@ public class RetakesPlugin : BasePlugin, IPluginConfig<BaseConfigs>
                 Config.Bomb.IsAutoPlantEnabled,
                 Config.Game.EnableFallbackAllocation,
                 Config.MapConfig.EnableFallbackBombsiteAnnouncement,
-                _random,
-                _mapConfigService
+                _random
             );
 
             _playerEventHandlers = new PlayerEventHandlers(this, _gameManager, _hasMutedVoices);
@@ -219,11 +223,14 @@ public class RetakesPlugin : BasePlugin, IPluginConfig<BaseConfigs>
 
             _voicesCommand = new VoicesCommand(this, Config, _hasMutedVoices);
 
-            _showSpawnsCommand = new ShowSpawnsCommand(this, _mapConfigService);
-            _addSpawnCommand = new AddSpawnCommand(this, _mapConfigService, _spawnManager, _showSpawnsCommand);
-            _removeSpawnCommand = new RemoveSpawnCommand(this, _mapConfigService, _spawnManager, _showSpawnsCommand);
-            _nearestSpawnCommand = new NearestSpawnCommand(this, _spawnManager, _showSpawnsCommand);
+            _showSpawnsCommand = new ShowSpawnsCommand(this);
+            _addSpawnCommand = new AddSpawnCommand(this, _showSpawnsCommand);
+            _removeSpawnCommand = new RemoveSpawnCommand(this, _showSpawnsCommand);
+            _nearestSpawnCommand = new NearestSpawnCommand(this, _showSpawnsCommand);
             _hideSpawnsCommand = new HideSpawnsCommand(this, _showSpawnsCommand);
+
+            // Set command references in event handlers
+            _roundEventHandlers?.SetCommandReferences(_showSpawnsCommand);
 
             // Register all commands
             RegisterCommands();

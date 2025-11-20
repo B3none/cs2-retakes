@@ -13,15 +13,11 @@ namespace RetakesPlugin.Commands.SpawnEditor;
 public class RemoveSpawnCommand
 {
     private readonly RetakesPlugin _plugin;
-    private readonly MapConfigService _mapConfigService;
-    private readonly SpawnManager _spawnManager;
     private readonly ShowSpawnsCommand _showSpawnsCommand;
 
-    public RemoveSpawnCommand(RetakesPlugin plugin, MapConfigService mapConfigService, SpawnManager spawnManager, ShowSpawnsCommand showSpawnsCommand)
+    public RemoveSpawnCommand(RetakesPlugin plugin, ShowSpawnsCommand showSpawnsCommand)
     {
         _plugin = plugin;
-        _mapConfigService = mapConfigService;
-        _spawnManager = spawnManager;
         _showSpawnsCommand = showSpawnsCommand;
     }
 
@@ -49,7 +45,13 @@ public class RemoveSpawnCommand
             return;
         }
 
-        var spawns = _spawnManager.GetSpawns((Bombsite)_showSpawnsCommand.ShowingSpawnsForBombsite);
+        if (_plugin.SpawnManager == null || _plugin.MapConfigService == null)
+        {
+            commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} Services not initialized.");
+            return;
+        }
+
+        var spawns = _plugin.SpawnManager.GetSpawns((Bombsite)_showSpawnsCommand.ShowingSpawnsForBombsite);
 
         if (spawns.Count == 0)
         {
@@ -81,10 +83,10 @@ public class RemoveSpawnCommand
 
         SpawnService.RemoveSpawnBeam(closestSpawn);
 
-        var didRemoveSpawn = _mapConfigService.RemoveSpawn(closestSpawn);
+        var didRemoveSpawn = _plugin.MapConfigService.RemoveSpawn(closestSpawn);
         if (didRemoveSpawn)
         {
-            _spawnManager.CalculateMapSpawns();
+            _plugin.SpawnManager.CalculateMapSpawns();
         }
 
         commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} {(didRemoveSpawn ? "Spawn removed" : "Error removing spawn")}");

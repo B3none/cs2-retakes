@@ -12,13 +12,11 @@ namespace RetakesPlugin.Commands.SpawnEditor;
 public class ShowSpawnsCommand
 {
     private readonly RetakesPlugin _plugin;
-    private readonly MapConfigService _mapConfigService;
     private Bombsite? _showingSpawnsForBombsite;
 
-    public ShowSpawnsCommand(RetakesPlugin plugin, MapConfigService mapConfigService)
+    public ShowSpawnsCommand(RetakesPlugin plugin)
     {
         _plugin = plugin;
-        _mapConfigService = mapConfigService;
     }
 
     public Bombsite? ShowingSpawnsForBombsite => _showingSpawnsForBombsite;
@@ -62,9 +60,9 @@ public class ShowSpawnsCommand
 
         _plugin.AddTimer(1.0f, () =>
         {
-            if (_showingSpawnsForBombsite != null)
+            if (_showingSpawnsForBombsite != null && _plugin.MapConfigService != null)
             {
-                SpawnService.ShowSpawns(_plugin, _mapConfigService.GetSpawnsClone(), _showingSpawnsForBombsite);
+                SpawnService.ShowSpawns(_plugin, _plugin.MapConfigService.GetSpawnsClone(), _showingSpawnsForBombsite);
                 Logger.LogInfo("Commands", $"Spawns displayed for bombsite {_showingSpawnsForBombsite}");
             }
         });

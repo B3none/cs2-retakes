@@ -86,12 +86,6 @@ When the plugin is first loaded it will create a `retakes_config.json` file in t
 | EnableBombsiteAnnouncementCenter   | Whether to display the bombsite in the center announcement box.                                 | true    | false | true |
 | EnableFallbackBombsiteAnnouncement | Whether to enable the fallback bombsite announcement.                                           | true    | false | true |
 
-### BarrierSettings
-| Config             | Description                                                                                                          | Default | Min   | Max   |
-|--------------------|----------------------------------------------------------------------------------------------------------------------|---------|-------|-------|
-| IsBarrierEnabled   | Whether to enable the barrier system. Barriers are temporary walls that spawn at round start and disappear after a delay. | false   | false | true  |
-| BarrierRemoveDelay | Time in seconds after freeze time ends before barriers are removed. Barriers spawn at round start on the active bombsite. | 3.0     | 0     | 99999 |
-
 ### BombSettings
 | Config             | Description                                                         | Default | Min   | Max  |
 |--------------------|---------------------------------------------------------------------|---------|-------|------|
