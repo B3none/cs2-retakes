@@ -3,8 +3,8 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 
-using RetakesPlugin.Services;
 using RetakesPlugin.Utils;
+using RetakesPlugin.Services;
 using RetakesPluginShared.Enums;
 
 namespace RetakesPlugin.Commands.SpawnEditor;
@@ -33,7 +33,9 @@ public class ShowSpawnsCommand
             return;
         }
 
-        if (!AdminManager.PlayerHasPermissions(player, "@css/root"))
+        var commandName = commandInfo.GetArg(0);
+        var requiredPermission = PlayerHelper.GetCommandPermission(_plugin.Config, commandName, "SpawnEditor");
+        if (!AdminManager.PlayerHasPermissions(player, requiredPermission))
         {
             commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.no_permissions"]}");
             return;

@@ -204,4 +204,27 @@ public static class PlayerHelper
 
         return shuffledList;
     }
+
+    public static string GetCommandPermission(BaseConfigs config, string commandName, string category, string defaultPermission = "@css/root")
+    {
+        if (config?.Commands == null)
+        {
+            return defaultPermission;
+        }
+
+        Dictionary<string, string>? commandDict = category.ToLower() switch
+        {
+            "admin" => config.Commands.Admin,
+            "mapconfig" => config.Commands.MapConfig,
+            "spawneditor" => config.Commands.SpawnEditor,
+            _ => null
+        };
+
+        if (commandDict == null)
+        {
+            return defaultPermission;
+        }
+
+        return commandDict.TryGetValue(commandName, out var permission) && !string.IsNullOrWhiteSpace(permission) ? permission : defaultPermission;
+    }
 }

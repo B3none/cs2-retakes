@@ -20,6 +20,9 @@ public class BaseConfigs : BasePluginConfig
     [JsonPropertyName("BombSettings")]
     public BombSettings Bomb { get; set; } = new();
 
+    [JsonPropertyName("CommandsSettings")]
+    public CommandsSettings Commands { get; set; } = new();
+
     [JsonPropertyName("DebugSettings")]
     public DebugSettings Debug { get; set; } = new();
 

@@ -2,8 +2,8 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 
-using RetakesPlugin.Managers;
 using RetakesPlugin.Utils;
+using RetakesPlugin.Managers;
 
 namespace RetakesPlugin.Commands.Admin;
 
@@ -25,7 +25,9 @@ public class ScrambleCommand
             return;
         }
 
-        if (!AdminManager.PlayerHasPermissions(player, "@css/admin"))
+        var commandName = commandInfo.GetArg(0);
+        var requiredPermission = PlayerHelper.GetCommandPermission(_plugin.Config, commandName, "Admin", "@css/admin");
+        if (!AdminManager.PlayerHasPermissions(player, requiredPermission))
         {
             commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.no_permissions"]}");
             return;
