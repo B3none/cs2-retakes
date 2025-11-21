@@ -6,8 +6,8 @@
 
   "retakes.queue.joined": "Bekleme sırasına alındınız.",
   "retakes.queue.waiting": "Oyun şu anda {green}{0}{default} oyuncuyla dolu. Bekleme sırasındasınız.",
-  "retakes.queue.replaced_by_vip": "Yerinizi VIP oyuncu {green}{0}{default} aldı.",
-  "retakes.queue.vip_took_place": "Oyunda {green}{0}{default}'in yerini aldınız.",
+  "retakes.queue.replaced_by_vip": "Yerinizi {gold}{1}{default} oyuncu {green}{0}{default} aldı.",
+  "retakes.queue.vip_took_place": "Oyunda {green}{0}{default}'in yerini aldınız çünkü {gold}{1}{default} sınız.",
 
   "retakes.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} T{default} vs {purple}{2} AT",
   "retakes.voices.toggle": "{0} sesli duyurunuz var!",

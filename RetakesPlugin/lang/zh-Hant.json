@@ -6,8 +6,8 @@
 
   "retakes.queue.joined": "您已被放入等待佇列。",
   "retakes.queue.waiting": "遊戲目前已滿，共有{green}{0}{default}名玩家。您正在等待佇列中。",
-  "retakes.queue.replaced_by_vip": "您已經被VIP用戶{green}{0}{default}取代。",
-  "retakes.queue.vip_took_place": "您已經取代了{green}{0}{default}在遊戲中的位置。",
+  "retakes.queue.replaced_by_vip": "您已經被{gold}{1}{default}用戶{green}{0}{default}取代。",
+  "retakes.queue.vip_took_place": "您已經取代了{green}{0}{default}在遊戲中的位置，因為您是{gold}{1}{default}。",
 
   "retakes.bombsite.announcement": "回防{green}{0}{default}炸彈點：{lightred}{1}名恐怖份子{default}對陣{purple}{2}名反恐小组",
 

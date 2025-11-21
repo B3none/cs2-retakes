@@ -6,8 +6,8 @@
   
   "retakes.queue.joined": "Você foi colocado na fila de espera, aguarde a próxima rodada.",
   "retakes.queue.waiting": "Os times estão cheios no momento com {green}{0}{default} jogadores. Você está na fila de espera, aguarde!",
-  "retakes.queue.replaced_by_vip": "Você foi substituído pelo jogador VIP {green}{0}{default}.",
-  "retakes.queue.vip_took_place": "Você ocupou o lugar de {green}{0}{default} no jogo.",
+  "retakes.queue.replaced_by_vip": "Você foi substituído pelo jogador {gold}{1}{default} {green}{0}{default}.",
+  "retakes.queue.vip_took_place": "Você ocupou o lugar de {green}{0}{default} no jogo por ser {gold}{1}{default}.",
 
   "retakes.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} Ts{default} vs {purple}{2} CTs",
   "retakes.voices.toggle": "Você tem {0} anúncios de voz!",

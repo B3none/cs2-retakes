@@ -6,8 +6,8 @@
 
   "retakes.queue.joined": "لقد تم وضعك في قائمة الانتظار.",
   "retakes.queue.waiting": "اللعبة ممتلئة حالياً ب{green}{0}{default} لاعبين. أنت في قائمة الانتظار.",
-  "retakes.queue.replaced_by_vip": "لقد تم استبدالك بلاعب VIP {green}{0}{default}.",
-  "retakes.queue.vip_took_place": "لقد أخذت مكان {green}{0}{default} في اللعبة.",
+  "retakes.queue.replaced_by_vip": "لقد تم استبدالك بلاعب {gold}{1}{default} {green}{0}{default}.",
+  "retakes.queue.vip_took_place": "لقد أخذت مكان {green}{0}{default} في اللعبة لأنك {gold}{1}{default}.",
 
   "retakes.bombsite.announcement": "إعادة الاستيلاء على {green}{0}{default}: {lightred}{1} من الإرهابيين{default} مقابل {purple}{2} من قوات مكافحة الإرهاب",
   "retakes.voices.toggle": "لديك {0} الإعلانات الصوتية!",

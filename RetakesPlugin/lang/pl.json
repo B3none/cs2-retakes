@@ -6,8 +6,8 @@
 
   "retakes.queue.joined": "Zostałeś dodany do kolejki.",
   "retakes.queue.waiting": "Gra jest pełna z {green}{0}{default} graczami. Jesteś aktualnie w kolejce.",
-  "retakes.queue.replaced_by_vip": "Zostałeś zastąpiony przez gracza VIP {green}{0}{default}.",
-  "retakes.queue.vip_took_place": "Zająłeś miejsce {green}{0}{default} w grze.",
+  "retakes.queue.replaced_by_vip": "Zostałeś zastąpiony przez gracza {gold}{1}{default} {green}{0}{default}.",
+  "retakes.queue.vip_took_place": "Zająłeś miejsce {green}{0}{default} w grze, ponieważ jesteś {gold}{1}{default}.",
 
   "retakes.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} Ts{default} vs {purple}{2} CTs",
   "retakes.voices.toggle": "Masz {0} głosowe ogłoszenia!",
