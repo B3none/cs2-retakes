@@ -24,7 +24,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(345)]
 public class RetakesPlugin : BasePlugin, IPluginConfig<BaseConfigs>
 {
-    public const string Version = "3.0.1-beta";
+    public const string Version = "3.0.2-beta";
 
     #region Plugin Info
     public override string ModuleName => "Retakes Plugin";
@@ -169,8 +169,8 @@ public class RetakesPlugin : BasePlugin, IPluginConfig<BaseConfigs>
                     this,
                     Config.Game.MaxPlayers,
                     Config.Team.TerroristRatio,
-                    Config.Queue.QueuePriorityFlag,
-                    Config.Queue.QueueImmunityFlag,
+                    Config.Queue.GetPriorityFlags(),
+                    Config.Queue.GetImmunityFlags(),
                     Config.Team.ShouldForceEvenTeamsWhenPlayerCountIsMultipleOf10,
                     Config.Team.ShouldPreventTeamChangesMidRound
                 ),
