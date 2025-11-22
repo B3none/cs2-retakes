@@ -5,6 +5,8 @@ using CounterStrikeSharp.API.Modules.Entities.Constants;
 using CounterStrikeSharp.API.Modules.Utils;
 using System.Diagnostics.CodeAnalysis;
 
+using RetakesPlugin.Configs;
+
 namespace RetakesPlugin.Utils;
 
 public static class PlayerHelper
@@ -83,6 +85,81 @@ public static class PlayerHelper
         return PlayerHasAnyQueuePermission(player, queueImmunityFlags);
     }
 
+    public static int GetQueuePriority(CCSPlayerController player, List<QueuePriorityFlagConfig> priorityFlags)
+    {
+        int maxPriority = int.MinValue;
+        bool hasAnyPriority = false;
+
+        foreach (var priorityFlag in priorityFlags)
+        {
+            if (string.IsNullOrWhiteSpace(priorityFlag.Flag))
+            {
+                continue;
+            }
+
+            if (AdminManager.PlayerHasPermissions(player, priorityFlag.Flag))
+            {
+                hasAnyPriority = true;
+                if (priorityFlag.Priority > maxPriority)
+                {
+                    maxPriority = priorityFlag.Priority;
+                }
+            }
+        }
+
+        return hasAnyPriority ? maxPriority : int.MinValue;
+    }
+
+    public static int GetQueueImmunityPriority(CCSPlayerController player, List<QueuePriorityFlagConfig> immunityFlags)
+    {
+        int maxPriority = int.MinValue;
+        bool hasAnyImmunity = false;
+
+        foreach (var immunityFlag in immunityFlags)
+        {
+            if (string.IsNullOrWhiteSpace(immunityFlag.Flag))
+            {
+                continue;
+            }
+
+            if (AdminManager.PlayerHasPermissions(player, immunityFlag.Flag))
+            {
+                hasAnyImmunity = true;
+                if (immunityFlag.Priority > maxPriority)
+                {
+                    maxPriority = immunityFlag.Priority;
+                }
+            }
+        }
+
+        return hasAnyImmunity ? maxPriority : int.MinValue;
+    }
+
+    public static string GetQueuePriorityDisplayName(CCSPlayerController player, List<QueuePriorityFlagConfig> priorityFlags)
+    {
+        int maxPriority = int.MinValue;
+        string? displayName = null;
+
+        foreach (var priorityFlag in priorityFlags)
+        {
+            if (string.IsNullOrWhiteSpace(priorityFlag.Flag))
+            {
+                continue;
+            }
+
+            if (AdminManager.PlayerHasPermissions(player, priorityFlag.Flag))
+            {
+                if (priorityFlag.Priority > maxPriority)
+                {
+                    maxPriority = priorityFlag.Priority;
+                    displayName = string.IsNullOrWhiteSpace(priorityFlag.DisplayName) ? "VIP" : priorityFlag.DisplayName;
+                }
+            }
+        }
+
+        return displayName ?? "VIP";
+    }
+
     public static bool HasAdminPermission(CCSPlayerController? player, params string[] permissionFlags)
     {
         if (player == null)
@@ -126,5 +203,28 @@ public static class PlayerHelper
         }
 
         return shuffledList;
+    }
+
+    public static string GetCommandPermission(BaseConfigs config, string commandName, string category, string defaultPermission = "@css/root")
+    {
+        if (config?.Commands == null)
+        {
+            return defaultPermission;
+        }
+
+        Dictionary<string, string>? commandDict = category.ToLower() switch
+        {
+            "admin" => config.Commands.Admin,
+            "mapconfig" => config.Commands.MapConfig,
+            "spawneditor" => config.Commands.SpawnEditor,
+            _ => null
+        };
+
+        if (commandDict == null)
+        {
+            return defaultPermission;
+        }
+
+        return commandDict.TryGetValue(commandName, out var permission) && !string.IsNullOrWhiteSpace(permission) ? permission : defaultPermission;
     }
 }

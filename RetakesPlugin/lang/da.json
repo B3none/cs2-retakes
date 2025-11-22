@@ -6,8 +6,8 @@
 
   "retakes.queue.joined": "Du er blevet placeret i køen.",
   "retakes.queue.waiting": "Dette spil er fuldt med {green}{0}{default} spillere. Du er blevet placeret i køen.",
-  "retakes.queue.replaced_by_vip": "Du er blevet erstattet af VIP-spilleren {green}{0}{default}.",
-  "retakes.queue.vip_took_place": "Du har taget {green}{0}{default}s plads i spillet.",
+  "retakes.queue.replaced_by_vip": "Du er blevet erstattet af {gold}{1}{default}-spilleren {green}{0}{default}.",
+  "retakes.queue.vip_took_place": "Du har taget {green}{0}{default}s plads i spillet, fordi du er {gold}{1}{default}.",
 
   "retakes.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} T'er{default} mod {purple}{2} CT'er",
   "retakes.voices.toggle": "Du har {0} stemmeannonceringer!",

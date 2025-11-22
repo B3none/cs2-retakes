@@ -2,8 +2,8 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Admin;
 using CounterStrikeSharp.API.Modules.Commands;
 
-using RetakesPlugin.Events;
 using RetakesPlugin.Utils;
+using RetakesPlugin.Events;
 
 namespace RetakesPlugin.Commands.Admin;
 
@@ -25,7 +25,8 @@ public class ForceBombsiteStopCommand
             return;
         }
 
-        if (!AdminManager.PlayerHasPermissions(player, "@css/root"))
+        var requiredPermission = PlayerHelper.GetCommandPermission(_plugin.Config, "css_forcebombsitestop", "Admin");
+        if (!AdminManager.PlayerHasPermissions(player, requiredPermission))
         {
             commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.no_permissions"]}");
             return;

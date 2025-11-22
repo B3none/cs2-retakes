@@ -6,8 +6,8 @@
 
   "retakes.queue.joined": "Bạn đã được đưa vào hàng chờ.",
   "retakes.queue.waiting": "Trận đấu hiện đã đầy với {green}{0}{default} người chơi. Bạn đang trong hàng chờ.",
-  "retakes.queue.replaced_by_vip": "Bạn đã bị thay thế bởi VIP {green}{0}{default}.",
-  "retakes.queue.vip_took_place": "Bạn đã lấy chỗ của {green}{0}{default} trong trận.",
+  "retakes.queue.replaced_by_vip": "Bạn đã bị thay thế bởi {gold}{1}{default} {green}{0}{default}.",
+  "retakes.queue.vip_took_place": "Bạn đã lấy chỗ của {green}{0}{default} trong trận vì bạn là {gold}{1}{default}.",
 
   "retakes.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} T{default} vs {purple}{2} CT",
   "retakes.voices.toggle": "Bạn đã {0} thông báo bằng giọng nói!",

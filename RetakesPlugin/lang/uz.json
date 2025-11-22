@@ -6,8 +6,8 @@
   
   "retakes.queue.joined": "Siz kutish navbatiga qo‘shildingiz.",
   "retakes.queue.waiting": "O‘yin hozirda {green}{0}{default} o‘yinchilar bilan to‘la. Siz kutish navbatidasiz.",
-  "retakes.queue.replaced_by_vip": "Siz vip o‘yinchi {green}{0}{default} bilan almashtirildingiz.",
-  "retakes.queue.vip_took_place": "Siz {green}{0}{default}ning o‘rniga o‘yinga kirdingiz.",
+  "retakes.queue.replaced_by_vip": "Siz {gold}{1}{default} o'yinchi {green}{0}{default} bilan almashtirildingiz.",
+  "retakes.queue.vip_took_place": "Siz {green}{0}{default}ning o'rniga o'yinga kirdingiz, chunki siz {gold}{1}{default} siz.",
 
   "retakes.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} Tlar{default} va [BLUE]{2} KTlar",
   "retakes.voices.toggle": "Siz ovozli e‘lonlarni {0}!",

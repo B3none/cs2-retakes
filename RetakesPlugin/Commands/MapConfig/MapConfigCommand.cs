@@ -26,7 +26,9 @@ public class MapConfigCommand
             return;
         }
 
-        if (!AdminManager.PlayerHasPermissions(player, "@css/root"))
+        var commandName = commandInfo.GetArg(0);
+        var requiredPermission = PlayerHelper.GetCommandPermission(_plugin.Config, commandName, "MapConfig");
+        if (!AdminManager.PlayerHasPermissions(player, requiredPermission))
         {
             commandInfo.ReplyToCommand($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.no_permissions"]}");
             return;

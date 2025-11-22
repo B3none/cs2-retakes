@@ -2,6 +2,7 @@ using CounterStrikeSharp.API.Core;
 using CounterStrikeSharp.API.Modules.Utils;
 
 using RetakesPlugin.Utils;
+using RetakesPlugin.Configs;
 
 namespace RetakesPlugin.Managers;
 
@@ -10,28 +11,22 @@ public class QueueManager
     private readonly RetakesPlugin _plugin;
     private readonly int _maxRetakesPlayers;
     private readonly float _terroristRatio;
-    private readonly string[] _queuePriorityFlags;
-    private readonly string[] _queueImmunityFlags;
+    private readonly List<QueuePriorityFlagConfig> _queuePriorityFlags;
+    private readonly List<QueuePriorityFlagConfig> _queueImmunityFlags;
     private readonly bool _shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10;
     private readonly bool _shouldPreventTeamChangesMidRound;
 
     public HashSet<CCSPlayerController> QueuePlayers = [];
     public HashSet<CCSPlayerController> ActivePlayers = [];
 
-    public QueueManager(RetakesPlugin plugin, int? retakesMaxPlayers, float? retakesTerroristRatio, string? queuePriorityFlags, string? queueImmunityFlags, bool? shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10, bool? shouldPreventTeamChangesMidRound)
+    public QueueManager(RetakesPlugin plugin, int? retakesMaxPlayers, float? retakesTerroristRatio, List<QueuePriorityFlagConfig>? queuePriorityFlags, List<QueuePriorityFlagConfig>? queueImmunityFlags, bool? shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10, bool? shouldPreventTeamChangesMidRound)
     {
         _plugin = plugin;
         _maxRetakesPlayers = retakesMaxPlayers ?? 9;
         _terroristRatio = retakesTerroristRatio ?? 0.45f;
-        _queuePriorityFlags = ParseFlags(queuePriorityFlags);
 
-        if (_queuePriorityFlags.Length == 0)
-        {
-            _queuePriorityFlags = ["@css/vip"];
-        }
-
-        var parsedImmunityFlags = ParseFlags(queueImmunityFlags);
-        _queueImmunityFlags = parsedImmunityFlags.Length > 0 ? parsedImmunityFlags : _queuePriorityFlags;
+        _queuePriorityFlags = queuePriorityFlags ?? new List<QueuePriorityFlagConfig>();
+        _queueImmunityFlags = queueImmunityFlags ?? new List<QueuePriorityFlagConfig>();
 
         _shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 = shouldForceEvenTeamsWhenPlayerCountIsMultipleOf10 ?? true;
         _shouldPreventTeamChangesMidRound = shouldPreventTeamChangesMidRound ?? true;
@@ -74,7 +69,8 @@ public class QueueManager
                 return HookResult.Continue;
             }
 
-            if (!_shouldPreventTeamChangesMidRound || GameRulesHelper.GetGameRules().WarmupPeriod)
+            var gameRules = GameRulesHelper.GetGameRulesOrNull();
+            if (!_shouldPreventTeamChangesMidRound || (gameRules?.WarmupPeriod ?? false))
             {
                 return HookResult.Continue;
             }
@@ -107,7 +103,8 @@ public class QueueManager
 
         if (!QueuePlayers.Contains(player))
         {
-            if (GameRulesHelper.GetGameRules().WarmupPeriod && ActivePlayers.Count < _maxRetakesPlayers)
+            var gameRules = GameRulesHelper.GetGameRulesOrNull();
+            if ((gameRules?.WarmupPeriod ?? false) && ActivePlayers.Count < _maxRetakesPlayers)
             {
                 Logger.LogInfo("QueueManager", $"[{player.PlayerName}] Added to active players (warmup)");
                 ActivePlayers.Add(player);
@@ -153,47 +150,70 @@ public class QueueManager
             return;
         }
 
-        var vipQueuePlayers = QueuePlayers
-            .Where(player => PlayerHelper.HasQueuePriority(player, _queuePriorityFlags))
+        var queuePlayersWithPriority = QueuePlayers
+            .Where(PlayerHelper.IsValid)
+            .Select(player => new
+            {
+                Player = player,
+                Priority = PlayerHelper.GetQueuePriority(player, _queuePriorityFlags)
+            })
+            .Where(x => x.Priority > int.MinValue)
+            .OrderByDescending(x => x.Priority)
+            .ThenBy(x => x.Player.Slot)
             .ToList();
 
-        if (vipQueuePlayers.Count <= 0)
+        if (queuePlayersWithPriority.Count <= 0)
         {
             return;
         }
 
-        foreach (var vipQueuePlayer in vipQueuePlayers)
+        foreach (var queuePlayerData in queuePlayersWithPriority)
         {
-            if (!PlayerHelper.IsValid(vipQueuePlayer))
+            var queuePlayer = queuePlayerData.Player;
+            var queuePlayerPriority = queuePlayerData.Priority;
+
+            if (!PlayerHelper.IsValid(queuePlayer))
             {
                 continue;
             }
 
-            // Remove newest non-VIP players first (by highest slot number)
             var replaceablePlayers = ActivePlayers
-                    .Where(player => !PlayerHelper.HasQueuePriority(player, _queuePriorityFlags))
-                    .OrderByDescending(player => player.Slot)
-                    .ToList();
+                .Where(PlayerHelper.IsValid)
+                .Select(player => new
+                {
+                    Player = player,
+                    Priority = PlayerHelper.GetQueuePriority(player, _queuePriorityFlags),
+                    ImmunityPriority = PlayerHelper.GetQueueImmunityPriority(player, _queueImmunityFlags)
+                })
+                .Where(x =>
+                    x.Priority < queuePlayerPriority &&
+                    x.ImmunityPriority < queuePlayerPriority)
+                .OrderBy(x => x.Priority)
+                .ThenByDescending(x => x.Player.Slot)
+                .ToList();
 
             if (replaceablePlayers.Count == 0)
             {
-                Logger.LogDebug("QueueManager", "No replaceable players found");
-                break;
+                Logger.LogDebug("QueueManager", $"No replaceable players found for {queuePlayer.PlayerName} (priority: {queuePlayerPriority})");
+                continue;
             }
 
-            var replaceablePlayer = replaceablePlayers.First();
+            var replaceablePlayerData = replaceablePlayers.First();
+            var replaceablePlayer = replaceablePlayerData.Player;
+
+            var queuePlayerDisplayName = PlayerHelper.GetQueuePriorityDisplayName(queuePlayer, _queuePriorityFlags);
 
             replaceablePlayer.ChangeTeam(CsTeam.Spectator);
             ActivePlayers.Remove(replaceablePlayer);
             QueuePlayers.Add(replaceablePlayer);
-            replaceablePlayer.PrintToChat($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.queue.replaced_by_vip", vipQueuePlayer.PlayerName]}");
+            replaceablePlayer.PrintToChat($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.queue.replaced_by_vip", queuePlayer.PlayerName, queuePlayerDisplayName]}");
 
-            ActivePlayers.Add(vipQueuePlayer);
-            QueuePlayers.Remove(vipQueuePlayer);
-            vipQueuePlayer.ChangeTeam(CsTeam.CounterTerrorist);
-            vipQueuePlayer.PrintToChat($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.queue.vip_took_place", replaceablePlayer.PlayerName]}");
+            ActivePlayers.Add(queuePlayer);
+            QueuePlayers.Remove(queuePlayer);
+            queuePlayer.ChangeTeam(CsTeam.CounterTerrorist);
+            queuePlayer.PrintToChat($"{_plugin.Localizer["retakes.prefix"]} {_plugin.Localizer["retakes.queue.vip_took_place", replaceablePlayer.PlayerName, queuePlayerDisplayName]}");
 
-            Logger.LogInfo("QueueManager", $"VIP {vipQueuePlayer.PlayerName} replaced {replaceablePlayer.PlayerName}");
+            Logger.LogInfo("QueueManager", $"{queuePlayer.PlayerName} ({queuePlayerDisplayName}, priority: {queuePlayerPriority}) replaced {replaceablePlayer.PlayerName} (priority: {replaceablePlayerData.Priority})");
         }
     }
 
@@ -206,11 +226,17 @@ public class QueueManager
         var playersToAdd = _maxRetakesPlayers - ActivePlayers.Count;
         if (playersToAdd > 0 && QueuePlayers.Count > 0)
         {
-            // Prioritize players with queue priority flag, then by join order (player slot)
             var playersToAddList = QueuePlayers
-                .OrderBy(player => PlayerHelper.HasQueuePriority(player, _queuePriorityFlags) ? 0 : 1)
-                .ThenBy(player => player.Slot)
+                .Where(PlayerHelper.IsValid)
+                .Select(player => new
+                {
+                    Player = player,
+                    Priority = PlayerHelper.GetQueuePriority(player, _queuePriorityFlags)
+                })
+                .OrderByDescending(x => x.Priority)
+                .ThenBy(x => x.Player.Slot)
                 .Take(playersToAdd)
+                .Select(x => x.Player)
                 .ToList();
 
             QueuePlayers.RemoveWhere(playersToAddList.Contains);
@@ -243,20 +269,6 @@ public class QueueManager
                 player.PrintToChat($"{_plugin.Localizer["retakes.prefix"]} {waitingMessage}");
             }
         }
-    }
-
-    private static string[] ParseFlags(string? rawFlags)
-    {
-        if (string.IsNullOrWhiteSpace(rawFlags))
-        {
-            return Array.Empty<string>();
-        }
-
-        return rawFlags
-            .Split(",", StringSplitOptions.RemoveEmptyEntries)
-            .Select(flag => flag.Trim())
-            .Where(flag => !string.IsNullOrWhiteSpace(flag))
-            .ToArray();
     }
 
     public void RemovePlayerFromQueues(CCSPlayerController player)
