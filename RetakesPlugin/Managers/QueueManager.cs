@@ -69,7 +69,8 @@ public class QueueManager
                 return HookResult.Continue;
             }
 
-            if (!_shouldPreventTeamChangesMidRound || GameRulesHelper.GetGameRules().WarmupPeriod)
+            var gameRules = GameRulesHelper.GetGameRulesOrNull();
+            if (!_shouldPreventTeamChangesMidRound || (gameRules?.WarmupPeriod ?? false))
             {
                 return HookResult.Continue;
             }
@@ -102,7 +103,8 @@ public class QueueManager
 
         if (!QueuePlayers.Contains(player))
         {
-            if (GameRulesHelper.GetGameRules().WarmupPeriod && ActivePlayers.Count < _maxRetakesPlayers)
+            var gameRules = GameRulesHelper.GetGameRulesOrNull();
+            if ((gameRules?.WarmupPeriod ?? false) && ActivePlayers.Count < _maxRetakesPlayers)
             {
                 Logger.LogInfo("QueueManager", $"[{player.PlayerName}] Added to active players (warmup)");
                 ActivePlayers.Add(player);

@@ -58,7 +58,14 @@ public class RoundEventHandlers
 
     public HookResult OnRoundPreStart(EventRoundPrestart @event, GameEventInfo info)
     {
-        if (GameRulesHelper.GetGameRules().WarmupPeriod)
+        var gameRules = GameRulesHelper.GetGameRulesOrNull();
+        if (gameRules == null)
+        {
+            Logger.LogDebug("Round", "Game rules not available yet, skipping pre-start logic");
+            return HookResult.Continue;
+        }
+
+        if (gameRules.WarmupPeriod)
         {
             Logger.LogDebug("Round", "Warmup round, skipping pre-start logic");
             return HookResult.Continue;
@@ -88,7 +95,14 @@ public class RoundEventHandlers
             weirdAliveSpectator.CommitSuicide(false, true);
         }
 
-        if (GameRulesHelper.GetGameRules().WarmupPeriod)
+        var gameRules = GameRulesHelper.GetGameRulesOrNull();
+        if (gameRules == null)
+        {
+            Logger.LogDebug("Round", "Game rules not available yet, skipping round start logic");
+            return HookResult.Continue;
+        }
+
+        if (gameRules.WarmupPeriod)
         {
             Logger.LogDebug("Round", "Warmup round, skipping.");
             if (_showSpawnsCommand?.ShowingSpawnsForBombsite != null && _plugin.MapConfigService != null)
@@ -131,7 +145,14 @@ public class RoundEventHandlers
 
     public HookResult OnRoundPostStart(EventRoundPoststart @event, GameEventInfo info)
     {
-        if (GameRulesHelper.GetGameRules().WarmupPeriod)
+        var gameRules = GameRulesHelper.GetGameRulesOrNull();
+        if (gameRules == null)
+        {
+            Logger.LogDebug("Round", "Game rules not available yet, skipping post-start logic");
+            return HookResult.Continue;
+        }
+
+        if (gameRules.WarmupPeriod)
         {
             Logger.LogDebug("Round", "Warmup round, skipping post-start logic");
             return HookResult.Continue;
@@ -173,7 +194,14 @@ public class RoundEventHandlers
 
     public HookResult OnRoundFreezeEnd(EventRoundFreezeEnd @event, GameEventInfo info)
     {
-        if (GameRulesHelper.GetGameRules().WarmupPeriod)
+        var gameRules = GameRulesHelper.GetGameRulesOrNull();
+        if (gameRules == null)
+        {
+            Logger.LogDebug("Round", "Game rules not available yet, skipping freeze end logic");
+            return HookResult.Continue;
+        }
+
+        if (gameRules.WarmupPeriod)
         {
             Logger.LogDebug("Round", "Warmup round, skipping freeze end logic");
             return HookResult.Continue;
