@@ -65,9 +65,45 @@ When the plugin is first loaded it will create a `retakes_config.json` file in t
 ### QueueSettings
 | Config                 | Description                                                                                                   | Default  | Min | Max |
 |------------------------|---------------------------------------------------------------------------------------------------------------|----------|-----|-----|
-| QueuePriorityFlag      | A comma separated list of CSS flags for queue priority.                                                       | @css/vip | n/a | n/a |
-| QueueImmunityFlag      | A comma separated list of CSS flags for queue immunity (prevents being moved to spectator).                   | @css/vip | n/a | n/a |
+| QueuePriorityFlag      | A list of priority flag configurations. Each entry contains DisplayName, Flag, and Priority. Players with higher priority can replace players with lower priority in the queue. | `[{"DisplayName": "VIP", "Flag": "@css/vip", "Priority": 0}]` | 0 | 100 |
+| QueueImmunityFlag      | A list of immunity flag configurations. Each entry contains DisplayName, Flag, and Priority. Players with immunity priority cannot be replaced by players with equal or lower priority. | `[{"DisplayName": "VIP", "Flag": "@css/vip", "Priority": 0}]` | 0 | 100 |
 | ShouldRemoveSpectators | When a player is moved to spectators, remove them from all retake queues. Ensures that AFK plugins work as expected. | true     | false | true |
+
+**QueuePriorityFlag and QueueImmunityFlag Configuration:**
+Each flag configuration object has the following properties:
+- **DisplayName**: The display name shown in messages (e.g., "VIP", "VIP Plus")
+- **Flag**: The CSS permission flag (e.g., "@css/vip", "@css/vipplus")
+- **Priority**: The priority value (higher numbers = higher priority). Valid range: 0-100
+
+**Example Configuration:**
+```json
+{
+  "QueuePriorityFlag": [
+    {"DisplayName": "VIP", "Flag": "@css/vip", "Priority": 0},
+    {"DisplayName": "VIP Plus", "Flag": "@css/vipplus", "Priority": 100}
+  ],
+  "QueueImmunityFlag": [
+    {"DisplayName": "VIP", "Flag": "@css/vip", "Priority": 0},
+    {"DisplayName": "VIP Plus", "Flag": "@css/vipplus", "Priority": 100}
+  ]
+}
+```
+
+In this example:
+- Players with `@css/vip` have priority 0
+- Players with `@css/vipplus` have priority 100
+- VIP Plus players can replace VIP players and regular players
+- VIP players can replace regular players but not VIP Plus players
+- Immunity works the same way: players with higher immunity priority cannot be replaced by players with equal or lower priority
+
+**Example: Disabling Slot Priority and Immunity:**
+To disable slot priority and immunity features, set both arrays to empty:
+```json
+{
+  "QueuePriorityFlag": [],
+  "QueueImmunityFlag": []
+}
+```
 
 ### TeamSettings
 | Config                                            | Description                                                                                                                                     | Default | Min   | Max   |

@@ -7,14 +7,26 @@ namespace RetakesPlugin.Utils;
 
 public static class GameRulesHelper
 {
-    public static CCSGameRules GetGameRules()
+    public static CCSGameRules? GetGameRulesOrNull()
     {
         var gameRulesEntities = Utilities.FindAllEntitiesByDesignerName<CCSGameRulesProxy>("cs_gamerules");
-        var gameRules = gameRulesEntities.First().GameRules;
+        var gameRulesProxy = gameRulesEntities.FirstOrDefault();
+
+        if (gameRulesProxy == null)
+        {
+            return null;
+        }
+
+        return gameRulesProxy.GameRules;
+    }
+
+    public static CCSGameRules GetGameRules()
+    {
+        var gameRules = GetGameRulesOrNull();
 
         if (gameRules == null)
         {
-            throw new Exception("Game rules not found!");
+            throw new InvalidOperationException("Game rules are not available yet. The server may still be initializing.");
         }
 
         return gameRules;
