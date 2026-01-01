@@ -1,4 +1,4 @@
-﻿namespace RetakesPlugin.Modules.Configs;
+namespace RetakesPlugin.Models;
 
 public class MapConfigData
 {
