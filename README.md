@@ -51,6 +51,8 @@ Although this plugin comes with it's own weapon allocation system, I would recom
 - NokkviReyr's Allocator: https://github.com/nokkvireyr/kps-allocator
 - Ravid's Allocator: https://github.com/Ravid-A/cs2-retakes-weapon-allocator
 
+If you'd like to add your own allocator here, make a PR to add it :+1:
+
 ## Configuration
 When the plugin is first loaded it will create a `retakes_config.json` file in the plugin directory. This file contains all of the configuration options for the plugin:
 
