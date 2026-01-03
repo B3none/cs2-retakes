@@ -12,19 +12,19 @@ public class PlayerScore
     public void AddKill()
     {
         Kills++;
-        Score += 50; // ScoreForKill
+        Score += 50;
     }
 
     public void AddAssist()
     {
         Assists++;
-        Score += 25; // ScoreForAssist
+        Score += 25;
     }
 
     public void AddDefuse()
     {
         Defuses++;
-        Score += 50; // ScoreForDefuse
+        Score += 50;
     }
 
     public void AddScore(int points)
