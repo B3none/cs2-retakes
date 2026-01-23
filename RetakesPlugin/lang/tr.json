@@ -10,6 +10,7 @@
   "retakes.queue.vip_took_place": "Oyunda {green}{0}{default}'in yerini aldınız çünkü {gold}{1}{default} sınız.",
 
   "retakes.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} T{default} vs {purple}{2} AT",
+  "retakes.center.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} T{default} vs {purple}{2} AT",
   "retakes.voices.toggle": "{0} sesli duyurunuz var!",
 
   "retakes.teams.scramble": "Teröristler {green}{0}{default} round arka arkaya kazandı. {purple}Takımlar karıştırılıyor!",

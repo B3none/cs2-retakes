@@ -10,6 +10,7 @@
   "retakes.queue.vip_took_place": "Olet ottanut pelaajan {green}{0}{default} paikan pelissä, koska olet {gold}{1}{default}.",
 
   "retakes.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} Ts{default} vs {purple}{2} CTs",
+  "retakes.center.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} Ts{default} vs {purple}{2} CTs",
   "retakes.voices.toggle": "Sinulla on {0} äänitiedotukset!",
 
   "retakes.teams.scramble": "Terot ovat voittaneet {green}{0}{default} kierrosta putkeen. {purple}Tiimit sekoitetaan!",

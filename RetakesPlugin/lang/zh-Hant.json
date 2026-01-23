@@ -10,6 +10,8 @@
   "retakes.queue.vip_took_place": "您已經取代了{green}{0}{default}在遊戲中的位置，因為您是{gold}{1}{default}。",
 
   "retakes.bombsite.announcement": "回防{green}{0}{default}炸彈點：{lightred}{1}名恐怖份子{default}對陣{purple}{2}名反恐小组",
+  "retakes.center.bombsite.announcement": "回防{green}{0}{default}炸彈點：{lightred}{1}名恐怖份子{default}對陣{purple}{2}名反恐小组",
+  "retakes.voices.toggle": "您已經{0}語音播報！",
 
   "retakes.teams.scramble": "T連續贏得{green}{0}{default}個回合。{purple}正在重新打亂隊伍！",
   "retakes.teams.almost_scramble": "T連續贏得{green}{0}{default}個回合 - 如果他們再贏{green}{1}個回合，{purple}將重新打亂隊伍。",

@@ -10,6 +10,7 @@
   "retakes.queue.vip_took_place": "Vous avez pris la place de {green}{0}{default} dans le jeu pour être {gold}{1}{default}.",
 
   "retakes.bombsite.announcement": "Reprise {green}{0}{default}: {lightred}{1} Terroristes{default} contre {purple}{2} CTs",
+  "retakes.center.bombsite.announcement": "Reprise {green}{0}{default}: {lightred}{1} Terroristes{default} contre {purple}{2} CTs",
   "retakes.voices.toggle": "Vous avez {0} les annonces vocales!",
 
   "retakes.teams.scramble": "Les terroristes ont gagné {green}{0}{default} tours d'affilée. {purple}Mélange des équipes en cours !",

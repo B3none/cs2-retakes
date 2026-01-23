@@ -10,6 +10,7 @@
   "retakes.queue.vip_took_place": "Вы заняли место {green}{0}{default} в игре, так как вы {gold}{1}{default}.",
 
   "retakes.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} T{default} против {purple}{2} CT",
+  "retakes.center.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} T{default} против {purple}{2} CT",
   "retakes.voices.toggle": "У вас {0} голосовые объявления!",
 
   "retakes.teams.scramble": "Террористы выиграли {green}{0}{default} раундов подряд. {purple}Команды были перемешаны!",
