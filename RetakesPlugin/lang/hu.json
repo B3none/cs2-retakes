@@ -10,6 +10,7 @@
   "retakes.queue.vip_took_place": "Átvetted {green}{0}{default} helyét a játékban, mert {gold}{1}{default} vagy.",
 
   "retakes.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} T-k{default} vs {purple}{2} TE-k",
+  "retakes.center.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} T-k{default} vs {purple}{2} TE-k",
   "retakes.voices.toggle": "{0} hangos bejelentéseid vannak!",
 
   "retakes.teams.scramble": "Terroristák {green}{0}{default} kört nyertek egymás után. {purple}A csapatok össze lettek keverve!",

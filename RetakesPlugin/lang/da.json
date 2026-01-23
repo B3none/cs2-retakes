@@ -10,6 +10,7 @@
   "retakes.queue.vip_took_place": "Du har taget {green}{0}{default}s plads i spillet, fordi du er {gold}{1}{default}.",
 
   "retakes.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} T'er{default} mod {purple}{2} CT'er",
+  "retakes.center.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} T'er{default} mod {purple}{2} CT'er",
   "retakes.voices.toggle": "Du har {0} stemmeannonceringer!",
 
   "retakes.teams.scramble": "Terroristerne har vundet {green}{0}{default} runder i træk. {purple}Holdende bliver blandet!",

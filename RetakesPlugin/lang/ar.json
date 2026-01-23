@@ -10,6 +10,7 @@
   "retakes.queue.vip_took_place": "لقد أخذت مكان {green}{0}{default} في اللعبة لأنك {gold}{1}{default}.",
 
   "retakes.bombsite.announcement": "إعادة الاستيلاء على {green}{0}{default}: {lightred}{1} من الإرهابيين{default} مقابل {purple}{2} من قوات مكافحة الإرهاب",
+  "retakes.center.bombsite.announcement": "إعادة الاستيلاء على {green}{0}{default}: {lightred}{1} من الإرهابيين{default} مقابل {purple}{2} من قوات مكافحة الإرهاب",
   "retakes.voices.toggle": "لديك {0} الإعلانات الصوتية!",
 
   "retakes.teams.scramble": "فاز الإرهابيون {green}{0}{default} جولات متتالية. {purple}يتم خلط الفرق!",

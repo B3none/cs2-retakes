@@ -10,6 +10,7 @@
   "retakes.queue.vip_took_place": "Du har tagit {green}{0}{default}s plats i matchen för att du är {gold}{1}{default}.",
 
   "retakes.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} Terrorister{default} vs {purple}{2} Anti-terrorister.",
+  "retakes.center.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} Terrorister{default} vs {purple}{2} Anti-terrorister.",
   "retakes.voices.toggle": "Du har {0} röstmeddelanden!",
 
   "retakes.teams.scramble": "Terroristerna har vunnit {green}{0}{default} rundor i rad. {purple}Blandar om lagen!",

@@ -10,6 +10,7 @@
   "retakes.queue.vip_took_place": "Bạn đã lấy chỗ của {green}{0}{default} trong trận vì bạn là {gold}{1}{default}.",
 
   "retakes.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} T{default} vs {purple}{2} CT",
+  "retakes.center.bombsite.announcement": "Retake {green}{0}{default}: {lightred}{1} T{default} vs {purple}{2} CT",
   "retakes.voices.toggle": "Bạn đã {0} thông báo bằng giọng nói!",
 
   "retakes.teams.scramble": "T đã thắng {green}{0}{default} round liên tiếp. {purple}Đội sẽ được xáo trộn!",

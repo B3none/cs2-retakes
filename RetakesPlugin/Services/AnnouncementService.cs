@@ -40,7 +40,7 @@ public class AnnouncementService
         var numCounterTerrorist = PlayerHelper.GetPlayerCount(CounterStrikeSharp.API.Modules.Utils.CsTeam.CounterTerrorist);
 
         var announcementMessage = _plugin.Localizer["retakes.bombsite.announcement", bombsite.ToString(), numTerrorist, numCounterTerrorist];
-        var centerAnnouncementMessage = _plugin.Localizer["center.retakes.bombsite.announcement", bombsite.ToString(), numTerrorist, numCounterTerrorist];
+        var centerAnnouncementMessage = _plugin.Localizer["retakes.center.bombsite.announcement", bombsite.ToString(), numTerrorist, numCounterTerrorist];
 
         foreach (var player in Utilities.GetPlayers())
         {
