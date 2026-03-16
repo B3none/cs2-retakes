@@ -5,27 +5,27 @@ namespace RetakesPlugin.Utils;
 
 public static class ServerHelper
 {
-    private const string RetakesCfgDirectory = "/../../../../cfg/cs2-retakes";
-    private const string RetakesCfgPath = $"{RetakesCfgDirectory}/retakes.cfg";
+    private static string RetakesCfgDirectory => Path.Combine(Server.GameDirectory, "csgo", "cfg", "cs2-retakes");
+    private static string RetakesCfgPath => Path.Combine(RetakesCfgDirectory, "retakes.cfg");
 
-    public static void ExecuteRetakesConfiguration(string moduleDirectory)
+    public static void ExecuteRetakesConfiguration()
     {
-        if (!File.Exists(moduleDirectory + RetakesCfgPath))
+        if (!File.Exists(RetakesCfgPath))
         {
-            CreateRetakesConfig(moduleDirectory);
+            CreateRetakesConfig();
         }
 
         Server.ExecuteCommand("exec cs2-retakes/retakes.cfg");
         Logger.LogInfo("Server", "Retakes configuration executed");
     }
 
-    private static void CreateRetakesConfig(string moduleDirectory)
+    private static void CreateRetakesConfig()
     {
         try
         {
-            Directory.CreateDirectory(moduleDirectory + RetakesCfgDirectory);
+            Directory.CreateDirectory(RetakesCfgDirectory);
 
-            var retakesCfg = File.Create(moduleDirectory + RetakesCfgPath);
+            var retakesCfg = File.Create(RetakesCfgPath);
 
             var retakesCfgContents = @"
                 // Things you shouldn't change:
