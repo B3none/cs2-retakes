@@ -141,7 +141,7 @@ public class RetakesPlugin : BasePlugin, IPluginConfig<BaseConfigs>
     {
         Utils.Logger.LogInfo("MapStart", $"Map started: {mapName}");
 
-        SpawnService.ClearAllSpawnModels();
+        SpawnService.Reset();
 
         AddTimer(1.0f, ServerHelper.ExecuteRetakesConfiguration);
 

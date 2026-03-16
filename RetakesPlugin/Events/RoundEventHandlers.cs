@@ -42,7 +42,7 @@ public class RoundEventHandlers
         _enableFallbackAllocation = enableFallbackAllocation;
         _enableFallbackBombsiteAnnouncement = enableFallbackBombsiteAnnouncement;
         _random = random;
-        
+
         Logger.LogInfo("RoundEventHandlers", $"EnableFallbackAllocation inicializado a: {_enableFallbackAllocation}");
     }
 
@@ -107,7 +107,7 @@ public class RoundEventHandlers
             Logger.LogDebug("Round", "Warmup round, skipping.");
             if (_showSpawnsCommand?.ShowingSpawnsForBombsite != null && _plugin.MapConfigService != null)
             {
-                SpawnService.ShowSpawns(null!, _plugin.MapConfigService.GetSpawnsClone(), _showSpawnsCommand.ShowingSpawnsForBombsite);
+                SpawnService.ShowSpawns(_plugin, _plugin.MapConfigService.GetSpawnsClone(), _showSpawnsCommand.ShowingSpawnsForBombsite);
                 Logger.LogDebug("Round", $"Re-showing spawns for bombsite {_showSpawnsCommand.ShowingSpawnsForBombsite}");
             }
 
