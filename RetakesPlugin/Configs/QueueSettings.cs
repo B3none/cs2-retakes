@@ -19,6 +19,9 @@ public class QueueSettings
     [JsonPropertyName("ShouldRemoveSpectators")]
     public bool ShouldRemoveSpectators { get; set; } = true;
 
+    [JsonPropertyName("ShouldAutoJoinSpectators")]
+    public bool ShouldAutoJoinSpectators { get; set; } = true;
+
     public List<QueuePriorityFlagConfig> GetPriorityFlags()
     {
         if (QueuePriorityFlag == null || QueuePriorityFlag.Count == 0)
