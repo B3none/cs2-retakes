@@ -31,6 +31,20 @@ public class PlayerEventHandlers
 
         player.ForceTeamTime = 3600.0f;
 
+        if(_plugin.Config.Queue.ShouldAutoJoinSpectators)
+        {
+            _plugin.AddTimer(1.0f, () =>
+            {
+                if (!PlayerHelper.IsValid(player))
+                {
+                    return;
+                }
+
+                player.ChangeTeam(CsTeam.Spectator);
+                player.ExecuteClientCommand("teammenu");
+            });
+        }
+
         // Grant VIP to contributors
         if (new List<ulong> { 76561198028510846, 76561198044886803, 76561198414501446, 76561199074660131 }.Contains(player.SteamID))
         {
