@@ -11,7 +11,7 @@ namespace RetakesPlugin.Services;
 
 public static class SpawnService
 {
-    private static readonly List<CBaseEntity> _spawnModels = new();
+    private static readonly List<uint> _spawnModelIndexes = new();
 
     public static int ShowSpawns(RetakesPlugin plugin, List<Spawn> spawns, Bombsite? bombsite)
     {
@@ -39,7 +39,7 @@ public static class SpawnService
     {
         // Create player model
         var model = Utilities.CreateEntityByName<CDynamicProp>("prop_dynamic");
-        if (model == null)
+        if (model == null || !model.IsValid)
         {
             Logger.LogError("SpawnService", "Failed to create prop_dynamic entity for spawn visualization");
             return;
@@ -68,16 +68,18 @@ public static class SpawnService
 
             // Apply color and glow
             model.Render = Color.FromArgb(200, teamColor.R, teamColor.G, teamColor.B);
-            model.Glow.GlowColorOverride = teamColor;
-            model.Glow.GlowRange = 2000;
-            model.Glow.GlowTeam = -1;
-            model.Glow.GlowType = 3;
-            model.Glow.GlowRangeMin = 25;
+            if (model.Glow != null)
+            {
+                model.Glow.GlowColorOverride = teamColor;
+                model.Glow.GlowRange = 2000;
+                model.Glow.GlowType = 3;
+                model.Glow.GlowRangeMin = 25;
+            }
 
             // Position the model
             model.Teleport(spawn.Vector, spawn.QAngle, new Vector(0, 0, 0));
+            if (model.Index != 0) _spawnModelIndexes.Add(model.Index);
 
-            _spawnModels.Add(model);
             CreateSpawnLabel(spawn);
 
             Logger.LogDebug("SpawnService", $"Created spawn model for {spawn.Team} at {spawn.Vector}");
@@ -85,7 +87,7 @@ public static class SpawnService
         catch (Exception ex)
         {
             Logger.LogError("SpawnService", $"Error creating spawn model: {ex.Message}");
-            model?.Remove();
+            if (model.IsValid) model.Remove();
         }
     }
 
@@ -128,7 +130,7 @@ public static class SpawnService
             spawnText.Teleport(textPos, textAngle);
             spawnText.DispatchSpawn();
 
-            _spawnModels.Add(spawnText);
+            if (spawnText.Index != 0) _spawnModelIndexes.Add(spawnText.Index);
         }
         catch (Exception ex)
         {
@@ -140,19 +142,27 @@ public static class SpawnService
     {
         try
         {
-            var modelsToRemove = _spawnModels
-                .Where(entity => entity != null && entity.IsValid && IsEntityAtPosition(entity, spawn.Vector))
-                .ToList();
-
-            foreach (var model in modelsToRemove)
+            var toRemove = new List<uint>();
+            foreach (var index in _spawnModelIndexes)
             {
-                model.Remove();
-                _spawnModels.Remove(model);
+                var entity = Utilities.GetEntityFromIndex<CBaseEntity>((int)index);
+                if (entity == null || !entity.IsValid) continue;
+
+                if (IsEntityAtPosition(entity, spawn.Vector))
+                {
+                    entity.Remove();
+                    toRemove.Add(index);
+                }
             }
 
-            if (modelsToRemove.Any())
+            foreach (var index in toRemove)
             {
-                Logger.LogDebug("SpawnService", $"Removed {modelsToRemove.Count} spawn visualization entities");
+                _spawnModelIndexes.Remove(index);
+            }
+
+            if (toRemove.Count > 0)
+            {
+                Logger.LogDebug("SpawnService", $"Removed {toRemove.Count} spawn visualization entities");
             }
         }
         catch (Exception ex)
@@ -171,7 +181,7 @@ public static class SpawnService
             Math.Pow(entity.AbsOrigin.Z - position.Z, 2)
         );
 
-        return distance < 50.0; // Within 50 units
+        return distance < 50.0;
     }
 
     public static void ClearAllSpawnModels()
@@ -179,16 +189,15 @@ public static class SpawnService
         try
         {
             int clearedCount = 0;
-            foreach (var model in _spawnModels.ToList())
+            for (int i = _spawnModelIndexes.Count - 1; i >= 0; i--)
             {
-                if (model != null && model.IsValid)
+                var entity = Utilities.GetEntityFromIndex<CBaseEntity>((int)_spawnModelIndexes[i]);
+                if (entity != null && entity.IsValid)
                 {
-                    model.Remove();
+                    entity.Remove();
                     clearedCount++;
                 }
             }
-
-            _spawnModels.Clear();
 
             if (clearedCount > 0)
             {
@@ -199,5 +208,12 @@ public static class SpawnService
         {
             Logger.LogError("SpawnService", $"Error clearing spawn models: {ex.Message}");
         }
+        finally
+        {
+            ClearIndexes();
+        }
     }
+
+    public static void Reset() => ClearIndexes();
+    private static void ClearIndexes() => _spawnModelIndexes.Clear();
 }

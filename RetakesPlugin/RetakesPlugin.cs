@@ -24,7 +24,7 @@ namespace RetakesPlugin;
 [MinimumApiVersion(345)]
 public class RetakesPlugin : BasePlugin, IPluginConfig<BaseConfigs>
 {
-    public const string Version = "3.0.3";
+    public const string Version = "3.0.4";
 
     #region Plugin Info
     public override string ModuleName => "Retakes Plugin";
@@ -141,12 +141,9 @@ public class RetakesPlugin : BasePlugin, IPluginConfig<BaseConfigs>
     {
         Utils.Logger.LogInfo("MapStart", $"Map started: {mapName}");
 
-        SpawnService.ClearAllSpawnModels();
+        SpawnService.Reset();
 
-        AddTimer(1.0f, () =>
-        {
-            ServerHelper.ExecuteRetakesConfiguration(ModuleDirectory);
-        });
+        AddTimer(1.0f, ServerHelper.ExecuteRetakesConfiguration);
 
         InitializeServices(mapName);
     }
