@@ -18,7 +18,7 @@ public static class PlayerHelper
 
     public static bool IsConnected(CCSPlayerController player)
     {
-        return player.Connected == PlayerConnectedState.PlayerConnected;
+        return player.Connected == PlayerConnectedState.Connected;
     }
 
     public static bool HasAlivePawn(CCSPlayerController? player, bool shouldBeAlive = true)
