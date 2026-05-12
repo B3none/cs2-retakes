@@ -48,7 +48,7 @@ public static class SpawnService
         try
         {
             // Select model based on team
-            string modelPath = spawn.Team == CsTeam.Terrorist ? "characters/models/tm_leet/tm_leet_variantb.vmdl" : "characters/models/ctm_sas/ctm_sas.vmdl";
+            string modelPath = spawn.Team == CsTeam.Terrorist ? "agents/models/tm_leet/tm_leet_variantb.vmdl" : "agents/models/ctm_sas/ctm_sas.vmdl";
 
             model.SetModel(modelPath);
             model.UseAnimGraph = false;
