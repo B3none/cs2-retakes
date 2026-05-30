@@ -1,14 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <OutputPath>..\build-output\addons\counterstrikesharp\plugins\RetakesPlugin\</OutputPath>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <DebugType>portable</DebugType>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CounterStrikeSharp.API" Version="1.0.367" />
+    <PackageReference Include="CounterStrikeSharp.API" Version="1.0.369" />
     <PackageReference Include="Microsoft.Extensions.Localization.Abstractions" Version="10.0.8" />
-    <ProjectReference Include="..\RetakesPluginShared\RetakesPluginShared.csproj" />
+    <ProjectReference Include="..\RetakesPluginShared\RetakesPluginShared.csproj"><Private>false</Private></ProjectReference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="lang\**\*.*" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition=" '$(CopyPath)' != '' ">

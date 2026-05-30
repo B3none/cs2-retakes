@@ -21,10 +21,10 @@ using RetakesPlugin.Commands.SpawnEditor;
 
 namespace RetakesPlugin;
 
-[MinimumApiVersion(345)]
+[MinimumApiVersion(369)]
 public class RetakesPlugin : BasePlugin, IPluginConfig<BaseConfigs>
 {
-    public const string Version = "3.0.4";
+    public const string Version = "3.0.5";
 
     #region Plugin Info
     public override string ModuleName => "Retakes Plugin";

@@ -2,18 +2,19 @@
     <PropertyGroup>
         <PackageId>RetakesPluginShared</PackageId>
         <Title>RetakesPluginShared</Title>
-        <Description>
-            This library is made to run alongside https://github.com/b3none/cs2-retakes
-        </Description>
+        <Description>This library is made to run alongside https://github.com/b3none/cs2-retakes</Description>
         <Authors>B3none</Authors>
-        
+
         <Version>2.0.0</Version>
-        
-        <TargetFramework>net8.0</TargetFramework>
+
+        <TargetFramework>net10.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>RetakesPluginShared</RootNamespace>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+        <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
+        <OutputPath>..\build-output\addons\counterstrikesharp\shared\RetakesPluginShared\</OutputPath>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <DebugType>portable</DebugType>
 
         <PackageReadmeFile>README.md</PackageReadmeFile>
         <PackageLicenseFile>LICENSE</PackageLicenseFile>
