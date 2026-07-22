@@ -48,7 +48,7 @@ public static class ServerHelper
                 sv_skirmish_id 0
 
                 // Things you can change, and may want to:
-                mp_roundtime_defuse 0.25
+                mp_roundtime_defuse 1.25
                 mp_autokick 0
                 mp_c4timer 40
                 mp_freezetime 1
