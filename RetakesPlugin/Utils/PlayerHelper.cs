@@ -31,6 +31,23 @@ public static class PlayerHelper
         try
         {
             player.ChangeTeam(team);
+
+            // ChangeTeam kills the player. During warmup nothing brings them back:
+            // retakes.cfg disables mp_respawn_on_death_ct/t and the warmup timer is
+            // paused while waiting for players, so there is no round restart either.
+            // Without this they sit in death cam until they switch team by hand.
+            if (team is CsTeam.Terrorist or CsTeam.CounterTerrorist
+                && (GameRulesHelper.GetGameRulesOrNull()?.WarmupPeriod ?? false))
+            {
+                Server.NextFrame(() =>
+                {
+                    if (IsValid(player) && IsConnected(player) && !player.PawnIsAlive)
+                    {
+                        player.Respawn();
+                    }
+                });
+            }
+
             return true;
         }
         catch (Exception ex)

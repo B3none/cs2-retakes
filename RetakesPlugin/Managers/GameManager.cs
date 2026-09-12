@@ -49,10 +49,16 @@ public class GameManager
     {
         var alreadyWaiting = IsWaitingForPlayers;
 
-        // Always re-assert the paused warmup so the hold recovers from an
-        // unexpected round restart happening while we were already waiting.
         IsWaitingForPlayers = true;
-        Server.ExecuteCommand("mp_warmup_start");
+
+        // Re-assert the warmup so the hold recovers from an unexpected round restart
+        // happening while we were already waiting, but don't restart one we are
+        // already in, that would needlessly respawn everyone.
+        if (!(GameRulesHelper.GetGameRulesOrNull()?.WarmupPeriod ?? false))
+        {
+            Server.ExecuteCommand("mp_warmup_start");
+        }
+
         Server.ExecuteCommand("mp_warmup_pausetimer 1");
 
         if (!alreadyWaiting)
@@ -78,6 +84,14 @@ public class GameManager
     {
         if (!IsWaitingForPlayers)
         {
+            // Take the hold as soon as we are short on players during a warmup,
+            // otherwise the warmup timer runs out, ends the round, and only then
+            // does round pre-start bounce us back into a paused warmup.
+            if (ShouldWaitForPlayers() && (GameRulesHelper.GetGameRulesOrNull()?.WarmupPeriod ?? false))
+            {
+                StartWaitingForPlayers();
+            }
+
             return;
         }
 
